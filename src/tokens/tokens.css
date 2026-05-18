@@ -1,0 +1,83 @@
+:root {
+  color-scheme: light;
+
+  /* Colors */
+  --color-primary: #0066FF;
+  --color-primary-hover: #0052CC;
+  --color-secondary: #6B7280;
+  --color-success: #10B981;
+  --color-danger: #EF4444;
+  --color-warning: #F59E0B;
+  --color-white: #FFFFFF;
+  --color-bg: #F9FAFB;
+  --color-border: #E5E7EB;
+  --color-text: #111827;
+  --color-text-muted: #6B7280;
+
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+
+  /* Border Radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-full: 9999px;
+
+  /* Font Size */
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-base: 16px;
+  --font-size-lg: 20px;
+  --font-size-xl: 24px;
+
+  /* Font Weight */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+
+  /* Shadow */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+[data-product-line="commerce"] {
+  --color-primary: #0F766E;
+  --color-primary-hover: #115E59;
+  --color-success: #16A34A;
+  --color-danger: #DC2626;
+  --color-warning: #D97706;
+  --color-bg: #F8FAFC;
+  --color-border: #CBD5E1;
+  --color-text: #0F172A;
+  --color-text-muted: #64748B;
+}
+
+[data-product-line="finance"] {
+  --color-primary: #1D4ED8;
+  --color-primary-hover: #1E40AF;
+  --color-success: #15803D;
+  --color-danger: #B91C1C;
+  --color-warning: #B45309;
+  --color-bg: #F8FAFC;
+  --color-border: #D6DAE1;
+  --color-text: #111827;
+  --color-text-muted: #4B5563;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+}
+
+[data-product-line="internal"] {
+  --color-primary: #7C3AED;
+  --color-primary-hover: #6D28D9;
+  --color-success: #059669;
+  --color-danger: #E11D48;
+  --color-warning: #CA8A04;
+  --color-bg: #FAFAFA;
+  --color-border: #E4E4E7;
+  --color-text: #18181B;
+  --color-text-muted: #71717A;
+}
