@@ -15,7 +15,11 @@ React + Vite + Storybook component library.
 - `Checkbox`
 - `Switch`
 - `Alert`
+- `Modal`
+- `Empty`
 - `Space`
+- `Tabs`
+- `Pagination`
 - design tokens CSS
 - Storybook 文件與互動範例
 
@@ -53,10 +57,14 @@ import {
   Button,
   Card,
   Checkbox,
+  Empty,
   Input,
+  Modal,
+  Pagination,
   Select,
   Space,
   Switch,
+  Tabs,
   ThemeProvider,
 } from 'my-design-system'
 
@@ -81,6 +89,20 @@ export function App() {
           <Checkbox defaultChecked>Invite team</Checkbox>
           <Switch defaultChecked checkedChildren="On" unCheckedChildren="Off" />
         </Card>
+        <Tabs
+          items={[
+            {
+              key: 'empty',
+              label: 'Empty state',
+              children: <Empty title="No releases found" actionText="Create release" />,
+            },
+            {
+              key: 'pages',
+              label: 'Pagination',
+              children: <Pagination current={1} total={24} pageSize={8} />,
+            },
+          ]}
+        />
       </Space>
     </ThemeProvider>
   )
@@ -301,6 +323,33 @@ import { Alert } from 'my-design-system'
 />
 ```
 
+### Modal
+
+```jsx
+import { Modal } from 'my-design-system'
+
+<Modal
+  open={open}
+  title="Create release"
+  onOk={handleOk}
+  onCancel={handleCancel}
+>
+  Confirm this release package before installing it in Product A.
+</Modal>
+```
+
+### Empty
+
+```jsx
+import { Empty } from 'my-design-system'
+
+<Empty
+  title="No releases found"
+  description="Build and pack the library before installing it in another product."
+  actionText="Create release"
+/>
+```
+
 ### Space
 
 ```jsx
@@ -310,6 +359,27 @@ import { Button, Space } from 'my-design-system'
   <Button type="primary">Save</Button>
   <Button variant="secondary">Cancel</Button>
 </Space>
+```
+
+### Tabs
+
+```jsx
+import { Tabs } from 'my-design-system'
+
+<Tabs
+  items={[
+    { key: 'overview', label: 'Overview', children: 'Overview content' },
+    { key: 'usage', label: 'Usage', children: 'Usage content' },
+  ]}
+/>
+```
+
+### Pagination
+
+```jsx
+import { Pagination } from 'my-design-system'
+
+<Pagination current={1} total={86} pageSize={10} onChange={setPage} />
 ```
 
 ### Card
