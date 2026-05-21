@@ -47,6 +47,11 @@ const groups = [
         href: '/?path=/docs/data-display-tabs--docs',
         description: 'Organize related content into switchable sections.',
       },
+      {
+        name: 'Table',
+        href: '/?path=/docs/data-display-table--docs',
+        description: 'Display structured data with sorting, row selection, and pagination.',
+      },
     ],
   },
   {
@@ -76,6 +81,11 @@ const groups = [
         name: 'Switch',
         href: '/?path=/docs/data-entry-switch--docs',
         description: 'Toggle immediate on/off settings with loading and disabled states.',
+      },
+      {
+        name: 'Form',
+        href: '/?path=/docs/data-entry-form--docs',
+        description: 'Coordinate field values, validation rules, errors, and submit callbacks.',
       },
     ],
   },
