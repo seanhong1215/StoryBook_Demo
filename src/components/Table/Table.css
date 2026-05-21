@@ -1,0 +1,69 @@
+.table {
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  color: var(--color-text);
+  overflow: hidden;
+}
+
+.table--loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.table__scroll {
+  overflow: auto;
+}
+
+.table__element {
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+  min-width: 100%;
+  text-align: left;
+}
+
+.table__element th,
+.table__element td {
+  border-bottom: 1px solid var(--color-border);
+  padding: 12px 14px;
+  vertical-align: middle;
+}
+
+.table__element th {
+  background: var(--color-bg);
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-bold);
+  white-space: nowrap;
+}
+
+.table__element tbody tr:hover {
+  background: var(--color-bg);
+}
+
+.table__selection {
+  width: 44px;
+}
+
+.table__sort {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  font-weight: inherit;
+  gap: var(--spacing-xs);
+  padding: 0;
+}
+
+.table__sort-indicator {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}
+
+.table__pagination {
+  display: flex;
+  justify-content: flex-end;
+  padding: var(--spacing-md);
+}
