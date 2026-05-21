@@ -24,23 +24,40 @@ export const Usage = {
   render: () => (
     <main className="docs-page">
       <p className="docs-kicker">Adoption</p>
-      <h1 className="docs-title">Use Components In Products</h1>
+      <h1 className="docs-title">Install Locally In Product A</h1>
       <p className="docs-lede">
-        Components are exported from one package entry. Product teams import the shared
-        CSS once, then use the same React components across product lines.
+        This library is designed to be tested as an external package without publishing to npm.
+        Build it, pack it, install the tarball in Product A, then import components from one entry.
       </p>
 
       <section className="docs-section">
         <div className="docs-section-header">
-          <h2 className="docs-section-title">Install and Import</h2>
+          <h2 className="docs-section-title">Recommended Local Package Flow</h2>
         </div>
-        <pre className="docs-code">{`import '@your-scope/my-design-system/styles.css'
-import { Button, Card, ThemeProvider } from '@your-scope/my-design-system'
+        <pre className="docs-code">{`# In this component library
+npm run build
+npm pack
+
+# In Product A
+npm install ../storybook/my-design-system-0.0.0.tgz`}</pre>
+      </section>
+
+      <section className="docs-section">
+        <div className="docs-section-header">
+          <h2 className="docs-section-title">Import In Product A</h2>
+        </div>
+        <pre className="docs-code">{`import 'my-design-system/styles.css'
+import { Button, Card, Input, Space, ThemeProvider } from 'my-design-system'
 
 export function App() {
   return (
     <ThemeProvider productLine="commerce">
-      <Button>Checkout</Button>
+      <Card title="Create project" footer={<Button type="primary">Create</Button>}>
+        <Space direction="vertical" align="stretch">
+          <Input placeholder="Project name" />
+          <Input prefix="https://" suffix=".app" placeholder="workspace-url" />
+        </Space>
+      </Card>
     </ThemeProvider>
   )
 }`}</pre>
@@ -56,7 +73,7 @@ export function App() {
             <ThemeProvider productLine={productLine.id} key={productLine.id}>
               <Card
                 title={productLine.name}
-                description="Same component API, different product token values."
+                description="Same component API, different CSS token values."
                 footer={
                   <>
                     <Badge variant="success">Ready</Badge>

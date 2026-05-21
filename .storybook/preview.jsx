@@ -22,11 +22,17 @@ const preview = {
       storySort: {
         order: [
           'Components',
-          ['Overview', 'Usage'],
+          ['Showcase', 'Overview', 'Usage'],
           'General',
           ['Button'],
           'Data Display',
           ['Badge', 'Card'],
+          'Data Entry',
+          ['Input', 'Select', 'Checkbox', 'Switch'],
+          'Feedback',
+          ['Alert'],
+          'Layout',
+          ['Space'],
           'Foundation',
           ['Tokens'],
         ],
