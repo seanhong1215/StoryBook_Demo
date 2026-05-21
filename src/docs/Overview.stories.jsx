@@ -1,5 +1,20 @@
 const groups = [
   {
+    name: 'Portfolio Entry',
+    components: [
+      {
+        name: 'Showcase',
+        href: '/?path=/story/components-showcase--admin-dashboard',
+        description: 'A composed admin UI that demonstrates how Product A can use this library.',
+      },
+      {
+        name: 'Usage',
+        href: '/?path=/story/components-usage--usage',
+        description: 'Local npm pack, file dependency, and theme adoption workflow.',
+      },
+    ],
+  },
+  {
     name: 'General',
     components: [
       {
@@ -25,13 +40,53 @@ const groups = [
     ],
   },
   {
-    name: 'Foundation',
+    name: 'Data Entry',
     components: [
       {
-        name: 'Usage',
-        href: '/?path=/story/components-usage--usage',
-        description: 'How products import components and apply product-line themes.',
+        name: 'Input',
+        href: '/?path=/docs/data-entry-input--docs',
+        description: 'Capture short text values with status, size, and affix controls.',
       },
+      {
+        name: 'Select',
+        href: '/?path=/docs/data-entry-select--docs',
+        description: 'Choose one option from a compact list with size and validation states.',
+      },
+      {
+        name: 'Checkbox',
+        href: '/?path=/docs/data-entry-checkbox--docs',
+        description: 'Capture binary or indeterminate choices for product settings.',
+      },
+      {
+        name: 'Switch',
+        href: '/?path=/docs/data-entry-switch--docs',
+        description: 'Toggle immediate on/off settings with loading and disabled states.',
+      },
+    ],
+  },
+  {
+    name: 'Feedback',
+    components: [
+      {
+        name: 'Alert',
+        href: '/?path=/docs/feedback-alert--docs',
+        description: 'Display contextual success, info, warning, and error feedback.',
+      },
+    ],
+  },
+  {
+    name: 'Layout',
+    components: [
+      {
+        name: 'Space',
+        href: '/?path=/docs/layout-space--docs',
+        description: 'Control gaps between inline or stacked children without custom CSS.',
+      },
+    ],
+  },
+  {
+    name: 'Foundation',
+    components: [
       {
         name: 'Tokens',
         href: '/?path=/story/foundation-tokens--colors',
@@ -55,10 +110,11 @@ export const Overview = {
   render: () => (
     <main className="docs-page">
       <p className="docs-kicker">Design System</p>
-      <h1 className="docs-title">Components Overview</h1>
+      <h1 className="docs-title">Ant Design-inspired React UI Library</h1>
       <p className="docs-lede">
-        Browse the system by usage category. Start here when you are choosing a component,
-        then open the component page for variants, controls, and implementation examples.
+        A portfolio-ready component library for small internal products. It focuses on
+        local package installation, reusable design tokens, Storybook documentation, and
+        practical components that can compose a real admin workflow.
       </p>
 
       {groups.map((group) => (
