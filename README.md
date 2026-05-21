@@ -10,6 +10,9 @@ React + Vite + Storybook component library.
 - `Button`
 - `Badge`
 - `Card`
+- `Table`
+- `Form`
+- `FormItem`
 - `Input`
 - `Textarea`
 - `Select`
@@ -61,6 +64,8 @@ import {
   Button,
   Card,
   Checkbox,
+  Form,
+  FormItem,
   Empty,
   Input,
   Modal,
@@ -69,6 +74,7 @@ import {
   Space,
   Switch,
   Tag,
+  Table,
   Textarea,
   Tooltip,
   Tabs,
@@ -80,22 +86,24 @@ export function App() {
     <ThemeProvider productLine="commerce">
       <Space direction="vertical" align="stretch">
         <Alert type="success" message="Design system connected" />
-        <Card
-          title="Create project"
-          description="This card and form controls come from the local component package."
-          footer={<Button type="primary">Create</Button>}
-        >
-          <Input placeholder="Project name" />
-          <Select
-            placeholder="Choose a plan"
-            options={[
-              { label: 'Commerce Pro', value: 'commerce-pro' },
-              { label: 'Finance Basic', value: 'finance-basic' },
-            ]}
-          />
-          <Checkbox defaultChecked>Invite team</Checkbox>
-          <Switch defaultChecked checkedChildren="On" unCheckedChildren="Off" />
-          <Textarea placeholder="Release notes" showCount maxLength={120} />
+        <Card title="Create project">
+          <Form>
+            <FormItem name="project" label="Project" rules={[{ required: true }]}>
+              <Input placeholder="Project name" />
+            </FormItem>
+            <FormItem name="plan" label="Plan">
+              <Select
+                placeholder="Choose a plan"
+                options={[
+                  { label: 'Commerce Pro', value: 'commerce-pro' },
+                  { label: 'Finance Basic', value: 'finance-basic' },
+                ]}
+              />
+            </FormItem>
+            <Checkbox defaultChecked>Invite team</Checkbox>
+            <Textarea placeholder="Release notes" showCount maxLength={120} />
+            <Button htmlType="submit" type="primary">Create</Button>
+          </Form>
         </Card>
         <Tabs
           items={[
@@ -292,6 +300,25 @@ import { Textarea } from 'my-design-system'
 <Textarea showCount maxLength={120} defaultValue="Updated install workflow." />
 ```
 
+### Form
+
+```jsx
+import { Button, Form, FormItem, Input, Select } from 'my-design-system'
+
+<Form onFinish={console.log}>
+  <FormItem name="workspace" label="Workspace" rules={[{ required: true }]}>
+    <Input placeholder="Workspace name" />
+  </FormItem>
+  <FormItem name="plan" label="Plan">
+    <Select
+      placeholder="Choose a plan"
+      options={[{ label: 'Commerce Pro', value: 'commerce-pro' }]}
+    />
+  </FormItem>
+  <Button htmlType="submit" type="primary">Submit</Button>
+</Form>
+```
+
 ### Select
 
 ```jsx
@@ -445,6 +472,25 @@ import { Badge, Button, Card } from 'my-design-system'
 >
   All services are available.
 </Card>
+```
+
+### Table
+
+```jsx
+import { Badge, Table, Tag } from 'my-design-system'
+
+<Table
+  columns={[
+    { title: 'Order', dataIndex: 'id', sorter: true },
+    { title: 'Customer', dataIndex: 'customer', sorter: true },
+    { title: 'Plan', dataIndex: 'plan', render: (plan) => <Tag color="primary">{plan}</Tag> },
+    { title: 'Status', dataIndex: 'status', render: (status) => <Badge>{status}</Badge> },
+  ]}
+  dataSource={[
+    { key: '1', id: 'ORD-1024', customer: 'Acme Studio', plan: 'Commerce Pro', status: 'Active' },
+  ]}
+  pagination={{ pageSize: 10 }}
+/>
 ```
 
 ## 本地開發
