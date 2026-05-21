@@ -4,7 +4,7 @@ import { Empty } from '../Empty/Empty'
 import { Pagination } from '../Pagination/Pagination'
 import './Table.css'
 
-const getRecordKey = (record, rowKey) => (
+const getRowKey = (record, rowKey) => (
   typeof rowKey === 'function' ? rowKey(record) : record[rowKey]
 )
 
@@ -13,73 +13,62 @@ export const Table = ({
   dataSource = [],
   rowKey = 'key',
   loading = false,
-  pagination = false,
+  pagination = { pageSize: 5 },
   rowSelection,
   emptyText = 'No data',
   className = '',
 }) => {
   const [sortState, setSortState] = useState()
-  const [currentPage, setCurrentPage] = useState(1)
-  const pageSize = typeof pagination === 'object' ? pagination.pageSize || 10 : 10
-
-  const selectedRowKeys = rowSelection?.selectedRowKeys || []
-  const selectable = Boolean(rowSelection)
+  const [page, setPage] = useState(1)
 
   const sortedData = useMemo(() => {
     if (!sortState) return dataSource
-
     const column = columns.find((item) => (item.key || item.dataIndex) === sortState.key)
     if (!column?.sorter) return dataSource
 
     return [...dataSource].sort((a, b) => {
-      const result = typeof column.sorter === 'function'
-        ? column.sorter(a, b)
-        : String(a[column.dataIndex] ?? '').localeCompare(String(b[column.dataIndex] ?? ''))
-
+      const result = column.sorter(a, b)
       return sortState.order === 'ascend' ? result : -result
     })
   }, [columns, dataSource, sortState])
 
-  const visibleData = pagination ? sortedData.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize,
-  ) : sortedData
+  const pageSize = pagination?.pageSize || 5
+  const pagedData = pagination
+    ? sortedData.slice((page - 1) * pageSize, page * pageSize)
+    : sortedData
+
+  const selectedRowKeys = rowSelection?.selectedRowKeys || []
+  const visibleRowKeys = pagedData.map((record) => getRowKey(record, rowKey))
+  const allVisibleSelected = visibleRowKeys.length > 0
+    && visibleRowKeys.every((key) => selectedRowKeys.includes(key))
+  const someVisibleSelected = visibleRowKeys.some((key) => selectedRowKeys.includes(key))
+    && !allVisibleSelected
 
   const toggleSort = (column) => {
-    const key = column.key || column.dataIndex
     if (!column.sorter) return
+    const key = column.key || column.dataIndex
 
     setSortState((current) => {
-      if (current?.key !== key) return { key, order: 'ascend' }
+      if (!current || current.key !== key) return { key, order: 'ascend' }
       if (current.order === 'ascend') return { key, order: 'descend' }
       return undefined
     })
   }
 
-  const toggleRow = (record) => {
-    const key = getRecordKey(record, rowKey)
-    const nextKeys = selectedRowKeys.includes(key)
-      ? selectedRowKeys.filter((item) => item !== key)
-      : [...selectedRowKeys, key]
+  const toggleAllVisible = () => {
+    const nextKeys = allVisibleSelected
+      ? selectedRowKeys.filter((key) => !visibleRowKeys.includes(key))
+      : [...new Set([...selectedRowKeys, ...visibleRowKeys])]
 
-    rowSelection?.onChange?.(nextKeys, dataSource.filter((item) => (
-      nextKeys.includes(getRecordKey(item, rowKey))
-    )))
+    rowSelection?.onChange?.(nextKeys)
   }
 
-  const allVisibleSelected = visibleData.length > 0 && visibleData.every((record) => (
-    selectedRowKeys.includes(getRecordKey(record, rowKey))
-  ))
+  const toggleRow = (key) => {
+    const nextKeys = selectedRowKeys.includes(key)
+      ? selectedRowKeys.filter((selectedKey) => selectedKey !== key)
+      : [...selectedRowKeys, key]
 
-  const toggleAllVisible = () => {
-    const visibleKeys = visibleData.map((record) => getRecordKey(record, rowKey))
-    const nextKeys = allVisibleSelected
-      ? selectedRowKeys.filter((key) => !visibleKeys.includes(key))
-      : Array.from(new Set([...selectedRowKeys, ...visibleKeys]))
-
-    rowSelection?.onChange?.(nextKeys, dataSource.filter((item) => (
-      nextKeys.includes(getRecordKey(item, rowKey))
-    )))
+    rowSelection?.onChange?.(nextKeys)
   }
 
   return (
@@ -88,12 +77,13 @@ export const Table = ({
         <table className="table__element">
           <thead>
             <tr>
-              {selectable && (
+              {rowSelection && (
                 <th className="table__selection">
                   <Checkbox
                     checked={allVisibleSelected}
-                    indeterminate={selectedRowKeys.length > 0 && !allVisibleSelected}
+                    indeterminate={someVisibleSelected}
                     onChange={toggleAllVisible}
+                    aria-label="Select all rows"
                   />
                 </th>
               )}
@@ -107,11 +97,12 @@ export const Table = ({
                       <button
                         className="table__sort"
                         type="button"
+                        aria-sort={sorted || 'none'}
                         onClick={() => toggleSort(column)}
                       >
                         {column.title}
                         <span className="table__sort-indicator">
-                          {sorted === 'ascend' ? '↑' : sorted === 'descend' ? '↓' : '↕'}
+                          {sorted === 'ascend' ? 'up' : sorted === 'descend' ? 'down' : 'sort'}
                         </span>
                       </button>
                     ) : column.title}
@@ -121,42 +112,47 @@ export const Table = ({
             </tr>
           </thead>
           <tbody>
-            {visibleData.map((record, rowIndex) => {
-              const key = getRecordKey(record, rowKey)
+            {pagedData.map((record, rowIndex) => {
+              const key = getRowKey(record, rowKey)
 
               return (
                 <tr key={key}>
-                  {selectable && (
+                  {rowSelection && (
                     <td className="table__selection">
                       <Checkbox
                         checked={selectedRowKeys.includes(key)}
-                        onChange={() => toggleRow(record)}
+                        onChange={() => toggleRow(key)}
+                        aria-label={`Select row ${key}`}
                       />
                     </td>
                   )}
-                  {columns.map((column) => (
-                    <td key={column.key || column.dataIndex}>
-                      {column.render
-                        ? column.render(record[column.dataIndex], record, rowIndex)
-                        : record[column.dataIndex]}
-                    </td>
-                  ))}
+                  {columns.map((column) => {
+                    const value = record[column.dataIndex]
+                    const columnKey = column.key || column.dataIndex
+
+                    return (
+                      <td key={columnKey}>
+                        {column.render ? column.render(value, record, rowIndex) : value}
+                      </td>
+                    )
+                  })}
                 </tr>
               )
             })}
           </tbody>
         </table>
-        {visibleData.length === 0 && (
-          <Empty title={emptyText} description="Try changing filters or creating a new item." />
+        {pagedData.length === 0 && (
+          <Empty title={emptyText} />
         )}
       </div>
+      {loading && <div className="table__loading">Loading</div>}
       {pagination && sortedData.length > pageSize && (
         <div className="table__pagination">
           <Pagination
-            current={currentPage}
+            current={page}
             total={sortedData.length}
             pageSize={pageSize}
-            onChange={setCurrentPage}
+            onChange={setPage}
           />
         </div>
       )}
