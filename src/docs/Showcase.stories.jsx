@@ -41,8 +41,8 @@ const statusVariant = {
 }
 
 const orderColumns = [
-  { title: 'Order', dataIndex: 'id', sorter: true },
-  { title: 'Customer', dataIndex: 'customer', sorter: true },
+  { title: 'Order', dataIndex: 'id', sorter: (a, b) => a.id.localeCompare(b.id) },
+  { title: 'Customer', dataIndex: 'customer', sorter: (a, b) => a.customer.localeCompare(b.customer) },
   {
     title: 'Plan',
     dataIndex: 'plan',
