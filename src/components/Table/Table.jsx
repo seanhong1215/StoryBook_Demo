@@ -27,7 +27,10 @@ export const Table = ({
     if (!column?.sorter) return dataSource
 
     return [...dataSource].sort((a, b) => {
-      const result = column.sorter(a, b)
+      const result = column.sorter === true
+        ? String(a[column.dataIndex] ?? '').localeCompare(String(b[column.dataIndex] ?? ''))
+        : column.sorter(a, b)
+
       return sortState.order === 'ascend' ? result : -result
     })
   }, [columns, dataSource, sortState])
