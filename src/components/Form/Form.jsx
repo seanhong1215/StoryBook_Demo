@@ -1,4 +1,13 @@
-import { cloneElement, createContext, useContext, useEffect, useMemo, useState } from 'react'
+import {
+  cloneElement,
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import { Button } from '../Button/Button'
 import './Form.css'
 
@@ -44,7 +53,7 @@ export const Form = ({
   const [errors, setErrors] = useState({})
   const [fields, setFields] = useState({})
 
-  const registerField = (name, config) => {
+  const registerField = useCallback((name, config) => {
     setFields((current) => ({ ...current, [name]: config }))
 
     return () => {
@@ -54,12 +63,12 @@ export const Form = ({
         return next
       })
     }
-  }
+  }, [])
 
-  const setFieldValue = (name, value) => {
+  const setFieldValue = useCallback((name, value) => {
     setValues((current) => ({ ...current, [name]: value }))
     setErrors((current) => ({ ...current, [name]: undefined }))
-  }
+  }, [])
 
   const validateFields = async () => {
     const nextErrors = {}
@@ -92,7 +101,7 @@ export const Form = ({
     errors,
     registerField,
     setFieldValue,
-  }), [values, errors])
+  }), [values, errors, registerField, setFieldValue])
 
   return (
     <FormContext.Provider value={contextValue}>
@@ -117,13 +126,23 @@ export const FormItem = ({
   extra,
 }) => {
   const form = useContext(FormContext)
+  const rulesRef = useRef(rules)
   const error = name ? form?.errors[name] : undefined
   const value = name ? form?.values[name] : undefined
+  const registerField = form?.registerField
 
   useEffect(() => {
-    if (!name || !form) return undefined
-    return form.registerField(name, { rules })
-  }, [form, name, rules])
+    rulesRef.current = rules
+  }, [rules])
+
+  useEffect(() => {
+    if (!name || !registerField) return undefined
+    return registerField(name, {
+      get rules() {
+        return rulesRef.current
+      },
+    })
+  }, [name, registerField])
 
   const child = name && form && children
     ? cloneElement(children, {
