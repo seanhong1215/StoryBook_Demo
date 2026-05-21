@@ -11,14 +11,18 @@ React + Vite + Storybook component library.
 - `Badge`
 - `Card`
 - `Input`
+- `Textarea`
 - `Select`
 - `Checkbox`
 - `Switch`
 - `Alert`
 - `Modal`
 - `Empty`
+- `Tooltip`
 - `Space`
 - `Tabs`
+- `Tag`
+- `Dropdown`
 - `Pagination`
 - design tokens CSS
 - Storybook 文件與互動範例
@@ -64,6 +68,9 @@ import {
   Select,
   Space,
   Switch,
+  Tag,
+  Textarea,
+  Tooltip,
   Tabs,
   ThemeProvider,
 } from 'my-design-system'
@@ -88,6 +95,7 @@ export function App() {
           />
           <Checkbox defaultChecked>Invite team</Checkbox>
           <Switch defaultChecked checkedChildren="On" unCheckedChildren="Off" />
+          <Textarea placeholder="Release notes" showCount maxLength={120} />
         </Card>
         <Tabs
           items={[
@@ -275,6 +283,15 @@ import { Input } from 'my-design-system'
 <Input status="error" placeholder="Required field" />
 ```
 
+### Textarea
+
+```jsx
+import { Textarea } from 'my-design-system'
+
+<Textarea placeholder="Release notes" />
+<Textarea showCount maxLength={120} defaultValue="Updated install workflow." />
+```
+
 ### Select
 
 ```jsx
@@ -323,6 +340,16 @@ import { Alert } from 'my-design-system'
 />
 ```
 
+### Tooltip
+
+```jsx
+import { Button, Tooltip } from 'my-design-system'
+
+<Tooltip title="Build and pack before installing in Product A.">
+  <Button variant="secondary">Hover me</Button>
+</Tooltip>
+```
+
 ### Modal
 
 ```jsx
@@ -361,6 +388,15 @@ import { Button, Space } from 'my-design-system'
 </Space>
 ```
 
+### Tag
+
+```jsx
+import { Tag } from 'my-design-system'
+
+<Tag color="primary">Commerce Pro</Tag>
+<Tag color="success" closable>Ready</Tag>
+```
+
 ### Tabs
 
 ```jsx
@@ -380,6 +416,20 @@ import { Tabs } from 'my-design-system'
 import { Pagination } from 'my-design-system'
 
 <Pagination current={1} total={86} pageSize={10} onChange={setPage} />
+```
+
+### Dropdown
+
+```jsx
+import { Button, Dropdown } from 'my-design-system'
+
+<Dropdown
+  trigger={<Button variant="secondary">Actions</Button>}
+  items={[
+    { key: 'preview', label: 'Preview package' },
+    { key: 'pack', label: 'Run npm pack' },
+  ]}
+/>
 ```
 
 ### Card

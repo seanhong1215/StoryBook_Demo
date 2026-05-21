@@ -27,7 +27,7 @@
 - `src/index.js`
   - library public API
   - 匯入全域 token 與元件 CSS
-  - 匯出 `ThemeProvider`, `Button`, `Badge`, `Card`, `Input`, `Select`, `Checkbox`, `Switch`, `Alert`, `Modal`, `Empty`, `Space`, `Tabs`, `Pagination`
+  - 匯出 `ThemeProvider`, `Button`, `Badge`, `Tag`, `Card`, `Input`, `Textarea`, `Select`, `Checkbox`, `Switch`, `Alert`, `Modal`, `Empty`, `Tooltip`, `Space`, `Tabs`, `Dropdown`, `Pagination`
 - `src/theme/`
   - `ThemeProvider.jsx`: 透過 `data-product-line` 包住 children，讓 CSS variables 切換 product line theme
 - `src/tokens/`
@@ -35,7 +35,7 @@
   - `Tokens.stories.jsx`: token 文件展示
 - `src/components/`
   - 每個元件維持同資料夾結構：`Component.jsx`, `Component.css`, `Component.stories.jsx`
-  - 目前元件：`Button`, `Badge`, `Card`, `Input`, `Select`, `Checkbox`, `Switch`, `Alert`, `Modal`, `Empty`, `Space`, `Tabs`, `Pagination`
+  - 目前元件：`Button`, `Badge`, `Tag`, `Card`, `Input`, `Textarea`, `Select`, `Checkbox`, `Switch`, `Alert`, `Modal`, `Empty`, `Tooltip`, `Space`, `Tabs`, `Dropdown`, `Pagination`
 - `src/docs/`
   - `Showcase.stories.jsx`: 面試展示入口，用既有元件組出小型後台管理頁
   - `Overview.stories.jsx`: Storybook component overview
@@ -57,16 +57,20 @@
 - `ThemeProvider`
 - `Button`
 - `Badge`
+- `Tag`
 - `Card`
 - `Input`
+- `Textarea`
 - `Select`
 - `Checkbox`
 - `Switch`
 - `Alert`
 - `Modal`
 - `Empty`
+- `Tooltip`
 - `Space`
 - `Tabs`
+- `Dropdown`
 - `Pagination`
 
 ### Component Model
