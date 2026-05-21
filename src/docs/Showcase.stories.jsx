@@ -4,11 +4,12 @@ import { Button } from '../components/Button/Button'
 import { Card } from '../components/Card/Card'
 import { Checkbox } from '../components/Checkbox/Checkbox'
 import { Dropdown } from '../components/Dropdown/Dropdown'
+import { Form, FormItem } from '../components/Form/Form'
 import { Input } from '../components/Input/Input'
-import { Pagination } from '../components/Pagination/Pagination'
 import { Select } from '../components/Select/Select'
 import { Space } from '../components/Space/Space'
 import { Switch } from '../components/Switch/Switch'
+import { Table } from '../components/Table/Table'
 import { Tag } from '../components/Tag/Tag'
 import { Textarea } from '../components/Textarea/Textarea'
 import { Tooltip } from '../components/Tooltip/Tooltip'
@@ -22,9 +23,9 @@ const metrics = [
 ]
 
 const orders = [
-  { id: 'ORD-1024', customer: 'Acme Studio', plan: 'Commerce Pro', status: 'Active' },
-  { id: 'ORD-1025', customer: 'Northwind', plan: 'Finance Basic', status: 'Pending' },
-  { id: 'ORD-1026', customer: 'Orbit Ops', plan: 'Internal Tools', status: 'Draft' },
+  { key: 'ORD-1024', id: 'ORD-1024', customer: 'Acme Studio', plan: 'Commerce Pro', status: 'Active' },
+  { key: 'ORD-1025', id: 'ORD-1025', customer: 'Northwind', plan: 'Finance Basic', status: 'Pending' },
+  { key: 'ORD-1026', id: 'ORD-1026', customer: 'Orbit Ops', plan: 'Internal Tools', status: 'Draft' },
 ]
 
 const planOptions = [
@@ -38,6 +39,21 @@ const statusVariant = {
   Pending: 'warning',
   Draft: 'secondary',
 }
+
+const orderColumns = [
+  { title: 'Order', dataIndex: 'id', sorter: true },
+  { title: 'Customer', dataIndex: 'customer', sorter: true },
+  {
+    title: 'Plan',
+    dataIndex: 'plan',
+    render: (plan) => <Tag color="primary">{plan}</Tag>,
+  },
+  {
+    title: 'Status',
+    dataIndex: 'status',
+    render: (status) => <Badge variant={statusVariant[status]} dot>{status}</Badge>,
+  },
+]
 
 export default {
   title: 'Components/Showcase',
@@ -91,21 +107,35 @@ export const AdminDashboard = {
         <section className="showcase-grid">
           <Card
             title="Create workspace"
-            description="Form-like composition with Input, Alert, Space, and Button."
-            footer={
+            description="Validated form composition with field rules and submit handling."
+          >
+            <Form initialValues={{ invite: true }}>
+              <FormItem
+                name="workspace"
+                label="Workspace name"
+                rules={[{ required: true, message: 'Workspace name is required.' }]}
+              >
+                <Input placeholder="Workspace name" />
+              </FormItem>
+              <FormItem name="url" label="Workspace URL">
+                <Input prefix="https://" suffix=".app" placeholder="workspace-url" />
+              </FormItem>
+              <FormItem name="notes" label="Release notes">
+                <Textarea rows={3} placeholder="Release notes" showCount maxLength={120} />
+              </FormItem>
+              <FormItem
+                name="plan"
+                label="Plan"
+                rules={[{ required: true, message: 'Choose a plan.' }]}
+              >
+                <Select options={planOptions} placeholder="Choose a plan" />
+              </FormItem>
+              <FormItem name="invite" valuePropName="checked">
+                <Checkbox>Invite team</Checkbox>
+              </FormItem>
               <Space>
                 <Button variant="secondary">Cancel</Button>
-                <Button type="primary">Create</Button>
-              </Space>
-            }
-          >
-            <Space direction="vertical" align="stretch">
-              <Input placeholder="Workspace name" />
-              <Input prefix="https://" suffix=".app" placeholder="workspace-url" />
-              <Textarea rows={3} placeholder="Release notes" showCount maxLength={120} />
-              <Select options={planOptions} placeholder="Choose a plan" />
-              <Space>
-                <Checkbox defaultChecked>Invite team</Checkbox>
+                <Button htmlType="submit" type="primary">Create</Button>
                 <Switch defaultChecked checkedChildren="On" unCheckedChildren="Off" />
               </Space>
               <Alert
@@ -113,7 +143,7 @@ export const AdminDashboard = {
                 message="Local package ready"
                 description="Install the packed tarball in Product A to validate external import behavior."
               />
-            </Space>
+            </Form>
           </Card>
 
           <Card
@@ -130,27 +160,12 @@ export const AdminDashboard = {
                   key: 'orders',
                   label: 'Orders',
                   children: (
-                    <Space direction="vertical" align="stretch">
-                      <div className="showcase-table" role="table" aria-label="Recent orders">
-                        <div className="showcase-table__row showcase-table__row--head" role="row">
-                          <span role="columnheader">Order</span>
-                          <span role="columnheader">Customer</span>
-                          <span role="columnheader">Plan</span>
-                          <span role="columnheader">Status</span>
-                        </div>
-                        {orders.map((order) => (
-                          <div className="showcase-table__row" role="row" key={order.id}>
-                            <span role="cell">{order.id}</span>
-                            <span role="cell">{order.customer}</span>
-                            <span role="cell"><Tag color="primary">{order.plan}</Tag></span>
-                            <span role="cell">
-                              <Badge variant={statusVariant[order.status]} dot>{order.status}</Badge>
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                      <Pagination current={1} total={orders.length * 8} pageSize={8} />
-                    </Space>
+                    <Table
+                      columns={orderColumns}
+                      dataSource={orders}
+                      pagination={{ pageSize: 2 }}
+                      rowSelection={{ selectedRowKeys: ['ORD-1024'] }}
+                    />
                   ),
                 },
                 {
