@@ -33,6 +33,11 @@ const groups = [
         description: 'Surface compact status, category, or count information.',
       },
       {
+        name: 'Tag',
+        href: '/?path=/docs/data-display-tag--docs',
+        description: 'Label attributes, categories, or compact metadata.',
+      },
+      {
         name: 'Card',
         href: '/?path=/docs/data-display-card--docs',
         description: 'Group related content, actions, and supporting metadata.',
@@ -51,6 +56,11 @@ const groups = [
         name: 'Input',
         href: '/?path=/docs/data-entry-input--docs',
         description: 'Capture short text values with status, size, and affix controls.',
+      },
+      {
+        name: 'Textarea',
+        href: '/?path=/docs/data-entry-textarea--docs',
+        description: 'Capture longer text values with count and validation states.',
       },
       {
         name: 'Select',
@@ -87,11 +97,21 @@ const groups = [
         href: '/?path=/docs/feedback-empty--docs',
         description: 'Communicate empty datasets and provide recovery actions.',
       },
+      {
+        name: 'Tooltip',
+        href: '/?path=/docs/feedback-tooltip--docs',
+        description: 'Provide short contextual help on hover or keyboard focus.',
+      },
     ],
   },
   {
     name: 'Navigation',
     components: [
+      {
+        name: 'Dropdown',
+        href: '/?path=/docs/navigation-dropdown--docs',
+        description: 'Reveal contextual actions from a trigger with outside dismissal.',
+      },
       {
         name: 'Pagination',
         href: '/?path=/docs/navigation-pagination--docs',

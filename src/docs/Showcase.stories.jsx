@@ -3,11 +3,15 @@ import { Badge } from '../components/Badge/Badge'
 import { Button } from '../components/Button/Button'
 import { Card } from '../components/Card/Card'
 import { Checkbox } from '../components/Checkbox/Checkbox'
+import { Dropdown } from '../components/Dropdown/Dropdown'
 import { Input } from '../components/Input/Input'
 import { Pagination } from '../components/Pagination/Pagination'
 import { Select } from '../components/Select/Select'
 import { Space } from '../components/Space/Space'
 import { Switch } from '../components/Switch/Switch'
+import { Tag } from '../components/Tag/Tag'
+import { Textarea } from '../components/Textarea/Textarea'
+import { Tooltip } from '../components/Tooltip/Tooltip'
 import { Tabs } from '../components/Tabs/Tabs'
 import { ThemeProvider } from '../theme/ThemeProvider'
 
@@ -59,7 +63,14 @@ export const AdminDashboard = {
             </p>
           </div>
           <Space wrap>
-            <Button variant="secondary">Preview package</Button>
+            <Dropdown
+              trigger={<Button variant="secondary">Package actions</Button>}
+              items={[
+                { key: 'preview', label: 'Preview package' },
+                { key: 'pack', label: 'Run npm pack' },
+                { key: 'install', label: 'Install in Product A' },
+              ]}
+            />
             <Button type="primary">Create release</Button>
           </Space>
         </header>
@@ -91,6 +102,7 @@ export const AdminDashboard = {
             <Space direction="vertical" align="stretch">
               <Input placeholder="Workspace name" />
               <Input prefix="https://" suffix=".app" placeholder="workspace-url" />
+              <Textarea rows={3} placeholder="Release notes" showCount maxLength={120} />
               <Select options={planOptions} placeholder="Choose a plan" />
               <Space>
                 <Checkbox defaultChecked>Invite team</Checkbox>
@@ -104,7 +116,14 @@ export const AdminDashboard = {
             </Space>
           </Card>
 
-          <Card title="Recent orders" extra={<Button type="link">View all</Button>}>
+          <Card
+            title="Recent orders"
+            extra={
+              <Tooltip title="Open the full orders list">
+                <Button type="link">View all</Button>
+              </Tooltip>
+            }
+          >
             <Tabs
               items={[
                 {
@@ -123,7 +142,7 @@ export const AdminDashboard = {
                           <div className="showcase-table__row" role="row" key={order.id}>
                             <span role="cell">{order.id}</span>
                             <span role="cell">{order.customer}</span>
-                            <span role="cell">{order.plan}</span>
+                            <span role="cell"><Tag color="primary">{order.plan}</Tag></span>
                             <span role="cell">
                               <Badge variant={statusVariant[order.status]} dot>{order.status}</Badge>
                             </span>
