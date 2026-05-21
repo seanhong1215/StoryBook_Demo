@@ -4,9 +4,11 @@ import { Button } from '../components/Button/Button'
 import { Card } from '../components/Card/Card'
 import { Checkbox } from '../components/Checkbox/Checkbox'
 import { Input } from '../components/Input/Input'
+import { Pagination } from '../components/Pagination/Pagination'
 import { Select } from '../components/Select/Select'
 import { Space } from '../components/Space/Space'
 import { Switch } from '../components/Switch/Switch'
+import { Tabs } from '../components/Tabs/Tabs'
 import { ThemeProvider } from '../theme/ThemeProvider'
 
 const metrics = [
@@ -103,24 +105,42 @@ export const AdminDashboard = {
           </Card>
 
           <Card title="Recent orders" extra={<Button type="link">View all</Button>}>
-            <div className="showcase-table" role="table" aria-label="Recent orders">
-              <div className="showcase-table__row showcase-table__row--head" role="row">
-                <span role="columnheader">Order</span>
-                <span role="columnheader">Customer</span>
-                <span role="columnheader">Plan</span>
-                <span role="columnheader">Status</span>
-              </div>
-              {orders.map((order) => (
-                <div className="showcase-table__row" role="row" key={order.id}>
-                  <span role="cell">{order.id}</span>
-                  <span role="cell">{order.customer}</span>
-                  <span role="cell">{order.plan}</span>
-                  <span role="cell">
-                    <Badge variant={statusVariant[order.status]} dot>{order.status}</Badge>
-                  </span>
-                </div>
-              ))}
-            </div>
+            <Tabs
+              items={[
+                {
+                  key: 'orders',
+                  label: 'Orders',
+                  children: (
+                    <Space direction="vertical" align="stretch">
+                      <div className="showcase-table" role="table" aria-label="Recent orders">
+                        <div className="showcase-table__row showcase-table__row--head" role="row">
+                          <span role="columnheader">Order</span>
+                          <span role="columnheader">Customer</span>
+                          <span role="columnheader">Plan</span>
+                          <span role="columnheader">Status</span>
+                        </div>
+                        {orders.map((order) => (
+                          <div className="showcase-table__row" role="row" key={order.id}>
+                            <span role="cell">{order.id}</span>
+                            <span role="cell">{order.customer}</span>
+                            <span role="cell">{order.plan}</span>
+                            <span role="cell">
+                              <Badge variant={statusVariant[order.status]} dot>{order.status}</Badge>
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                      <Pagination current={1} total={orders.length * 8} pageSize={8} />
+                    </Space>
+                  ),
+                },
+                {
+                  key: 'reviews',
+                  label: 'Reviews',
+                  children: <Alert type="success" message="No pending reviews" />,
+                },
+              ]}
+            />
           </Card>
         </section>
       </main>

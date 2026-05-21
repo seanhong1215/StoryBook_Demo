@@ -37,6 +37,11 @@ const groups = [
         href: '/?path=/docs/data-display-card--docs',
         description: 'Group related content, actions, and supporting metadata.',
       },
+      {
+        name: 'Tabs',
+        href: '/?path=/docs/data-display-tabs--docs',
+        description: 'Organize related content into switchable sections.',
+      },
     ],
   },
   {
@@ -71,6 +76,26 @@ const groups = [
         name: 'Alert',
         href: '/?path=/docs/feedback-alert--docs',
         description: 'Display contextual success, info, warning, and error feedback.',
+      },
+      {
+        name: 'Modal',
+        href: '/?path=/docs/feedback-modal--docs',
+        description: 'Present blocking workflows with portal rendering and footer actions.',
+      },
+      {
+        name: 'Empty',
+        href: '/?path=/docs/feedback-empty--docs',
+        description: 'Communicate empty datasets and provide recovery actions.',
+      },
+    ],
+  },
+  {
+    name: 'Navigation',
+    components: [
+      {
+        name: 'Pagination',
+        href: '/?path=/docs/navigation-pagination--docs',
+        description: 'Move through datasets with current page and total count controls.',
       },
     ],
   },
