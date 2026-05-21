@@ -13,6 +13,27 @@ export default {
       },
     },
   },
+  argTypes: {
+    variant: {
+      control: 'select',
+      options: ['default', 'outlined', 'elevated', 'ghost'],
+      description: 'Surface treatment.',
+    },
+    padding: {
+      control: 'select',
+      options: ['sm', 'md', 'lg'],
+      description: 'Internal spacing density.',
+    },
+    interactive: {
+      control: 'boolean',
+      description: 'Adds pointer affordance and hover feedback.',
+    },
+    footerAlign: {
+      control: 'select',
+      options: ['start', 'center', 'between', 'end'],
+      description: 'Footer action alignment.',
+    },
+  },
 }
 
 export const Basic = {
@@ -37,6 +58,33 @@ export const WithFooter = {
   ),
 }
 
+export const Elevated = {
+  args: {
+    variant: 'elevated',
+    title: 'Usage growth',
+    description: 'Use elevated cards when the item needs more prominence than nearby content.',
+  },
+}
+
+export const Interactive = {
+  args: {
+    as: 'a',
+    href: '#',
+    interactive: true,
+    variant: 'outlined',
+    title: 'Selectable plan',
+    description: 'Interactive cards can act as a larger selection target while preserving card structure.',
+  },
+}
+
+export const Dense = {
+  args: {
+    padding: 'sm',
+    title: 'Compact summary',
+    description: 'Dense cards help product screens display more information without custom CSS.',
+  },
+}
+
 export const WithBadge = {
   render: () => (
     <Card title="System status">
@@ -55,5 +103,21 @@ export const WithBadge = {
         </div>
       </div>
     </Card>
+  ),
+}
+
+export const FooterAlignment = {
+  render: () => (
+    <Card
+      title="Team access"
+      description="Use footer alignment to match product workflow density."
+      footerAlign="between"
+      footer={
+        <>
+          <Badge variant="success">Enabled</Badge>
+          <Button variant="secondary" size="sm">Manage</Button>
+        </>
+      }
+    />
   ),
 }
