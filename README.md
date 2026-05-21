@@ -1,16 +1,378 @@
-# React + Vite
+# My Design System
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React + Vite + Storybook component library.
 
-Currently, two official plugins are available:
+定位：給小型 React 專案直接套用的輕量 UI 元件庫，API 盡量接近 Ant Design 常見用法，但保留本專案自己的 CSS token 與樣式實作。
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+目前提供：
 
-## React Compiler
+- `ThemeProvider`
+- `Button`
+- `Badge`
+- `Card`
+- `Input`
+- `Select`
+- `Checkbox`
+- `Switch`
+- `Alert`
+- `Space`
+- design tokens CSS
+- Storybook 文件與互動範例
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 在 A 產品本機測試
 
-## Expanding the ESLint configuration
+不發布到 npm 也可以測試。建議先用 `npm pack`，因為它最接近真正發布後的安裝結果，能驗證 `package.json` 的 `files`, `exports`, `main`, `module`, `style` 是否正確。
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### 方式一：npm pack
+
+在元件庫專案執行：
+
+```bash
+npm run build
+npm pack
+```
+
+會產生類似：
+
+```text
+my-design-system-0.0.0.tgz
+```
+
+切到 A 產品專案後安裝：
+
+```bash
+npm install ../storybook/my-design-system-0.0.0.tgz
+```
+
+A 產品即可使用：
+
+```jsx
+import 'my-design-system/styles.css'
+import {
+  Alert,
+  Button,
+  Card,
+  Checkbox,
+  Input,
+  Select,
+  Space,
+  Switch,
+  ThemeProvider,
+} from 'my-design-system'
+
+export function App() {
+  return (
+    <ThemeProvider productLine="commerce">
+      <Space direction="vertical" align="stretch">
+        <Alert type="success" message="Design system connected" />
+        <Card
+          title="Create project"
+          description="This card and form controls come from the local component package."
+          footer={<Button type="primary">Create</Button>}
+        >
+          <Input placeholder="Project name" />
+          <Select
+            placeholder="Choose a plan"
+            options={[
+              { label: 'Commerce Pro', value: 'commerce-pro' },
+              { label: 'Finance Basic', value: 'finance-basic' },
+            ]}
+          />
+          <Checkbox defaultChecked>Invite team</Checkbox>
+          <Switch defaultChecked checkedChildren="On" unCheckedChildren="Off" />
+        </Card>
+      </Space>
+    </ThemeProvider>
+  )
+}
+```
+
+元件庫修改後，重新執行：
+
+```bash
+npm run build
+npm pack
+```
+
+再回 A 產品安裝新的 `.tgz`。
+
+### 方式二：本機路徑安裝
+
+在元件庫專案執行：
+
+```bash
+npm run build
+```
+
+切到 A 產品專案後安裝元件庫資料夾：
+
+```bash
+npm install ../storybook
+```
+
+A 產品的 `package.json` 會出現類似：
+
+```json
+{
+  "dependencies": {
+    "my-design-system": "file:../storybook"
+  }
+}
+```
+
+這種方式更新較快，但比較不像正式發布結果。若要確認 package 對外設定，仍建議用 `npm pack` 測一次。
+
+## 本機 CDN / UMD 測試
+
+如果 A 產品不是用 bundler，或想模擬 CDN script tag 載入，可以使用 build 後的 UMD 檔。
+
+先在元件庫專案建置：
+
+```bash
+npm run build
+```
+
+建置後會產生：
+
+- `dist/my-design-system.css`
+- `dist/my-design-system.js`
+- `dist/my-design-system.umd.cjs`
+
+建立一個本機 HTML 測試頁，例如 `local-cdn-test.html`，依實際路徑載入 React、ReactDOM、CSS 和 UMD：
+
+```html
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="./dist/my-design-system.css" />
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script src="https://unpkg.com/react@19/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@19/umd/react-dom.production.min.js"></script>
+    <script src="./dist/my-design-system.umd.cjs"></script>
+    <script>
+      const {
+        Alert,
+        Button,
+        Card,
+        Checkbox,
+        Input,
+        Select,
+        Space,
+        Switch,
+        ThemeProvider,
+      } = MyDesignSystem
+
+      ReactDOM.createRoot(document.getElementById('root')).render(
+        React.createElement(
+          ThemeProvider,
+          { productLine: 'core' },
+          React.createElement(
+            Space,
+            { direction: 'vertical', align: 'stretch' },
+            React.createElement(Alert, {
+              type: 'info',
+              message: 'Loaded from local UMD build',
+            }),
+            React.createElement(
+              Card,
+              {
+                title: 'Local CDN test',
+                footer: React.createElement(Button, { type: 'primary' }, 'Submit'),
+              },
+              React.createElement(Input, { placeholder: 'Type something' }),
+              React.createElement(Select, {
+                placeholder: 'Choose a plan',
+                options: [
+                  { label: 'Commerce Pro', value: 'commerce-pro' },
+                  { label: 'Finance Basic', value: 'finance-basic' },
+                ],
+              }),
+              React.createElement(Checkbox, { defaultChecked: true }, 'Invite team'),
+              React.createElement(Switch, {
+                defaultChecked: true,
+                checkedChildren: 'On',
+                unCheckedChildren: 'Off',
+              })
+            )
+          )
+        )
+      )
+    </script>
+  </body>
+</html>
+```
+
+正式 CDN 的概念相同，只是把 `./dist/...` 換成 CDN URL。注意：UMD 模式下 React 和 ReactDOM 是外部依賴，所以 HTML 需要先載入 React 與 ReactDOM。
+
+## 元件用法
+
+### ThemeProvider
+
+```jsx
+import { ThemeProvider } from 'my-design-system'
+
+<ThemeProvider productLine="finance">
+  <AppContent />
+</ThemeProvider>
+```
+
+目前支援：
+
+- `core`
+- `commerce`
+- `finance`
+- `internal`
+
+### Button
+
+支援本專案原本的 `variant`，也支援接近 Ant Design 的 `type`、`htmlType`、`block`。
+
+```jsx
+import { Button } from 'my-design-system'
+
+<Button type="primary">Primary</Button>
+<Button type="default">Default</Button>
+<Button type="link">Link</Button>
+<Button variant="danger">Delete</Button>
+<Button loading>Saving</Button>
+<Button block>Continue</Button>
+<Button htmlType="submit">Submit</Button>
+```
+
+### Input
+
+```jsx
+import { Input } from 'my-design-system'
+
+<Input placeholder="Project name" />
+<Input size="lg" prefix="$" placeholder="Amount" />
+<Input status="error" placeholder="Required field" />
+```
+
+### Select
+
+```jsx
+import { Select } from 'my-design-system'
+
+<Select
+  placeholder="Choose a plan"
+  options={[
+    { label: 'Commerce Pro', value: 'commerce-pro' },
+    { label: 'Finance Basic', value: 'finance-basic' },
+  ]}
+/>
+<Select status="warning" placeholder="Confirm plan" options={[]} />
+```
+
+### Checkbox
+
+```jsx
+import { Checkbox } from 'my-design-system'
+
+<Checkbox defaultChecked>Read access</Checkbox>
+<Checkbox indeterminate>Select all permissions</Checkbox>
+<Checkbox disabled>Owner access</Checkbox>
+```
+
+### Switch
+
+```jsx
+import { Switch } from 'my-design-system'
+
+<Switch defaultChecked />
+<Switch checkedChildren="On" unCheckedChildren="Off" />
+<Switch loading defaultChecked />
+```
+
+### Alert
+
+```jsx
+import { Alert } from 'my-design-system'
+
+<Alert type="success" message="Saved successfully" />
+<Alert
+  type="warning"
+  message="Subscription expires soon"
+  description="Update billing details to keep this workspace active."
+/>
+```
+
+### Space
+
+```jsx
+import { Button, Space } from 'my-design-system'
+
+<Space>
+  <Button type="primary">Save</Button>
+  <Button variant="secondary">Cancel</Button>
+</Space>
+```
+
+### Card
+
+```jsx
+import { Badge, Button, Card } from 'my-design-system'
+
+<Card
+  title="System status"
+  extra={<Badge variant="success">Active</Badge>}
+  hoverable
+  footer={<Button size="sm">Manage</Button>}
+>
+  All services are available.
+</Card>
+```
+
+## 本地開發
+
+啟動 Vite demo：
+
+```bash
+npm run dev
+```
+
+啟動 Storybook：
+
+```bash
+npm run storybook
+```
+
+建置 library：
+
+```bash
+npm run build
+```
+
+建置 Storybook：
+
+```bash
+npm run build-storybook
+```
+
+檢查程式碼：
+
+```bash
+npm run lint
+```
+
+## 新增元件流程
+
+新增元件時維持目前結構：
+
+```text
+src/components/NewComponent/NewComponent.jsx
+src/components/NewComponent/NewComponent.css
+src/components/NewComponent/NewComponent.stories.jsx
+```
+
+若元件要對外使用，必須更新 `src/index.js`：
+
+```js
+import './components/NewComponent/NewComponent.css'
+
+export { NewComponent } from './components/NewComponent/NewComponent'
+```
