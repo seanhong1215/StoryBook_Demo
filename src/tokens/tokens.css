@@ -21,11 +21,25 @@
   --spacing-lg: 24px;
   --spacing-xl: 32px;
 
+  /* Size */
+  --size-xs: 24px;
+  --size-sm: 32px;
+  --size-md: 40px;
+  --size-lg: 48px;
+  --size-xl: 64px;
+
   /* Border Radius */
   --radius-sm: 4px;
   --radius-md: 8px;
   --radius-lg: 12px;
   --radius-full: 9999px;
+
+  /* Border */
+  --border-width-sm: 1px;
+  --border-width-md: 2px;
+  --border-width-lg: 4px;
+  --border-style-solid: solid;
+  --border-style-dashed: dashed;
 
   /* Font Size */
   --font-size-xs: 12px;
@@ -42,6 +56,17 @@
   /* Shadow */
   --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
   --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+  --shadow-lg: 0 12px 30px rgba(15,23,42,0.14);
+
+  /* Opacity */
+  --opacity-disabled: 0.45;
+  --opacity-muted: 0.64;
+  --opacity-overlay: 0.72;
+
+  /* Transition */
+  --transition-fast: 120ms ease;
+  --transition-base: 160ms ease;
+  --transition-slow: 240ms ease;
 }
 
 [data-product-line="commerce"] {
