@@ -264,6 +264,50 @@
   padding: 16px;
 }
 
+pre .tag,
+pre .attr-name,
+pre .attr-value,
+pre .boolean,
+pre .keyword,
+pre .operator,
+pre .punctuation,
+pre .string {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  display: inline;
+  font: inherit;
+  line-height: inherit;
+  padding: 0;
+  white-space: pre;
+}
+
+pre .tag {
+  color: #7DD3FC;
+}
+
+pre .attr-name {
+  color: #93C5FD;
+}
+
+pre .attr-value,
+pre .string {
+  color: #FDE68A;
+}
+
+pre .boolean {
+  color: #FCA5A5;
+}
+
+pre .keyword {
+  color: #C4B5FD;
+}
+
+pre .operator,
+pre .punctuation {
+  color: #E5E7EB;
+}
+
 .theme-grid {
   align-items: start;
   display: grid;
