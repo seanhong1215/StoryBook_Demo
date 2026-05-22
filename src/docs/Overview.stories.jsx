@@ -202,15 +202,15 @@ export default {
 export const Overview = {
   render: () => (
     <main className="docs-page">
-      <p className="docs-kicker">Interview Guide</p>
-      <h1 className="docs-title">如何展示這套元件庫</h1>
+      <p className="docs-kicker">Guide</p>
+      <h1 className="docs-title">元件庫</h1>
       <p className="docs-lede">
-        這份 Storybook 不只是元件清單。建議先展示企業級首頁版型，讓面試官看到元件庫可以組成可交付頁面，再補充套件導入方式與個別元件 API。
+        Storybook 元件清單
       </p>
 
       <section className="docs-section">
         <div className="docs-section-header">
-          <h2 className="docs-section-title">建議展示順序</h2>
+          <h2 className="docs-section-title">建議順序</h2>
           <span className="docs-count">3 步驟</span>
         </div>
         <div className="interview-path">
@@ -228,7 +228,7 @@ export const Overview = {
 
       <section className="docs-section">
         <div className="docs-section-header">
-          <h2 className="docs-section-title">這個作品要證明什麼</h2>
+          <h2 className="docs-section-title">特色</h2>
           <span className="docs-count">{proofPoints.length} 項</span>
         </div>
         <div className="proof-grid">
