@@ -6,6 +6,7 @@ import { Select } from '../components/Select/Select'
 import { Space } from '../components/Space/Space'
 import { Tag } from '../components/Tag/Tag'
 import { ThemeProvider } from '../theme/ThemeProvider'
+import portfolioCover from '../assets/portfolio-cover.png'
 
 export default {
   title: 'Components/Showcase',
@@ -26,6 +27,18 @@ const Footer = ({ product, links }) => (
       ))}
     </nav>
   </footer>
+)
+
+const PortfolioCoverTemplate = () => (
+  <ThemeProvider productLine="commerce">
+    <main className="portfolio-cover-showcase portfolio-cover-showcase--image">
+      <img
+        className="portfolio-cover-showcase__image"
+        src={portfolioCover}
+        alt="React Design System 模板元件庫作品集封面"
+      />
+    </main>
+  </ThemeProvider>
 )
 
 const CommerceOperationsTemplate = () => (
@@ -319,6 +332,11 @@ const SaasServicesTemplate = () => (
     </main>
   </ThemeProvider>
 )
+
+export const PortfolioCover = {
+  name: '00 Cover 首頁',
+  render: () => <PortfolioCoverTemplate />,
+}
 
 export const CommerceOperations = {
   name: '01 電商營運首頁',

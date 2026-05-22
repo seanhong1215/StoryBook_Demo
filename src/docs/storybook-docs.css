@@ -506,6 +506,25 @@
   width: 100%;
 }
 
+.portfolio-cover-showcase {
+  background: #020617;
+  display: grid;
+  min-height: 100vh;
+}
+
+.portfolio-cover-showcase--image {
+  padding: 0;
+  place-items: center;
+}
+
+.portfolio-cover-showcase__image {
+  display: block;
+  height: 100vh;
+  max-width: 100%;
+  object-fit: contain;
+  width: 100%;
+}
+
 .template-header,
 .finance-header,
 .template-footer {
