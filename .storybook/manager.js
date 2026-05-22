@@ -1,5 +1,12 @@
 import { addons } from 'storybook/manager-api'
 
 addons.setConfig({
-  showPanel: false,
+  bottomPanelHeight: 0,
+  rightPanelWidth: 0,
+  showToolbar: true,
+})
+
+addons.register('my-design-system/default-layout', (api) => {
+  api.toggleToolbar(true)
+  api.togglePanel(false)
 })
