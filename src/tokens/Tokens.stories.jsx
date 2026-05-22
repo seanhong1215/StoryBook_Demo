@@ -22,6 +22,17 @@ const TokenBox = ({ name, value }) => (
   </div>
 )
 
+const TokenRow = ({ name, value, preview }) => (
+  <div className="token-row token-row--preview">
+    <div className="token-preview">{preview}</div>
+    <div>
+      <div className="token-name">{name}</div>
+      <div className="token-value">{value}</div>
+    </div>
+    <code>{value}</code>
+  </div>
+)
+
 export const Colors = {
   render: () => (
     <div className="docs-page">
@@ -37,6 +48,147 @@ export const Colors = {
         <TokenBox name="--color-border" value="#E5E7EB" />
         <TokenBox name="--color-text" value="#111827" />
         <TokenBox name="--color-text-muted" value="#6B7280" />
+      </div>
+    </div>
+  ),
+}
+
+export const Radius = {
+  render: () => (
+    <div className="docs-page">
+      <h2 className="docs-section-title">Radius Tokens</h2>
+      <div className="token-list">
+        {[
+          { name: '--radius-sm', value: '4px' },
+          { name: '--radius-md', value: '8px' },
+          { name: '--radius-lg', value: '12px' },
+          { name: '--radius-full', value: '9999px' },
+        ].map(({ name, value }) => (
+          <TokenRow
+            name={name}
+            value={value}
+            key={name}
+            preview={<span className="token-shape" style={{ borderRadius: value }} />}
+          />
+        ))}
+      </div>
+    </div>
+  ),
+}
+
+export const Shadow = {
+  render: () => (
+    <div className="docs-page">
+      <h2 className="docs-section-title">Shadow Tokens</h2>
+      <div className="token-list">
+        {[
+          { name: '--shadow-sm', value: '0 1px 3px rgba(0,0,0,0.1)' },
+          { name: '--shadow-md', value: '0 4px 12px rgba(0,0,0,0.1)' },
+          { name: '--shadow-lg', value: '0 12px 30px rgba(15,23,42,0.14)' },
+        ].map(({ name, value }) => (
+          <TokenRow
+            name={name}
+            value={value}
+            key={name}
+            preview={<span className="token-shape token-shape--surface" style={{ boxShadow: value }} />}
+          />
+        ))}
+      </div>
+    </div>
+  ),
+}
+
+export const Size = {
+  render: () => (
+    <div className="docs-page">
+      <h2 className="docs-section-title">Size Tokens</h2>
+      <div className="token-list">
+        {[
+          { name: '--size-xs', value: '24px' },
+          { name: '--size-sm', value: '32px' },
+          { name: '--size-md', value: '40px' },
+          { name: '--size-lg', value: '48px' },
+          { name: '--size-xl', value: '64px' },
+        ].map(({ name, value }) => (
+          <TokenRow
+            name={name}
+            value={value}
+            key={name}
+            preview={<span className="token-size-box" style={{ width: value, height: value }} />}
+          />
+        ))}
+      </div>
+    </div>
+  ),
+}
+
+export const Border = {
+  render: () => (
+    <div className="docs-page">
+      <h2 className="docs-section-title">Border Tokens</h2>
+      <div className="token-list">
+        {[
+          { name: '--border-width-sm', value: '1px', style: 'solid' },
+          { name: '--border-width-md', value: '2px', style: 'solid' },
+          { name: '--border-width-lg', value: '4px', style: 'solid' },
+          { name: '--border-style-dashed', value: 'dashed', width: '2px', style: 'dashed' },
+        ].map(({ name, value, width = value, style }) => (
+          <TokenRow
+            name={name}
+            value={value}
+            key={name}
+            preview={(
+              <span
+                className="token-shape token-shape--surface"
+                style={{ borderWidth: width, borderStyle: style }}
+              />
+            )}
+          />
+        ))}
+      </div>
+    </div>
+  ),
+}
+
+export const Opacity = {
+  render: () => (
+    <div className="docs-page">
+      <h2 className="docs-section-title">Opacity Tokens</h2>
+      <div className="token-list">
+        {[
+          { name: '--opacity-disabled', value: '0.45' },
+          { name: '--opacity-muted', value: '0.64' },
+          { name: '--opacity-overlay', value: '0.72' },
+        ].map(({ name, value }) => (
+          <TokenRow
+            name={name}
+            value={value}
+            key={name}
+            preview={<span className="token-shape" style={{ opacity: value }} />}
+          />
+        ))}
+      </div>
+    </div>
+  ),
+}
+
+export const Transition = {
+  render: () => (
+    <div className="docs-page">
+      <h2 className="docs-section-title">Transition Tokens</h2>
+      <div className="token-list">
+        {[
+          { name: '--transition-fast', value: '120ms ease' },
+          { name: '--transition-base', value: '160ms ease' },
+          { name: '--transition-slow', value: '240ms ease' },
+        ].map(({ name, value }) => (
+          <TokenRow
+            name={name}
+            value={value}
+            key={name}
+            preview={<span className="token-transition-dot" style={{ transition: `transform ${value}` }} />}
+          />
+        ))}
       </div>
     </div>
   ),
