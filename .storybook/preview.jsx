@@ -18,7 +18,6 @@ const preview = {
       test: "todo"
     },
     options: {
-      showPanel: false,
       storySort: {
         order: [
           'Components',
