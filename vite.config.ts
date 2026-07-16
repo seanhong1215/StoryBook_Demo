@@ -1,5 +1,5 @@
 /// <reference types="vitest/config" />
-import { defineConfig } from 'vite';
+import { defineConfig, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 
 // https://vite.dev/config/
@@ -13,7 +13,7 @@ const dirname = path.dirname(fileURLToPath(import.meta.url));
 // addon-vitest 生成的 guard 用 percent-encoded 的 import.meta.url 去 includes() 原始檔案路徑，
 // 專案路徑含非 ASCII 字元（中文）時永遠比對失敗，導致 "No test suite found"。
 // 這裡在比對前先 decode URL。上游修復後可移除。
-const storybookNonAsciiPathFix = {
+const storybookNonAsciiPathFix: Plugin = {
   name: 'storybook-vitest-non-ascii-path-fix',
   enforce: 'post',
   transform(code, id) {
