@@ -8,7 +8,8 @@ const config = {
     "../src/tokens/**/*.stories.@(js|jsx|mjs|ts|tsx)"
   ],
   "addons": [
-    "@storybook/addon-docs"
+    "@storybook/addon-docs",
+    "@storybook/addon-vitest"
   ],
   "framework": "@storybook/react-vite"
 };
