@@ -1,6 +1,7 @@
 /// <reference types="vitest/config" />
 import { defineConfig, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
+import dts from 'vite-plugin-dts';
 
 // https://vite.dev/config/
 import path from 'node:path';
@@ -29,10 +30,21 @@ const storybookNonAsciiPathFix: Plugin = {
 
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    {
+      ...dts({
+        tsconfigPath: path.join(dirname, 'tsconfig.app.json'),
+        include: ['src'],
+        exclude: ['src/**/*.stories.tsx', 'src/App.tsx', 'src/main.tsx'],
+      }),
+      // 只在 library build 產出型別；Storybook build 也會套用此設定檔，不加這行會把 d.ts 灑進 storybook-static
+      apply: (config) => Boolean(config.build?.lib),
+    },
+  ],
   build: {
     lib: {
-      entry: path.resolve(dirname, 'src/index.js'),
+      entry: path.resolve(dirname, 'src/index.ts'),
       name: 'MyDesignSystem',
       fileName: 'my-design-system',
       formats: ['es', 'umd'],

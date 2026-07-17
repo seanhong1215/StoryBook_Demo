@@ -8,7 +8,9 @@ import { Tag } from '../components/Tag/Tag'
 import { ThemeProvider } from '../theme/ThemeProvider'
 import portfolioCover from '../assets/portfolio-cover.png'
 
-export default {
+import type { Meta, StoryObj } from '@storybook/react-vite'
+
+const meta = {
   title: 'Components/Showcase',
   parameters: {
     layout: 'fullscreen',
@@ -16,9 +18,12 @@ export default {
       page: null,
     },
   },
-}
+} satisfies Meta
 
-const Footer = ({ product, links }) => (
+export default meta
+type Story = StoryObj<typeof meta>
+
+const Footer = ({ product, links }: { product: string; links: string[] }) => (
   <footer className="template-footer">
     <strong>{product}</strong>
     <nav aria-label={`${product} footer`}>
@@ -81,7 +86,7 @@ const CommerceOperationsTemplate = () => (
 
       <section className="template-section commerce-flow" id="workflow">
         <div>
-          <Tag color="blue">主要使用者流程</Tag>
+          <Tag color="primary">主要使用者流程</Tag>
           <h2>首頁就是營運主管的每日工作台。</h2>
           <p>這個版型不是展示元件，而是讓小型電商產品可以直接套用的首頁結構。</p>
         </div>
@@ -114,7 +119,7 @@ const CommerceOperationsTemplate = () => (
 
       <section className="template-cta" id="contact">
         <div>
-          <Tag color="green">首頁版型可交付</Tag>
+          <Tag color="success">首頁版型可交付</Tag>
           <h2>適合改成小型電商 SaaS、內部營運後台或門市管理工具。</h2>
         </div>
         <Card title="取得版型">
@@ -160,7 +165,7 @@ const FinanceServicesTemplate = () => (
             建立信任，並引導企業客戶進入風險審查、案件管理與合規諮詢。
           </p>
         </div>
-        <Card className="finance-review-card" title="風險審查摘要" extra={<Tag color="blue">安全工作區</Tag>}>
+        <Card className="finance-review-card" title="風險審查摘要" extra={<Tag color="primary">安全工作區</Tag>}>
           {[
             ['高風險案件', '11', '需主管覆核'],
             ['KYC 更新', '26', '處理中'],
@@ -190,7 +195,7 @@ const FinanceServicesTemplate = () => (
 
       <section className="template-section finance-content" id="risk">
         <div className="template-section__header">
-          <Tag color="blue">企業級首頁結構</Tag>
+          <Tag color="primary">企業級首頁結構</Tag>
           <h2>金融服務首頁需要先建立信任，再談功能。</h2>
           <p>這個版型用較克制的資訊密度，呈現安全、稽核、案件流程與客戶信任。</p>
         </div>
@@ -261,16 +266,16 @@ const SaasServicesTemplate = () => (
             <span style={{ height: '92%' }} />
           </div>
           <div className="saas-dashboard__summary">
-            <Tag color="green">128 個活躍工作區</Tag>
-            <Tag color="gold">12 個需追蹤帳戶</Tag>
-            <Tag color="blue">41% onboarding 提升</Tag>
+            <Tag color="success">128 個活躍工作區</Tag>
+            <Tag color="warning">12 個需追蹤帳戶</Tag>
+            <Tag color="primary">41% onboarding 提升</Tag>
           </div>
         </Card>
       </section>
 
       <section className="template-section" id="features">
         <div className="template-section__header template-section__header--center">
-          <Tag color="blue">SaaS template sections</Tag>
+          <Tag color="primary">SaaS template sections</Tag>
           <h2>首頁結構為轉換率服務，而不是為了展示元件。</h2>
           <p>Hero、產品截圖感、指標、功能卡與價格區塊可以直接改成真實 SaaS 官網。</p>
         </div>
@@ -300,7 +305,7 @@ const SaasServicesTemplate = () => (
           >
             <strong className="template-stat">{price}</strong>
             <p>{text}</p>
-            <Button type={plan === 'Growth' ? 'primary' : 'default'} block>
+            <Button variant={plan === 'Growth' ? 'primary' : 'secondary'} block>
               選擇方案
             </Button>
           </Card>
@@ -309,7 +314,7 @@ const SaasServicesTemplate = () => (
 
       <section className="template-cta">
         <div>
-          <Tag color="green">可直接套版</Tag>
+          <Tag color="success">可直接套版</Tag>
           <h2>適合 B2B SaaS、內部平台、AI 工具與工作流產品首頁。</h2>
         </div>
         <Card title="申請產品試用">
@@ -333,22 +338,22 @@ const SaasServicesTemplate = () => (
   </ThemeProvider>
 )
 
-export const PortfolioCover = {
+export const PortfolioCover: Story = {
   name: '00 Cover 首頁',
   render: () => <PortfolioCoverTemplate />,
 }
 
-export const CommerceOperations = {
+export const CommerceOperations: Story = {
   name: '01 電商營運首頁',
   render: () => <CommerceOperationsTemplate />,
 }
 
-export const FinancialServices = {
+export const FinancialServices: Story = {
   name: '02 金融服務首頁',
   render: () => <FinanceServicesTemplate />,
 }
 
-export const SaasService = {
+export const SaasService: Story = {
   name: '03 SaaS 服務首頁',
   render: () => <SaasServicesTemplate />,
 }

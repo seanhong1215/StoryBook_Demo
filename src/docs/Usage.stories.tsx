@@ -2,8 +2,9 @@ import { Badge } from '../components/Badge/Badge'
 import { Button } from '../components/Button/Button'
 import { Card } from '../components/Card/Card'
 import { ThemeProvider } from '../theme/ThemeProvider'
+import type { ProductLine } from '../theme/ThemeProvider'
 
-const productLines = [
+const productLines: Array<{ id: ProductLine; name: string }> = [
   { id: 'core', name: 'Core' },
   { id: 'commerce', name: 'Commerce' },
   { id: 'finance', name: 'Finance' },

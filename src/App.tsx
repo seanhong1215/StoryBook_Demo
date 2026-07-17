@@ -19,10 +19,22 @@ import {
   Textarea,
   ThemeProvider,
   Tooltip,
-} from './index.js'
+} from './index'
+import type { BadgeProps, FormValues, TableColumn, TableRowKey, TagProps } from './index'
 import './App.css'
 
-const orders = [
+type OrderStatus = 'paid' | 'pending' | 'review' | 'failed'
+
+interface Order {
+  id: string
+  customer: string
+  plan: string
+  status: OrderStatus
+  seats: number
+  amount: number
+}
+
+const orders: Order[] = [
   {
     id: 'ORD-1001',
     customer: 'Acme Studio',
@@ -65,11 +77,11 @@ const orders = [
   },
 ]
 
-const statusMap = {
-  paid: { label: 'Paid', color: 'green', badge: 'success' },
-  pending: { label: 'Pending', color: 'gold', badge: 'warning' },
-  review: { label: 'Review', color: 'blue', badge: 'primary' },
-  failed: { label: 'Failed', color: 'red', badge: 'danger' },
+const statusMap: Record<OrderStatus, { label: string; color: TagProps['color']; badge: BadgeProps['variant'] }> = {
+  paid: { label: 'Paid', color: 'success', badge: 'success' },
+  pending: { label: 'Pending', color: 'warning', badge: 'warning' },
+  review: { label: 'Review', color: 'primary', badge: 'primary' },
+  failed: { label: 'Failed', color: 'danger', badge: 'danger' },
 }
 
 const packageActions = [
@@ -79,11 +91,11 @@ const packageActions = [
 ]
 
 function App() {
-  const [selectedRowKeys, setSelectedRowKeys] = useState(['ORD-1001'])
+  const [selectedRowKeys, setSelectedRowKeys] = useState<TableRowKey[]>(['ORD-1001'])
   const [modalOpen, setModalOpen] = useState(false)
   const [lastAction, setLastAction] = useState('Ready for local package validation')
 
-  const columns = useMemo(() => [
+  const columns = useMemo<TableColumn<Order>[]>(() => [
     {
       title: 'Order',
       dataIndex: 'id',
@@ -99,13 +111,13 @@ function App() {
       title: 'Plan',
       dataIndex: 'plan',
       sorter: true,
-      render: (value) => <Tag color={value === 'Enterprise' ? 'blue' : 'default'}>{value}</Tag>,
+      render: (value) => <Tag color={value === 'Enterprise' ? 'primary' : 'default'}>{value}</Tag>,
     },
     {
       title: 'Status',
       dataIndex: 'status',
-      render: (value) => {
-        const status = statusMap[value]
+      render: (_, record) => {
+        const status = statusMap[record.status]
         return (
           <Space size="sm">
             <Badge variant={status.badge} dot>
@@ -124,11 +136,11 @@ function App() {
       title: 'Amount',
       dataIndex: 'amount',
       sorter: (a, b) => a.amount - b.amount,
-      render: (value) => `$${value.toLocaleString()}`,
+      render: (_, record) => `$${record.amount.toLocaleString()}`,
     },
   ], [])
 
-  const handleSubmit = (values) => {
+  const handleSubmit = (values: FormValues) => {
     setLastAction(`Workspace "${values.workspaceName}" is ready to review`)
     setModalOpen(true)
   }
@@ -140,7 +152,7 @@ function App() {
           <div>
             <Space size="sm" wrap>
               <Badge variant="primary">Local adoption demo</Badge>
-              <Tag color="blue">my-design-system</Tag>
+              <Tag color="primary">my-design-system</Tag>
             </Space>
             <h1>Product A Admin</h1>
             <p>
@@ -154,7 +166,7 @@ function App() {
               items={packageActions}
               onSelect={(item) => setLastAction(`${item.label} selected`)}
             />
-            <Tooltip content="Open the release checklist modal">
+            <Tooltip title="Open the release checklist modal">
               <Button type="primary" onClick={() => setModalOpen(true)}>
                 Create release
               </Button>
@@ -165,11 +177,11 @@ function App() {
         <Alert
           type="info"
           message={lastAction}
-          description="This Vite app imports components from src/index.js, matching the public package entry used by npm pack consumers."
+          description="This Vite app imports components from src/index.ts, matching the public package entry used by npm pack consumers."
         />
 
         <section className="metric-grid" aria-label="Product metrics">
-          <Card title="Active tenants" extra={<Tag color="green">+12%</Tag>}>
+          <Card title="Active tenants" extra={<Tag color="success">+12%</Tag>}>
             <strong className="metric-value">128</strong>
             <span className="muted-text">Across three product lines</span>
           </Card>
@@ -177,7 +189,7 @@ function App() {
             <strong className="metric-value">${selectedRowKeys.length * 2480}</strong>
             <span className="muted-text">Selection state from Table</span>
           </Card>
-          <Card title="Package health" extra={<Tag color="blue">Ready</Tag>}>
+          <Card title="Package health" extra={<Tag color="primary">Ready</Tag>}>
             <strong className="metric-value">ESM + UMD</strong>
             <span className="muted-text">Validated by build output</span>
           </Card>
@@ -268,9 +280,9 @@ function App() {
                         description="Storybook documents variants, the package entry exports components, and this demo exercises product-level composition."
                       />
                       <Space wrap>
-                        <Tag color="green">npm pack</Tag>
-                        <Tag color="blue">Storybook docs</Tag>
-                        <Tag color="gold">UMD ready</Tag>
+                        <Tag color="success">npm pack</Tag>
+                        <Tag color="primary">Storybook docs</Tag>
+                        <Tag color="warning">UMD ready</Tag>
                       </Space>
                     </div>
                   ),

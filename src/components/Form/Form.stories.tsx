@@ -1,21 +1,23 @@
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Alert } from '../Alert/Alert'
 import { Button } from '../Button/Button'
 import { Card } from '../Card/Card'
 import { Checkbox } from '../Checkbox/Checkbox'
 import { Input } from '../Input/Input'
 import { Select } from '../Select/Select'
+import type { SelectOption } from '../Select/Select'
 import { Space } from '../Space/Space'
 import { Switch } from '../Switch/Switch'
 import { Textarea } from '../Textarea/Textarea'
 import { Form } from './Form'
 
-const planOptions = [
+const planOptions: SelectOption[] = [
   { label: 'Commerce Pro', value: 'commerce-pro' },
   { label: 'Finance Basic', value: 'finance-basic' },
   { label: 'Internal Tools', value: 'internal-tools' },
 ]
 
-export default {
+const meta = {
   title: 'Data Entry/Form',
   component: Form,
   tags: ['autodocs'],
@@ -26,15 +28,12 @@ export default {
       },
     },
   },
-  argTypes: {
-    layout: {
-      control: 'select',
-      options: ['vertical', 'horizontal'],
-    },
-  },
-}
+} satisfies Meta<typeof Form>
 
-export const Basic = {
+export default meta
+type Story = StoryObj<typeof meta>
+
+export const Basic: Story = {
   render: () => (
     <Card title="Create workspace">
       <Form
@@ -73,7 +72,7 @@ export const Basic = {
   ),
 }
 
-export const Validation = {
+export const Validation: Story = {
   render: () => (
     <Form
       onFinishFailed={({ errors }) => console.log('errors', errors)}

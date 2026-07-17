@@ -1,8 +1,8 @@
+import type { Preview } from '@storybook/react-vite'
 import '../src/tokens/tokens.css'
 import '../src/docs/storybook-docs.css'
 
-/** @type { import('@storybook/react-vite').Preview } */
-const preview = {
+const preview: Preview = {
   parameters: {
     controls: {
       matchers: {
@@ -15,7 +15,7 @@ const preview = {
       // 'todo' - show a11y violations in the test UI only
       // 'error' - fail CI on a11y violations
       // 'off' - skip a11y checks entirely
-      test: "todo"
+      test: 'todo',
     },
     options: {
       storySort: {
@@ -40,6 +40,6 @@ const preview = {
       },
     },
   },
-};
+}
 
-export default preview;
+export default preview

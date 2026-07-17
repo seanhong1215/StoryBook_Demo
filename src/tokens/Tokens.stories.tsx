@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import './tokens.css'
 
 export default {
@@ -11,7 +12,7 @@ export default {
   },
 }
 
-const TokenBox = ({ name, value }) => (
+const TokenBox = ({ name, value }: { name: string; value: string }) => (
   <div className="token-row">
     <div className="token-swatch" style={{ background: value }} />
     <div>
@@ -22,7 +23,7 @@ const TokenBox = ({ name, value }) => (
   </div>
 )
 
-const TokenRow = ({ name, value, preview }) => (
+const TokenRow = ({ name, value, preview }: { name: string; value: string; preview: ReactNode }) => (
   <div className="token-row token-row--preview">
     <div className="token-preview">{preview}</div>
     <div>
