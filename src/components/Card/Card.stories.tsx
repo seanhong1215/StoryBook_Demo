@@ -1,8 +1,9 @@
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Card } from './Card'
 import { Button } from '../Button/Button'
 import { Badge } from '../Badge/Badge'
 
-export default {
+const meta = {
   title: 'Data Display/Card',
   component: Card,
   tags: ['autodocs'],
@@ -13,37 +14,19 @@ export default {
       },
     },
   },
-  argTypes: {
-    variant: {
-      control: 'select',
-      options: ['default', 'outlined', 'elevated', 'ghost'],
-      description: 'Surface treatment.',
-    },
-    padding: {
-      control: 'select',
-      options: ['sm', 'md', 'lg'],
-      description: 'Internal spacing density.',
-    },
-    interactive: {
-      control: 'boolean',
-      description: 'Adds pointer affordance and hover feedback.',
-    },
-    footerAlign: {
-      control: 'select',
-      options: ['start', 'center', 'between', 'end'],
-      description: 'Footer action alignment.',
-    },
-  },
-}
+} satisfies Meta<typeof Card>
 
-export const Basic = {
+export default meta
+type Story = StoryObj<typeof meta>
+
+export const Basic: Story = {
   args: {
     title: 'Project summary',
     description: 'Use a card when a small group of related information needs to be scanned as one unit.',
   },
 }
 
-export const WithFooter = {
+export const WithFooter: Story = {
   render: () => (
     <Card
       title="Pending changes"
@@ -58,7 +41,7 @@ export const WithFooter = {
   ),
 }
 
-export const Elevated = {
+export const Elevated: Story = {
   args: {
     variant: 'elevated',
     title: 'Usage growth',
@@ -66,7 +49,7 @@ export const Elevated = {
   },
 }
 
-export const Interactive = {
+export const Interactive: Story = {
   args: {
     as: 'a',
     href: '#',
@@ -77,7 +60,7 @@ export const Interactive = {
   },
 }
 
-export const Dense = {
+export const Dense: Story = {
   args: {
     padding: 'sm',
     title: 'Compact summary',
@@ -85,7 +68,7 @@ export const Dense = {
   },
 }
 
-export const WithBadge = {
+export const WithBadge: Story = {
   render: () => (
     <Card title="System status">
       <div className="story-stack">
@@ -106,7 +89,7 @@ export const WithBadge = {
   ),
 }
 
-export const FooterAlignment = {
+export const FooterAlignment: Story = {
   render: () => (
     <Card
       title="Team access"

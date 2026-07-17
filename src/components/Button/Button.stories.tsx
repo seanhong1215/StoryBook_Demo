@@ -1,6 +1,7 @@
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Button } from './Button'
 
-export default {
+const meta = {
   title: 'General/Button',
   component: Button,
   tags: ['autodocs'],
@@ -12,72 +13,50 @@ export default {
     },
   },
   argTypes: {
-    variant: {
-      control: 'select',
-      options: ['primary', 'secondary', 'ghost', 'danger', 'success'],
-      description: 'Visual style and intent.',
-    },
-    size: {
-      control: 'select',
-      options: ['sm', 'md', 'lg'],
-      description: 'Button height and horizontal padding.',
-    },
-    disabled: {
-      control: 'boolean',
-      description: 'Prevents user interaction.',
-    },
-    loading: {
-      control: 'boolean',
-      description: 'Shows progress and prevents interaction.',
-    },
-    fullWidth: {
-      control: 'boolean',
-      description: 'Expands the button to fill the parent width.',
-    },
-    children: {
-      control: 'text',
-      description: 'Button label.',
-    },
+    children: { control: 'text' },
   },
-}
+} satisfies Meta<typeof Button>
 
-export const Primary = {
+export default meta
+type Story = StoryObj<typeof meta>
+
+export const Primary: Story = {
   args: { variant: 'primary', children: 'Primary action' },
 }
 
-export const Secondary = {
+export const Secondary: Story = {
   args: { variant: 'secondary', children: 'Secondary action' },
 }
 
-export const Ghost = {
+export const Ghost: Story = {
   args: { variant: 'ghost', children: 'Dismiss' },
 }
 
-export const Danger = {
+export const Danger: Story = {
   args: { variant: 'danger', children: 'Delete' },
 }
 
-export const Success = {
+export const Success: Story = {
   args: { variant: 'success', children: 'Success' },
 }
 
-export const Small = {
+export const Small: Story = {
   args: { variant: 'primary', size: 'sm', children: 'Small' },
 }
 
-export const Large = {
+export const Large: Story = {
   args: { variant: 'primary', size: 'lg', children: 'Large' },
 }
 
-export const Disabled = {
+export const Disabled: Story = {
   args: { variant: 'primary', children: 'Disabled', disabled: true },
 }
 
-export const Loading = {
+export const Loading: Story = {
   args: { variant: 'primary', children: 'Saving', loading: true },
 }
 
-export const WithIcons = {
+export const WithIcons: Story = {
   render: () => (
     <div className="story-surface">
       <Button leftIcon={<span aria-hidden="true">+</span>}>Create</Button>
@@ -86,7 +65,7 @@ export const WithIcons = {
   ),
 }
 
-export const FullWidth = {
+export const FullWidth: Story = {
   render: () => (
     <div style={{ width: '320px' }}>
       <Button fullWidth>Confirm selection</Button>
@@ -94,7 +73,7 @@ export const FullWidth = {
   ),
 }
 
-export const AllVariants = {
+export const AllVariants: Story = {
   render: () => (
     <div className="story-surface">
       <Button variant="primary">Primary</Button>

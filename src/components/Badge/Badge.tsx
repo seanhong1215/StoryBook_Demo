@@ -1,4 +1,16 @@
+import type { HTMLAttributes, ReactNode } from 'react'
 import './Badge.css'
+
+export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
+  /** Semantic color treatment. */
+  variant?: 'primary' | 'success' | 'danger' | 'warning' | 'secondary'
+  /** Badge density and text size. */
+  size?: 'sm' | 'md' | 'lg'
+  /** Shows a compact status indicator before the label. */
+  dot?: boolean
+  /** Badge label. */
+  children?: ReactNode
+}
 
 export const Badge = ({
   variant = 'primary',
@@ -7,7 +19,7 @@ export const Badge = ({
   className = '',
   children,
   ...props
-}) => {
+}: BadgeProps) => {
   const classes = [
     'badge',
     `badge--${variant}`,
