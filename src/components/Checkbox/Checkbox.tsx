@@ -1,5 +1,13 @@
 import { useEffect, useRef } from 'react'
+import type { InputHTMLAttributes, ReactNode } from 'react'
 import './Checkbox.css'
+
+export interface CheckboxProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size' | 'type'> {
+  /** Shows the mixed state for partially selected groups. */
+  indeterminate?: boolean
+  /** Checkbox label. */
+  children?: ReactNode
+}
 
 export const Checkbox = ({
   checked,
@@ -9,8 +17,8 @@ export const Checkbox = ({
   className = '',
   children,
   ...props
-}) => {
-  const inputRef = useRef(null)
+}: CheckboxProps) => {
+  const inputRef = useRef<HTMLInputElement>(null)
   const classes = [
     'checkbox',
     disabled ? 'checkbox--disabled' : '',

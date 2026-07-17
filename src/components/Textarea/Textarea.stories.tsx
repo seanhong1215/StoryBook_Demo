@@ -1,6 +1,7 @@
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Textarea } from './Textarea'
 
-export default {
+const meta = {
   title: 'Data Entry/Textarea',
   component: Textarea,
   tags: ['autodocs'],
@@ -11,34 +12,18 @@ export default {
       },
     },
   },
-  argTypes: {
-    size: {
-      control: 'select',
-      options: ['sm', 'md', 'lg'],
-    },
-    status: {
-      control: 'select',
-      options: [undefined, 'error', 'warning'],
-    },
-    rows: {
-      control: 'number',
-    },
-    showCount: {
-      control: 'boolean',
-    },
-    disabled: {
-      control: 'boolean',
-    },
-  },
-}
+} satisfies Meta<typeof Textarea>
 
-export const Basic = {
+export default meta
+type Story = StoryObj<typeof meta>
+
+export const Basic: Story = {
   args: {
     placeholder: 'Describe the release changes',
   },
 }
 
-export const WithCount = {
+export const WithCount: Story = {
   args: {
     defaultValue: 'Updated package installation workflow.',
     maxLength: 120,
@@ -46,7 +31,7 @@ export const WithCount = {
   },
 }
 
-export const Status = {
+export const Status: Story = {
   render: () => (
     <div className="story-stack">
       <Textarea status="error" placeholder="Release notes are required" />

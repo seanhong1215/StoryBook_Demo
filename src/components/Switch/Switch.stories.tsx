@@ -1,6 +1,7 @@
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Switch } from './Switch'
 
-export default {
+const meta = {
   title: 'Data Entry/Switch',
   component: Switch,
   tags: ['autodocs'],
@@ -12,32 +13,21 @@ export default {
     },
   },
   argTypes: {
-    checked: {
-      control: 'boolean',
-    },
-    defaultChecked: {
-      control: 'boolean',
-    },
-    disabled: {
-      control: 'boolean',
-    },
-    loading: {
-      control: 'boolean',
-    },
-    size: {
-      control: 'select',
-      options: ['sm', 'md', 'lg'],
-    },
+    checkedChildren: { control: 'text' },
+    unCheckedChildren: { control: 'text' },
   },
-}
+} satisfies Meta<typeof Switch>
 
-export const Basic = {
+export default meta
+type Story = StoryObj<typeof meta>
+
+export const Basic: Story = {
   args: {
     defaultChecked: true,
   },
 }
 
-export const WithLabels = {
+export const WithLabels: Story = {
   render: () => (
     <div className="story-surface">
       <Switch defaultChecked checkedChildren="On" unCheckedChildren="Off" />
@@ -46,7 +36,7 @@ export const WithLabels = {
   ),
 }
 
-export const Sizes = {
+export const Sizes: Story = {
   render: () => (
     <div className="story-surface">
       <Switch size="sm" defaultChecked />
@@ -56,7 +46,7 @@ export const Sizes = {
   ),
 }
 
-export const States = {
+export const States: Story = {
   render: () => (
     <div className="story-surface">
       <Switch defaultChecked />

@@ -1,4 +1,18 @@
+import type { ChangeEvent, InputHTMLAttributes, ReactNode } from 'react'
 import './Input.css'
+
+export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size' | 'prefix'> {
+  /** Input height and horizontal padding. */
+  size?: 'sm' | 'md' | 'lg'
+  /** Validation status styling. */
+  status?: 'error' | 'warning'
+  /** Addon rendered before the control. */
+  prefix?: ReactNode
+  /** Addon rendered after the control. */
+  suffix?: ReactNode
+  /** Shows a clear button when the input has a value. */
+  allowClear?: boolean
+}
 
 export const Input = ({
   size = 'md',
@@ -12,7 +26,7 @@ export const Input = ({
   className = '',
   onChange,
   ...props
-}) => {
+}: InputProps) => {
   const hasControls = prefix || suffix || allowClear
   const classes = [
     'input',
@@ -25,7 +39,7 @@ export const Input = ({
 
   const clearValue = () => {
     if (onChange) {
-      onChange({ target: { value: '' } })
+      onChange({ target: { value: '' } } as ChangeEvent<HTMLInputElement>)
     }
   }
 

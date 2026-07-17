@@ -1,13 +1,15 @@
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Select } from './Select'
+import type { SelectOption } from './Select'
 
-const options = [
+const options: SelectOption[] = [
   { label: 'Commerce Pro', value: 'commerce-pro' },
   { label: 'Finance Basic', value: 'finance-basic' },
   { label: 'Internal Tools', value: 'internal-tools' },
   { label: 'Legacy Plan', value: 'legacy', disabled: true },
 ]
 
-export default {
+const meta = {
   title: 'Data Entry/Select',
   component: Select,
   tags: ['autodocs'],
@@ -19,31 +21,21 @@ export default {
     },
   },
   argTypes: {
-    size: {
-      control: 'select',
-      options: ['sm', 'md', 'lg'],
-    },
-    status: {
-      control: 'select',
-      options: [undefined, 'error', 'warning'],
-    },
-    disabled: {
-      control: 'boolean',
-    },
-    placeholder: {
-      control: 'text',
-    },
+    placeholder: { control: 'text' },
   },
-}
+} satisfies Meta<typeof Select>
 
-export const Basic = {
+export default meta
+type Story = StoryObj<typeof meta>
+
+export const Basic: Story = {
   args: {
     options,
     placeholder: 'Choose a plan',
   },
 }
 
-export const Sizes = {
+export const Sizes: Story = {
   render: () => (
     <div className="story-stack">
       <Select size="sm" options={options} placeholder="Small select" />
@@ -53,7 +45,7 @@ export const Sizes = {
   ),
 }
 
-export const Status = {
+export const Status: Story = {
   render: () => (
     <div className="story-stack">
       <Select status="error" options={options} placeholder="Plan is required" />

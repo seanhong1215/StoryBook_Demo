@@ -1,6 +1,7 @@
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Checkbox } from './Checkbox'
 
-export default {
+const meta = {
   title: 'Data Entry/Checkbox',
   component: Checkbox,
   tags: ['autodocs'],
@@ -12,45 +13,34 @@ export default {
     },
   },
   argTypes: {
-    checked: {
-      control: 'boolean',
-    },
-    defaultChecked: {
-      control: 'boolean',
-    },
-    indeterminate: {
-      control: 'boolean',
-    },
-    disabled: {
-      control: 'boolean',
-    },
-    children: {
-      control: 'text',
-    },
+    children: { control: 'text' },
   },
-}
+} satisfies Meta<typeof Checkbox>
 
-export const Basic = {
+export default meta
+type Story = StoryObj<typeof meta>
+
+export const Basic: Story = {
   args: {
     children: 'Receive product updates',
   },
 }
 
-export const Checked = {
+export const Checked: Story = {
   args: {
     defaultChecked: true,
     children: 'Enable workspace access',
   },
 }
 
-export const Indeterminate = {
+export const Indeterminate: Story = {
   args: {
     indeterminate: true,
     children: 'Select all permissions',
   },
 }
 
-export const Group = {
+export const Group: Story = {
   render: () => (
     <div className="story-stack">
       <Checkbox defaultChecked>Read access</Checkbox>

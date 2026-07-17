@@ -1,4 +1,16 @@
+import type { InputHTMLAttributes, ReactNode } from 'react'
 import './Switch.css'
+
+export interface SwitchProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size' | 'type'> {
+  /** Shows a pending state and prevents interaction. */
+  loading?: boolean
+  /** Track height and handle size. */
+  size?: 'sm' | 'md' | 'lg'
+  /** Label shown inside the track when checked. */
+  checkedChildren?: ReactNode
+  /** Label shown inside the track when unchecked. */
+  unCheckedChildren?: ReactNode
+}
 
 export const Switch = ({
   checked,
@@ -10,7 +22,7 @@ export const Switch = ({
   unCheckedChildren,
   className = '',
   ...props
-}) => {
+}: SwitchProps) => {
   const classes = [
     'switch',
     `switch--${size}`,
