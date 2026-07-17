@@ -1,4 +1,27 @@
+import type { ReactNode, SelectHTMLAttributes } from 'react'
 import './Select.css'
+
+export interface SelectOption {
+  /** Visible option label. */
+  label: ReactNode
+  /** Submitted option value. */
+  value: string | number
+  /** Disables this option. */
+  disabled?: boolean
+}
+
+export interface SelectProps extends Omit<SelectHTMLAttributes<HTMLSelectElement>, 'size'> {
+  /** Control height and padding density. */
+  size?: 'sm' | 'md' | 'lg'
+  /** Validation status styling. */
+  status?: 'error' | 'warning'
+  /** Options rendered when no children are provided. */
+  options?: SelectOption[]
+  /** Placeholder shown as a disabled first option. */
+  placeholder?: ReactNode
+  /** Custom option elements; takes precedence over options. */
+  children?: ReactNode
+}
 
 export const Select = ({
   size = 'md',
@@ -11,7 +34,7 @@ export const Select = ({
   className = '',
   children,
   ...props
-}) => {
+}: SelectProps) => {
   const classes = [
     'select',
     `select--${size}`,

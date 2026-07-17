@@ -1,6 +1,7 @@
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Input } from './Input'
 
-export default {
+const meta = {
   title: 'Data Entry/Input',
   component: Input,
   tags: ['autodocs'],
@@ -12,33 +13,21 @@ export default {
     },
   },
   argTypes: {
-    size: {
-      control: 'select',
-      options: ['sm', 'md', 'lg'],
-    },
-    status: {
-      control: 'select',
-      options: [undefined, 'error', 'warning'],
-    },
-    disabled: {
-      control: 'boolean',
-    },
-    allowClear: {
-      control: 'boolean',
-    },
-    placeholder: {
-      control: 'text',
-    },
+    prefix: { control: 'text' },
+    suffix: { control: 'text' },
   },
-}
+} satisfies Meta<typeof Input>
 
-export const Basic = {
+export default meta
+type Story = StoryObj<typeof meta>
+
+export const Basic: Story = {
   args: {
     placeholder: 'Search products',
   },
 }
 
-export const Sizes = {
+export const Sizes: Story = {
   render: () => (
     <div className="story-stack">
       <Input size="sm" placeholder="Small input" />
@@ -48,7 +37,7 @@ export const Sizes = {
   ),
 }
 
-export const WithAffixes = {
+export const WithAffixes: Story = {
   render: () => (
     <div className="story-stack">
       <Input prefix="https://" suffix=".com" placeholder="domain" />
@@ -57,7 +46,7 @@ export const WithAffixes = {
   ),
 }
 
-export const Status = {
+export const Status: Story = {
   render: () => (
     <div className="story-stack">
       <Input status="error" placeholder="Required field" />

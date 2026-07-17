@@ -1,4 +1,14 @@
+import type { TextareaHTMLAttributes } from 'react'
 import './Textarea.css'
+
+export interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
+  /** Control height and padding density. */
+  size?: 'sm' | 'md' | 'lg'
+  /** Validation status styling. */
+  status?: 'error' | 'warning'
+  /** Shows the character count under the control. */
+  showCount?: boolean
+}
 
 export const Textarea = ({
   size = 'md',
@@ -11,7 +21,7 @@ export const Textarea = ({
   disabled = false,
   className = '',
   ...props
-}) => {
+}: TextareaProps) => {
   const countValue = value ?? defaultValue ?? ''
   const classes = [
     'textarea',
