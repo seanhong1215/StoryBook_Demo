@@ -1,7 +1,36 @@
 import { useEffect } from 'react'
+import type { ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { Button } from '../Button/Button'
 import './Modal.css'
+
+export interface ModalProps {
+  /** Shows the dialog. */
+  open?: boolean
+  /** Header title. */
+  title?: ReactNode
+  /** Body content. */
+  children?: ReactNode
+  /** Custom footer; pass null to hide the default OK/Cancel footer. */
+  footer?: ReactNode
+  /** Dialog width in pixels or any CSS width value. */
+  width?: number | string
+  /** Shows the close button in the header. */
+  closable?: boolean
+  /** Clicking the mask closes the dialog. */
+  maskClosable?: boolean
+  /** Label of the default OK button. */
+  okText?: ReactNode
+  /** Label of the default Cancel button. */
+  cancelText?: ReactNode
+  /** Shows a loading state on the default OK button. */
+  confirmLoading?: boolean
+  className?: string
+  /** Called when the default OK button is clicked. */
+  onOk?: () => void
+  /** Called on cancel: close button, mask click, or Escape. */
+  onCancel?: () => void
+}
 
 export const Modal = ({
   open = false,
@@ -17,14 +46,14 @@ export const Modal = ({
   className = '',
   onOk,
   onCancel,
-}) => {
+}: ModalProps) => {
   useEffect(() => {
     if (!open) return undefined
 
     const previousOverflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
 
-    const handleKeyDown = (event) => {
+    const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         onCancel?.()
       }

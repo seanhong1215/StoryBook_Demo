@@ -8,26 +8,52 @@ import {
   useRef,
   useState,
 } from 'react'
+import type { FormEvent, FormHTMLAttributes, ReactElement, ReactNode } from 'react'
 import { Button } from '../Button/Button'
 import './Form.css'
 
-const FormContext = createContext(null)
+export type FormValues = Record<string, unknown>
 
-const getEventValue = (event, valuePropName) => {
-  if (event && event.target) {
-    return valuePropName === 'checked' ? event.target.checked : event.target.value
+export interface FormRule {
+  /** Value must be non-empty. */
+  required?: boolean
+  /** Value must match this pattern. */
+  pattern?: RegExp
+  /** Error message when the rule fails. */
+  message?: string
+  /** Custom validator returning an error message, or undefined when valid. */
+  validator?: (value: unknown) => string | undefined | Promise<string | undefined>
+}
+
+interface FieldConfig {
+  rules: FormRule[]
+}
+
+interface FormContextValue {
+  values: FormValues
+  errors: Record<string, string | undefined>
+  registerField: (name: string, config: FieldConfig) => () => void
+  setFieldValue: (name: string, value: unknown) => void
+}
+
+const FormContext = createContext<FormContextValue | null>(null)
+
+const getEventValue = (event: unknown, valuePropName: string): unknown => {
+  if (event && typeof event === 'object' && 'target' in event) {
+    const target = (event as { target: HTMLInputElement }).target
+    return valuePropName === 'checked' ? target.checked : target.value
   }
 
   return event
 }
 
-const validateField = async (value, rules = []) => {
+const validateField = async (value: unknown, rules: FormRule[] = []) => {
   for (const rule of rules) {
     if (rule.required && (value === undefined || value === null || value === '')) {
       return rule.message || 'This field is required.'
     }
 
-    if (rule.pattern && value && !rule.pattern.test(value)) {
+    if (rule.pattern && value && !rule.pattern.test(String(value))) {
       return rule.message || 'This field format is invalid.'
     }
 
@@ -40,7 +66,19 @@ const validateField = async (value, rules = []) => {
   return undefined
 }
 
-export const Form = ({
+export interface FormProps extends Omit<FormHTMLAttributes<HTMLFormElement>, 'onSubmit'> {
+  /** Initial field values keyed by field name. */
+  initialValues?: FormValues
+  /** Called with the values when submit passes validation. */
+  onFinish?: (values: FormValues) => void
+  /** Called with values and errors when submit fails validation. */
+  onFinishFailed?: (info: { values: FormValues; errors: Record<string, string> }) => void
+  /** Label and control arrangement. */
+  layout?: 'vertical' | 'horizontal'
+  children?: ReactNode
+}
+
+const FormBase = ({
   initialValues = {},
   onFinish,
   onFinishFailed,
@@ -48,12 +86,12 @@ export const Form = ({
   children,
   className = '',
   ...props
-}) => {
-  const [values, setValues] = useState(initialValues)
-  const [errors, setErrors] = useState({})
-  const [fields, setFields] = useState({})
+}: FormProps) => {
+  const [values, setValues] = useState<FormValues>(initialValues)
+  const [errors, setErrors] = useState<Record<string, string | undefined>>({})
+  const [fields, setFields] = useState<Record<string, FieldConfig>>({})
 
-  const registerField = useCallback((name, config) => {
+  const registerField = useCallback((name: string, config: FieldConfig) => {
     setFields((current) => ({ ...current, [name]: config }))
 
     return () => {
@@ -65,13 +103,13 @@ export const Form = ({
     }
   }, [])
 
-  const setFieldValue = useCallback((name, value) => {
+  const setFieldValue = useCallback((name: string, value: unknown) => {
     setValues((current) => ({ ...current, [name]: value }))
     setErrors((current) => ({ ...current, [name]: undefined }))
   }, [])
 
   const validateFields = async () => {
-    const nextErrors = {}
+    const nextErrors: Record<string, string> = {}
 
     for (const [name, field] of Object.entries(fields)) {
       const error = await validateField(values[name], field.rules)
@@ -84,7 +122,7 @@ export const Form = ({
     return nextErrors
   }
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     const nextErrors = await validateFields()
 
@@ -116,6 +154,29 @@ export const Form = ({
   )
 }
 
+interface FieldElementProps {
+  status?: 'error' | 'warning'
+  onChange?: (...args: unknown[]) => void
+  [prop: string]: unknown
+}
+
+export interface FormItemProps {
+  /** Field name; connects the child control to the form state. */
+  name?: string
+  /** Field label. */
+  label?: ReactNode
+  /** Validation rules applied on submit. */
+  rules?: FormRule[]
+  /** Child prop receiving the field value (e.g. 'checked' for Checkbox). */
+  valuePropName?: string
+  /** Derives the field value from the child's onChange arguments. */
+  getValueFromEvent?: (...args: unknown[]) => unknown
+  /** A single form control element. */
+  children?: ReactElement<FieldElementProps>
+  /** Helper text shown when there is no error. */
+  extra?: ReactNode
+}
+
 export const FormItem = ({
   name,
   label,
@@ -124,7 +185,7 @@ export const FormItem = ({
   getValueFromEvent,
   children,
   extra,
-}) => {
+}: FormItemProps) => {
   const form = useContext(FormContext)
   const rulesRef = useRef(rules)
   const error = name ? form?.errors[name] : undefined
@@ -147,8 +208,8 @@ export const FormItem = ({
   const child = name && form && children
     ? cloneElement(children, {
       [valuePropName]: value ?? (valuePropName === 'checked' ? false : ''),
-      status: error ? 'error' : children.props.status,
-      onChange: (...args) => {
+      status: error ? 'error' as const : children.props.status,
+      onChange: (...args: unknown[]) => {
         const nextValue = getValueFromEvent
           ? getValueFromEvent(...args)
           : getEventValue(args[0], valuePropName)
@@ -169,5 +230,8 @@ export const FormItem = ({
   )
 }
 
-Form.Item = FormItem
-Form.Submit = Button
+// eslint-disable-next-line react-refresh/only-export-components -- compound component 靜態屬性（Form.Item / Form.Submit）
+export const Form = Object.assign(FormBase, {
+  Item: FormItem,
+  Submit: Button,
+})

@@ -6,8 +6,10 @@
   "main": "./dist/my-design-system.umd.cjs",
   "module": "./dist/my-design-system.js",
   "style": "./dist/my-design-system.css",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/my-design-system.js",
       "require": "./dist/my-design-system.umd.cjs"
     },
@@ -49,7 +51,6 @@
     "eslint-plugin-storybook": "^10.4.0",
     "globals": "^17.6.0",
     "playwright": "^1.60.0",
-    "prop-types": "^15.8.1",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "storybook": "^10.4.0",
