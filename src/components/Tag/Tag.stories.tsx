@@ -1,6 +1,7 @@
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Tag } from './Tag'
 
-export default {
+const meta = {
   title: 'Data Display/Tag',
   component: Tag,
   tags: ['autodocs'],
@@ -12,26 +13,20 @@ export default {
     },
   },
   argTypes: {
-    color: {
-      control: 'select',
-      options: ['default', 'primary', 'success', 'warning', 'danger'],
-    },
-    closable: {
-      control: 'boolean',
-    },
-    children: {
-      control: 'text',
-    },
+    children: { control: 'text' },
   },
-}
+} satisfies Meta<typeof Tag>
 
-export const Basic = {
+export default meta
+type Story = StoryObj<typeof meta>
+
+export const Basic: Story = {
   args: {
     children: 'Commerce',
   },
 }
 
-export const Colors = {
+export const Colors: Story = {
   render: () => (
     <div className="story-surface">
       <Tag>Default</Tag>
@@ -43,7 +38,7 @@ export const Colors = {
   ),
 }
 
-export const Closable = {
+export const Closable: Story = {
   args: {
     closable: true,
     children: 'Removable',

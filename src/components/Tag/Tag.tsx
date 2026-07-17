@@ -1,4 +1,16 @@
+import type { HTMLAttributes, MouseEventHandler, ReactNode } from 'react'
 import './Tag.css'
+
+export interface TagProps extends HTMLAttributes<HTMLSpanElement> {
+  /** Semantic color treatment. */
+  color?: 'default' | 'primary' | 'success' | 'warning' | 'danger'
+  /** Renders a close button after the label. */
+  closable?: boolean
+  /** Called when the close button is clicked. */
+  onClose?: MouseEventHandler<HTMLButtonElement>
+  /** Tag label. */
+  children?: ReactNode
+}
 
 export const Tag = ({
   color = 'default',
@@ -7,7 +19,7 @@ export const Tag = ({
   children,
   onClose,
   ...props
-}) => {
+}: TagProps) => {
   return (
     <span
       className={['tag', `tag--${color}`, className].filter(Boolean).join(' ')}

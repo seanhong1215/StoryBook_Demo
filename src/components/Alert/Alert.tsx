@@ -1,4 +1,23 @@
+import type { HTMLAttributes, MouseEventHandler, ReactNode } from 'react'
 import './Alert.css'
+
+export interface AlertProps extends HTMLAttributes<HTMLDivElement> {
+  /** Semantic tone of the alert. */
+  type?: 'success' | 'info' | 'warning' | 'error'
+  /** Primary message line. */
+  message?: ReactNode
+  /** Supporting copy under the message; children are rendered here too. */
+  description?: ReactNode
+  /** Shows the tone icon before the content. */
+  showIcon?: boolean
+  /** Renders a close button. */
+  closable?: boolean
+  /** Custom action node aligned to the end. */
+  action?: ReactNode
+  /** Called when the close button is clicked. */
+  onClose?: MouseEventHandler<HTMLButtonElement>
+  children?: ReactNode
+}
 
 export const Alert = ({
   type = 'info',
@@ -11,7 +30,7 @@ export const Alert = ({
   onClose,
   children,
   ...props
-}) => {
+}: AlertProps) => {
   const classes = [
     'alert',
     `alert--${type}`,

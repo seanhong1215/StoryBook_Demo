@@ -1,7 +1,8 @@
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Button } from '../Button/Button'
 import { Alert } from './Alert'
 
-export default {
+const meta = {
   title: 'Feedback/Alert',
   component: Alert,
   tags: ['autodocs'],
@@ -12,21 +13,12 @@ export default {
       },
     },
   },
-  argTypes: {
-    type: {
-      control: 'select',
-      options: ['success', 'info', 'warning', 'error'],
-    },
-    showIcon: {
-      control: 'boolean',
-    },
-    closable: {
-      control: 'boolean',
-    },
-  },
-}
+} satisfies Meta<typeof Alert>
 
-export const Info = {
+export default meta
+type Story = StoryObj<typeof meta>
+
+export const Info: Story = {
   args: {
     type: 'info',
     message: 'New update available',
@@ -34,7 +26,7 @@ export const Info = {
   },
 }
 
-export const Types = {
+export const Types: Story = {
   render: () => (
     <div className="story-stack">
       <Alert type="success" message="Saved successfully" />
@@ -45,7 +37,7 @@ export const Types = {
   ),
 }
 
-export const WithAction = {
+export const WithAction: Story = {
   render: () => (
     <Alert
       type="warning"

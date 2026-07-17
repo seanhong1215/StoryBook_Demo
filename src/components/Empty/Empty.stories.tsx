@@ -1,7 +1,8 @@
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Button } from '../Button/Button'
 import { Empty } from './Empty'
 
-export default {
+const meta = {
   title: 'Feedback/Empty',
   component: Empty,
   tags: ['autodocs'],
@@ -13,26 +14,23 @@ export default {
     },
   },
   argTypes: {
-    title: {
-      control: 'text',
-    },
-    description: {
-      control: 'text',
-    },
-    actionText: {
-      control: 'text',
-    },
+    title: { control: 'text' },
+    description: { control: 'text' },
+    actionText: { control: 'text' },
   },
-}
+} satisfies Meta<typeof Empty>
 
-export const Basic = {
+export default meta
+type Story = StoryObj<typeof meta>
+
+export const Basic: Story = {
   args: {
     title: 'No projects yet',
     description: 'Create a project to start validating this component library in Product A.',
   },
 }
 
-export const WithAction = {
+export const WithAction: Story = {
   args: {
     title: 'No releases found',
     description: 'Build and pack the library before installing it in another product.',
@@ -40,7 +38,7 @@ export const WithAction = {
   },
 }
 
-export const CustomAction = {
+export const CustomAction: Story = {
   render: () => (
     <Empty
       title="No pending reviews"

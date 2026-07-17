@@ -1,8 +1,9 @@
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Button } from '../Button/Button'
 import { Badge } from '../Badge/Badge'
 import { Space } from './Space'
 
-export default {
+const meta = {
   title: 'Layout/Space',
   component: Space,
   tags: ['autodocs'],
@@ -13,26 +14,12 @@ export default {
       },
     },
   },
-  argTypes: {
-    direction: {
-      control: 'select',
-      options: ['horizontal', 'vertical'],
-    },
-    size: {
-      control: 'select',
-      options: ['xs', 'sm', 'md', 'lg'],
-    },
-    align: {
-      control: 'select',
-      options: ['start', 'center', 'end', 'stretch'],
-    },
-    wrap: {
-      control: 'boolean',
-    },
-  },
-}
+} satisfies Meta<typeof Space>
 
-export const Horizontal = {
+export default meta
+type Story = StoryObj<typeof meta>
+
+export const Horizontal: Story = {
   render: () => (
     <Space>
       <Button>Save</Button>
@@ -42,7 +29,7 @@ export const Horizontal = {
   ),
 }
 
-export const Vertical = {
+export const Vertical: Story = {
   render: () => (
     <Space direction="vertical" align="stretch">
       <Button>Publish</Button>
