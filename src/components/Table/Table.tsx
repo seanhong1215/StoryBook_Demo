@@ -1,24 +1,70 @@
 import { useMemo, useState } from 'react'
+import type { ReactNode } from 'react'
 import { Checkbox } from '../Checkbox/Checkbox'
 import { Empty } from '../Empty/Empty'
 import { Pagination } from '../Pagination/Pagination'
 import './Table.css'
 
-const getRowKey = (record, rowKey) => (
-  typeof rowKey === 'function' ? rowKey(record) : record[rowKey]
+export type TableRowKey = string | number
+
+export interface TableColumn<T> {
+  /** Column header content. */
+  title?: ReactNode
+  /** Record field rendered in this column. */
+  dataIndex?: Extract<keyof T, string>
+  /** Unique column key; falls back to dataIndex. */
+  key?: string
+  /** true for default string sorting, or a custom compare function. */
+  sorter?: boolean | ((a: T, b: T) => number)
+  /** Custom cell renderer. */
+  render?: (value: T[Extract<keyof T, string>] | undefined, record: T, index: number) => ReactNode
+}
+
+export interface TableRowSelection {
+  /** Keys of the currently selected rows. */
+  selectedRowKeys?: TableRowKey[]
+  /** Called with the next selected row keys. */
+  onChange?: (selectedRowKeys: TableRowKey[]) => void
+}
+
+export interface TableProps<T> {
+  /** Column definitions. */
+  columns?: TableColumn<T>[]
+  /** Row records. */
+  dataSource?: T[]
+  /** Record field used as the row key, or a function deriving it. */
+  rowKey?: Extract<keyof T, string> | ((record: T) => TableRowKey)
+  /** Shows the loading overlay. */
+  loading?: boolean
+  /** Pagination settings; false disables pagination. */
+  pagination?: false | { pageSize?: number }
+  /** Enables row selection checkboxes. */
+  rowSelection?: TableRowSelection
+  /** Title of the built-in empty state. */
+  emptyText?: ReactNode
+  className?: string
+}
+
+interface SortState {
+  key?: string
+  order: 'ascend' | 'descend'
+}
+
+const getRowKey = <T,>(record: T, rowKey: Extract<keyof T, string> | ((record: T) => TableRowKey)) => (
+  typeof rowKey === 'function' ? rowKey(record) : record[rowKey] as TableRowKey
 )
 
-export const Table = ({
+export const Table = <T,>({
   columns = [],
   dataSource = [],
-  rowKey = 'key',
+  rowKey = 'key' as Extract<keyof T, string>,
   loading = false,
   pagination = { pageSize: 5 },
   rowSelection,
   emptyText = 'No data',
   className = '',
-}) => {
-  const [sortState, setSortState] = useState()
+}: TableProps<T>) => {
+  const [sortState, setSortState] = useState<SortState>()
   const [page, setPage] = useState(1)
 
   const sortedData = useMemo(() => {
@@ -28,14 +74,15 @@ export const Table = ({
 
     return [...dataSource].sort((a, b) => {
       const result = column.sorter === true
-        ? String(a[column.dataIndex] ?? '').localeCompare(String(b[column.dataIndex] ?? ''))
-        : column.sorter(a, b)
+        ? String((column.dataIndex && a[column.dataIndex]) ?? '')
+            .localeCompare(String((column.dataIndex && b[column.dataIndex]) ?? ''))
+        : (column.sorter as (a: T, b: T) => number)(a, b)
 
       return sortState.order === 'ascend' ? result : -result
     })
   }, [columns, dataSource, sortState])
 
-  const pageSize = pagination?.pageSize || 5
+  const pageSize = (pagination && pagination.pageSize) || 5
   const pagedData = pagination
     ? sortedData.slice((page - 1) * pageSize, page * pageSize)
     : sortedData
@@ -47,7 +94,7 @@ export const Table = ({
   const someVisibleSelected = visibleRowKeys.some((key) => selectedRowKeys.includes(key))
     && !allVisibleSelected
 
-  const toggleSort = (column) => {
+  const toggleSort = (column: TableColumn<T>) => {
     if (!column.sorter) return
     const key = column.key || column.dataIndex
 
@@ -66,7 +113,7 @@ export const Table = ({
     rowSelection?.onChange?.(nextKeys)
   }
 
-  const toggleRow = (key) => {
+  const toggleRow = (key: TableRowKey) => {
     const nextKeys = selectedRowKeys.includes(key)
       ? selectedRowKeys.filter((selectedKey) => selectedKey !== key)
       : [...selectedRowKeys, key]
@@ -92,7 +139,7 @@ export const Table = ({
               )}
               {columns.map((column) => {
                 const key = column.key || column.dataIndex
-                const sorted = sortState?.key === key ? sortState.order : undefined
+                const sorted = sortState && sortState.key === key ? sortState.order : undefined
 
                 return (
                   <th key={key}>
@@ -100,7 +147,7 @@ export const Table = ({
                       <button
                         className="table__sort"
                         type="button"
-                        aria-sort={sorted || 'none'}
+                        aria-sort={sorted === 'ascend' ? 'ascending' : sorted === 'descend' ? 'descending' : 'none'}
                         onClick={() => toggleSort(column)}
                       >
                         {column.title}
@@ -130,12 +177,12 @@ export const Table = ({
                     </td>
                   )}
                   {columns.map((column) => {
-                    const value = record[column.dataIndex]
+                    const value = column.dataIndex ? record[column.dataIndex] : undefined
                     const columnKey = column.key || column.dataIndex
 
                     return (
                       <td key={columnKey}>
-                        {column.render ? column.render(value, record, rowIndex) : value}
+                        {column.render ? column.render(value, record, rowIndex) : value as ReactNode}
                       </td>
                     )
                   })}

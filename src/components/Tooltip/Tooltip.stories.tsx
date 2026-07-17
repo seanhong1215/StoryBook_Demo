@@ -1,8 +1,9 @@
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Button } from '../Button/Button'
 import { Space } from '../Space/Space'
 import { Tooltip } from './Tooltip'
 
-export default {
+const meta = {
   title: 'Feedback/Tooltip',
   component: Tooltip,
   tags: ['autodocs'],
@@ -14,24 +15,21 @@ export default {
     },
   },
   argTypes: {
-    placement: {
-      control: 'select',
-      options: ['top', 'bottom', 'left', 'right'],
-    },
-    title: {
-      control: 'text',
-    },
+    title: { control: 'text' },
   },
-}
+} satisfies Meta<typeof Tooltip>
 
-export const Basic = {
+export default meta
+type Story = StoryObj<typeof meta>
+
+export const Basic: Story = {
   args: {
     title: 'Build and pack before installing in Product A.',
     children: <Button variant="secondary">Hover me</Button>,
   },
 }
 
-export const Placements = {
+export const Placements: Story = {
   render: () => (
     <Space>
       <Tooltip title="Top placement" placement="top">

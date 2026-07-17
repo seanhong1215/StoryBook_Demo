@@ -1,8 +1,10 @@
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Badge } from '../Badge/Badge'
 import { Card } from '../Card/Card'
 import { Tabs } from './Tabs'
+import type { TabItem } from './Tabs'
 
-const items = [
+const items: TabItem[] = [
   {
     key: 'overview',
     label: 'Overview',
@@ -20,7 +22,7 @@ const items = [
   },
 ]
 
-export default {
+const meta = {
   title: 'Data Display/Tabs',
   component: Tabs,
   tags: ['autodocs'],
@@ -31,26 +33,19 @@ export default {
       },
     },
   },
-  argTypes: {
-    size: {
-      control: 'select',
-      options: ['sm', 'md', 'lg'],
-    },
-    type: {
-      control: 'select',
-      options: ['line', 'card'],
-    },
-  },
-}
+} satisfies Meta<typeof Tabs>
 
-export const Line = {
+export default meta
+type Story = StoryObj<typeof meta>
+
+export const Line: Story = {
   args: {
     items,
     defaultActiveKey: 'overview',
   },
 }
 
-export const CardTabs = {
+export const CardTabs: Story = {
   args: {
     items,
     type: 'card',
@@ -58,7 +53,7 @@ export const CardTabs = {
   },
 }
 
-export const DisabledTab = {
+export const DisabledTab: Story = {
   args: {
     items: [
       ...items,

@@ -1,6 +1,22 @@
 import { Button } from '../Button/Button'
 import './Pagination.css'
 
+export interface PaginationProps {
+  /** Current page (1-based). */
+  current?: number
+  /** Total number of items. */
+  total?: number
+  /** Items per page. */
+  pageSize?: number
+  /** Disables all pagination controls. */
+  disabled?: boolean
+  /** Shows the total item count. */
+  showTotal?: boolean
+  className?: string
+  /** Called with the new page number. */
+  onChange?: (page: number) => void
+}
+
 export const Pagination = ({
   current = 1,
   total = 0,
@@ -9,7 +25,7 @@ export const Pagination = ({
   showTotal = true,
   className = '',
   onChange,
-}) => {
+}: PaginationProps) => {
   const totalPages = Math.max(1, Math.ceil(total / pageSize))
   const pages = Array.from({ length: totalPages }, (_, index) => index + 1)
     .filter((page) => (
@@ -18,7 +34,7 @@ export const Pagination = ({
       Math.abs(page - current) <= 1
     ))
 
-  const changePage = (page) => {
+  const changePage = (page: number) => {
     if (disabled || page < 1 || page > totalPages || page === current) return
     onChange?.(page)
   }

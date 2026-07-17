@@ -1,14 +1,16 @@
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Button } from '../Button/Button'
 import { Dropdown } from './Dropdown'
+import type { DropdownItem } from './Dropdown'
 
-const items = [
+const items: DropdownItem[] = [
   { key: 'preview', label: 'Preview package' },
   { key: 'pack', label: 'Run npm pack' },
   { key: 'publish', label: 'Publish release' },
   { key: 'archive', label: 'Archive', disabled: true },
 ]
 
-export default {
+const meta = {
   title: 'Navigation/Dropdown',
   component: Dropdown,
   tags: ['autodocs'],
@@ -19,25 +21,19 @@ export default {
       },
     },
   },
-  argTypes: {
-    placement: {
-      control: 'select',
-      options: ['bottom-start', 'bottom-end'],
-    },
-    disabled: {
-      control: 'boolean',
-    },
-  },
-}
+} satisfies Meta<typeof Dropdown>
 
-export const Basic = {
+export default meta
+type Story = StoryObj<typeof meta>
+
+export const Basic: Story = {
   args: {
     items,
     trigger: <Button variant="secondary">Actions</Button>,
   },
 }
 
-export const EndAligned = {
+export const EndAligned: Story = {
   args: {
     items,
     placement: 'bottom-end',
