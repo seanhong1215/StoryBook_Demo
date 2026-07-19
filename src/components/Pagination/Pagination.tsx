@@ -1,3 +1,4 @@
+import { forwardRef } from 'react'
 import { Button } from '../Button/Button'
 import './Pagination.css'
 
@@ -17,7 +18,7 @@ export interface PaginationProps {
   onChange?: (page: number) => void
 }
 
-export const Pagination = ({
+export const Pagination = forwardRef<HTMLElement, PaginationProps>(({
   current = 1,
   total = 0,
   pageSize = 10,
@@ -25,7 +26,7 @@ export const Pagination = ({
   showTotal = true,
   className = '',
   onChange,
-}: PaginationProps) => {
+}, ref) => {
   const totalPages = Math.max(1, Math.ceil(total / pageSize))
   const pages = Array.from({ length: totalPages }, (_, index) => index + 1)
     .filter((page) => (
@@ -41,6 +42,7 @@ export const Pagination = ({
 
   return (
     <nav
+      ref={ref}
       className={['pagination', className].filter(Boolean).join(' ')}
       aria-label="Pagination"
     >
@@ -84,4 +86,6 @@ export const Pagination = ({
       </Button>
     </nav>
   )
-}
+})
+
+Pagination.displayName = 'Pagination'

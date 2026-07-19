@@ -1,3 +1,4 @@
+import { forwardRef } from 'react'
 import type { ReactNode } from 'react'
 import './Tooltip.css'
 
@@ -11,14 +12,16 @@ export interface TooltipProps {
   className?: string
 }
 
-export const Tooltip = ({
+/** ref 指向外層 wrapper，供定位 / measure 使用。 */
+export const Tooltip = forwardRef<HTMLSpanElement, TooltipProps>(({
   title,
   placement = 'top',
   children,
   className = '',
-}: TooltipProps) => {
+}, ref) => {
   return (
     <span
+      ref={ref}
       className={['tooltip', `tooltip--${placement}`, className].filter(Boolean).join(' ')}
     >
       <span className="tooltip__trigger" tabIndex={0}>
@@ -29,4 +32,6 @@ export const Tooltip = ({
       </span>
     </span>
   )
-}
+})
+
+Tooltip.displayName = 'Tooltip'

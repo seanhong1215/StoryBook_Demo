@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import './Dropdown.css'
 
@@ -27,7 +27,11 @@ export interface DropdownProps {
   onSelect?: (item: DropdownItem) => void
 }
 
-export const Dropdown = ({
+/**
+ * ref 指向外層 root div。
+ * 內部另有 rootRef 供 outside-click 偵測使用，兩者用 useImperativeHandle 合併。
+ */
+export const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
   items = [],
   trigger,
   placement = 'bottom-start',
@@ -35,9 +39,10 @@ export const Dropdown = ({
   className = '',
   onOpenChange,
   onSelect,
-}: DropdownProps) => {
+}, ref) => {
   const [open, setOpen] = useState(false)
   const rootRef = useRef<HTMLDivElement>(null)
+  useImperativeHandle(ref, () => rootRef.current as HTMLDivElement, [])
 
   const setOpenState = (nextOpen: boolean) => {
     if (disabled) return
@@ -96,4 +101,6 @@ export const Dropdown = ({
       )}
     </div>
   )
-}
+})
+
+Dropdown.displayName = 'Dropdown'

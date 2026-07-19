@@ -1,3 +1,4 @@
+import { forwardRef } from 'react'
 import type { HTMLAttributes, MouseEventHandler, ReactNode } from 'react'
 import './Alert.css'
 
@@ -19,7 +20,7 @@ export interface AlertProps extends HTMLAttributes<HTMLDivElement> {
   children?: ReactNode
 }
 
-export const Alert = ({
+export const Alert = forwardRef<HTMLDivElement, AlertProps>(({
   type = 'info',
   message,
   description,
@@ -30,7 +31,7 @@ export const Alert = ({
   onClose,
   children,
   ...props
-}: AlertProps) => {
+}, ref) => {
   const classes = [
     'alert',
     `alert--${type}`,
@@ -39,7 +40,7 @@ export const Alert = ({
   ].filter(Boolean).join(' ')
 
   return (
-    <div className={classes} role="alert" {...props}>
+    <div ref={ref} className={classes} role="alert" {...props}>
       {showIcon && <span className="alert__icon" aria-hidden="true" />}
       <div className="alert__content">
         {message && <div className="alert__message">{message}</div>}
@@ -60,4 +61,6 @@ export const Alert = ({
       )}
     </div>
   )
-}
+})
+
+Alert.displayName = 'Alert'

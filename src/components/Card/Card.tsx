@@ -1,3 +1,4 @@
+import { forwardRef } from 'react'
 import type { AllHTMLAttributes, ElementType, ReactNode } from 'react'
 import './Card.css'
 
@@ -31,7 +32,8 @@ export interface CardProps extends Omit<AllHTMLAttributes<HTMLElement>, 'title' 
   children?: ReactNode
 }
 
-export const Card = ({
+/** ref 指向 as 指定的容器元素（預設 div），故型別為泛用的 HTMLElement。 */
+export const Card = forwardRef<HTMLElement, CardProps>(({
   as: Component = 'div',
   title,
   extra,
@@ -47,7 +49,7 @@ export const Card = ({
   footerAlign = 'end',
   className = '',
   ...props
-}: CardProps) => {
+}, ref) => {
   const cardPadding = size === 'small' ? 'sm' : padding
 
   const classes = [
@@ -60,7 +62,7 @@ export const Card = ({
   ].filter(Boolean).join(' ')
 
   return (
-    <Component className={classes} {...props}>
+    <Component ref={ref} className={classes} {...props}>
       {title && (
         <div className="card__header">
           <h3 className="card__title">{title}</h3>
@@ -76,4 +78,6 @@ export const Card = ({
       )}
     </Component>
   )
-}
+})
+
+Card.displayName = 'Card'

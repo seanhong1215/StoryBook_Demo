@@ -1,6 +1,7 @@
 import {
   cloneElement,
   createContext,
+  forwardRef,
   useCallback,
   useContext,
   useEffect,
@@ -78,7 +79,7 @@ export interface FormProps extends Omit<FormHTMLAttributes<HTMLFormElement>, 'on
   children?: ReactNode
 }
 
-const FormBase = ({
+const FormBase = forwardRef<HTMLFormElement, FormProps>(({
   initialValues = {},
   onFinish,
   onFinishFailed,
@@ -86,7 +87,7 @@ const FormBase = ({
   children,
   className = '',
   ...props
-}: FormProps) => {
+}, ref) => {
   const [values, setValues] = useState<FormValues>(initialValues)
   const [errors, setErrors] = useState<Record<string, string | undefined>>({})
   const [fields, setFields] = useState<Record<string, FieldConfig>>({})
@@ -144,6 +145,7 @@ const FormBase = ({
   return (
     <FormContext.Provider value={contextValue}>
       <form
+        ref={ref}
         className={['form', `form--${layout}`, className].filter(Boolean).join(' ')}
         onSubmit={handleSubmit}
         {...props}
@@ -152,7 +154,9 @@ const FormBase = ({
       </form>
     </FormContext.Provider>
   )
-}
+})
+
+FormBase.displayName = 'Form'
 
 interface FieldElementProps {
   status?: 'error' | 'warning'
@@ -177,7 +181,7 @@ export interface FormItemProps {
   extra?: ReactNode
 }
 
-export const FormItem = ({
+export const FormItem = forwardRef<HTMLDivElement, FormItemProps>(({
   name,
   label,
   rules = [],
@@ -185,7 +189,7 @@ export const FormItem = ({
   getValueFromEvent,
   children,
   extra,
-}: FormItemProps) => {
+}, ref) => {
   const form = useContext(FormContext)
   const rulesRef = useRef(rules)
   const error = name ? form?.errors[name] : undefined
@@ -221,14 +225,16 @@ export const FormItem = ({
     : children
 
   return (
-    <div className={['form-item', error ? 'form-item--error' : ''].filter(Boolean).join(' ')}>
+    <div ref={ref} className={['form-item', error ? 'form-item--error' : ''].filter(Boolean).join(' ')}>
       {label && <label className="form-item__label">{label}</label>}
       <div className="form-item__control">{child}</div>
       {error && <div className="form-item__message">{error}</div>}
       {extra && !error && <div className="form-item__extra">{extra}</div>}
     </div>
   )
-}
+})
+
+FormItem.displayName = 'FormItem'
 
 // eslint-disable-next-line react-refresh/only-export-components -- compound component 靜態屬性（Form.Item / Form.Submit）
 export const Form = Object.assign(FormBase, {

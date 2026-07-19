@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { forwardRef, useEffect } from 'react'
 import type { ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { Button } from '../Button/Button'
@@ -32,7 +32,8 @@ export interface ModalProps {
   onCancel?: () => void
 }
 
-export const Modal = ({
+/** ref 指向 dialog 面板本身（`<section class="modal">`），供 focus 管理 / measure 使用。 */
+export const Modal = forwardRef<HTMLElement, ModalProps>(({
   open = false,
   title,
   children,
@@ -46,7 +47,7 @@ export const Modal = ({
   className = '',
   onOk,
   onCancel,
-}: ModalProps) => {
+}, ref) => {
   useEffect(() => {
     if (!open) return undefined
 
@@ -76,6 +77,7 @@ export const Modal = ({
         onClick={maskClosable ? onCancel : undefined}
       />
       <section
+        ref={ref}
         className={['modal', className].filter(Boolean).join(' ')}
         role="dialog"
         aria-modal="true"
@@ -111,4 +113,6 @@ export const Modal = ({
   )
 
   return createPortal(content, document.body)
-}
+})
+
+Modal.displayName = 'Modal'

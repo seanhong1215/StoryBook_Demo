@@ -1,3 +1,4 @@
+import { forwardRef } from 'react'
 import type { InputHTMLAttributes, ReactNode } from 'react'
 import './Switch.css'
 
@@ -12,7 +13,8 @@ export interface SwitchProps extends Omit<InputHTMLAttributes<HTMLInputElement>,
   unCheckedChildren?: ReactNode
 }
 
-export const Switch = ({
+/** ref 指向內層的原生 `<input type="checkbox">`，而非外層 label。 */
+export const Switch = forwardRef<HTMLInputElement, SwitchProps>(({
   checked,
   defaultChecked,
   disabled = false,
@@ -22,7 +24,7 @@ export const Switch = ({
   unCheckedChildren,
   className = '',
   ...props
-}: SwitchProps) => {
+}, ref) => {
   const classes = [
     'switch',
     `switch--${size}`,
@@ -33,6 +35,7 @@ export const Switch = ({
   return (
     <label className={classes}>
       <input
+        ref={ref}
         className="switch__input"
         type="checkbox"
         checked={checked}
@@ -47,4 +50,6 @@ export const Switch = ({
       </span>
     </label>
   )
-}
+})
+
+Switch.displayName = 'Switch'

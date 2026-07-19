@@ -1,3 +1,4 @@
+import { forwardRef } from 'react'
 import type { TextareaHTMLAttributes } from 'react'
 import './Textarea.css'
 
@@ -10,7 +11,8 @@ export interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElemen
   showCount?: boolean
 }
 
-export const Textarea = ({
+/** ref 指向內層的原生 `<textarea>`，而非外層 wrapper。 */
+export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(({
   size = 'md',
   status,
   rows = 4,
@@ -21,7 +23,7 @@ export const Textarea = ({
   disabled = false,
   className = '',
   ...props
-}: TextareaProps) => {
+}, ref) => {
   const countValue = value ?? defaultValue ?? ''
   const classes = [
     'textarea',
@@ -34,6 +36,7 @@ export const Textarea = ({
   return (
     <span className={classes}>
       <textarea
+        ref={ref}
         className="textarea__control"
         rows={rows}
         value={value}
@@ -49,4 +52,6 @@ export const Textarea = ({
       )}
     </span>
   )
-}
+})
+
+Textarea.displayName = 'Textarea'
