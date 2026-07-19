@@ -83,8 +83,16 @@ MVP project.
 
 Best when more than one project consumes the library. Free for private repos.
 
-Publish (one-time setup: create a classic PAT with `write:packages`, then
-`npm login --registry=https://npm.pkg.github.com`):
+One-time setup: create a classic PAT with `write:packages`, then store it:
+
+```bash
+npm config set //npm.pkg.github.com/:_authToken <YOUR_PAT>
+```
+
+> Do **not** use `npm login` here. npm 11 defaults to a browser-based OAuth flow
+> that GitHub Packages does not support, so it hangs at the `Username:` prompt.
+
+Then publish:
 
 ```bash
 npm publish

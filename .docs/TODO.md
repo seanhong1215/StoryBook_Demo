@@ -36,8 +36,10 @@
 - 已用臨時消費端專案（vite react-ts + tgz + react-hook-form）實測 7 項通過
 
 散布方式：GitHub Packages 私有 registry 為主，本機 `.tgz` 為 fallback。
-**發布前需使用者操作**：建立 classic PAT（`write:packages`）並
-`npm login --registry=https://npm.pkg.github.com`。
+**發布前需使用者操作**：建立 classic PAT（`write:packages`），然後
+`npm config set //npm.pkg.github.com/:_authToken <PAT>`。
+不要用 `npm login` —— npm 11 預設走瀏覽器 OAuth，GitHub Packages 不支援，會卡在
+`Username:` 提示。
 
 ### Phase 2 — Dark mode token 架構（已完成）
 
@@ -126,15 +128,19 @@ tone token 混出來的所有淺底）；(b) 另立 `--color-success-solid` 之�
 - `deploy-pages.yml`：`upload-pages-artifact` + `deploy-pages`；repo Settings > Pages source 改 "GitHub Actions"；之後刪 `scripts/deploy-storybook.ps1` 與 `deploy` script
 - **Chromatic baseline 務必等 Phase 2/4 視覺定型後才建立**
 
-## 已知缺陷（由消費端範例 `../product-a-demo` 實測發現）
+## 由消費端範例 `../product-a-demo` 實測發現的缺陷
 
-- **`Select` 的 placeholder 無效。** `src/components/Select/Select.tsx` 的
-  placeholder option 帶 `disabled`，瀏覽器會跳過它自動選第一個真實選項。
-  結果：(1) 畫面顯示第一個選項而非 placeholder；(2) 非受控用法下 value 永遠非空，
-  **`required` 驗證永遠不會觸發**。
+- ~~**`Select` 的 placeholder 無效**~~ — 已修正。
+  原因：placeholder option 帶 `disabled`，瀏覽器會跳過它自動選第一個真實選項。
+  後果不只是 placeholder 不顯示 —— 非受控用法下 value 永遠非空，
+  **`required` 驗證（原生與 react-hook-form）永遠不會觸發**。
   修法：非受控且有 placeholder 時給 select `defaultValue=""`，
-  並把 placeholder option 加上 `hidden` 讓它不出現在展開清單中。
-  注意不要在受控（有傳 `value`）時同時給 `defaultValue`，React 會警告。
+  placeholder option 加 `hidden`；受控與非受控分開展開，避免同時傳
+  `value` 與 `defaultValue` 觸發 React 警告。
+  已加 `Select / Placeholder 預設值` story 釘住此行為。
+
+  > 這類「元件單看正常、組成真實表單才會爆」的缺陷，靠 Storybook 看不出來。
+  > 保留 `../product-a-demo` 當作真實消費端的迴歸驗證場。
 
 ## 收尾雜項
 - [x] 更新 `AGENTS.md` 與 `README.md`（原本仍寫 src/index.js、.jsx、src/stories 等舊狀態）— Phase 1f 已處理

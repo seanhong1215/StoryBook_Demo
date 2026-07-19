@@ -18,7 +18,10 @@ export interface SelectProps extends Omit<SelectHTMLAttributes<HTMLSelectElement
   status?: 'error' | 'warning'
   /** Options rendered when no children are provided. */
   options?: SelectOption[]
-  /** Placeholder shown as a disabled first option. */
+  /**
+   * Prompt shown when nothing is selected. Pass `null` to render no prompt and
+   * let the first option be selected by default.
+   */
   placeholder?: ReactNode
   /** Custom option elements; takes precedence over options. */
   children?: ReactNode
@@ -45,18 +48,31 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(({
     className,
   ].filter(Boolean).join(' ')
 
+  const isControlled = value !== undefined
+
+  /*
+   * 非受控且沒指定 defaultValue 時，明確把起始值設成空字串。
+   *
+   * 少了這行，瀏覽器會跳過 disabled 的 placeholder option 自動選第一個真實選項，
+   * 造成兩個問題：placeholder 永遠不會顯示，而且 value 永遠非空，
+   * 讓 required 驗證（原生或 react-hook-form）永遠不會觸發。
+   *
+   * 受控時不能同時給 value 與 defaultValue，React 會警告，因此下面分開展開。
+   */
+  const uncontrolledDefault = defaultValue ?? (placeholder ? '' : undefined)
+
   return (
     <span className={classes}>
       <select
         ref={ref}
         className="mds-select__control"
-        value={value}
-        defaultValue={defaultValue}
+        {...(isControlled ? { value } : { defaultValue: uncontrolledDefault })}
         disabled={disabled}
         {...props}
       >
         {placeholder && (
-          <option value="" disabled>
+          // hidden 讓 placeholder 不出現在展開清單裡，但被選中時仍會顯示在收合的控制項上
+          <option value="" disabled hidden>
             {placeholder}
           </option>
         )}

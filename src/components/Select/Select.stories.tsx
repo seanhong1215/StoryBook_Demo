@@ -35,6 +35,37 @@ export const Basic: Story = {
   },
 }
 
+/**
+ * 未選取時應停在 placeholder，而不是自動跳到第一個選項。
+ * 這關係到 required 驗證能否運作 —— 若 value 一開始就非空，驗證永遠不會觸發。
+ */
+export const PlaceholderAndDefaults: Story = {
+  name: 'Placeholder / 預設值',
+  render: () => (
+    <div className="story-stack">
+      <label>
+        未選取（value 為空，required 會擋下）
+        <Select options={options} placeholder="Choose a plan" />
+      </label>
+      <label>
+        指定 defaultValue（非受控）
+        <Select options={options} defaultValue="business" placeholder="Choose a plan" />
+      </label>
+      <label>
+        不要 placeholder：傳 null，第一個選項會被選中
+        <Select options={options} placeholder={null} />
+      </label>
+      <label>
+        原生 required：直接送出會被瀏覽器擋下
+        <form style={{ display: 'flex', gap: 8 }}>
+          <Select options={options} placeholder="Required" required name="plan" />
+          <button type="submit">Submit</button>
+        </form>
+      </label>
+    </div>
+  ),
+}
+
 export const Sizes: Story = {
   render: () => (
     <div className="story-stack">
