@@ -15,7 +15,7 @@
 | 1e | ✅ 完成 | TS 批次 D 收尾，全庫 100% TS（commit `601e463`） |
 | 1f | ✅ 完成 | 可共用門檻：打包保險 + forwardRef + `mds-` 前綴 + ThemeProvider global |
 | 2 | ✅ 完成 | Dark mode token 架構 |
-| 3 | ⬜ 待辦 | Storybook toolbar 全域化（theme + product-line） |
+| 3 | ✅ 完成 | Storybook toolbar 全域化（theme + product-line） |
 | 4 | ⬜ 待辦 | a11y 真正啟用 |
 | 5 | ⬜ 待辦 | Interaction tests（play functions） |
 | 6 | ⬜ 待辦 | MDX 使用指南 |
@@ -66,18 +66,42 @@
 「識別控制項所需的邊界」要求 3:1。修它要把所有邊框大幅加深，會動到整體視覺設計，
 需要先與使用者確認。
 
-### Phase 3 — Toolbar 全域化
-- `.storybook/preview.tsx` 加 `globalTypes`（theme: light/dark + productLine: core/commerce/finance/internal）+ `initialGlobals` + decorator
-- **關鍵坑**：Modal/Tooltip/Dropdown 用 portal，decorator 必須用 `useEffect` 把 attribute 設在 `document.documentElement`，不能只包 div
-- `storybook-docs.css` 處理 autodocs 白底：`[data-theme="dark"] .docs-story { background: var(--color-bg) }`
-- `.storybook/manager.js` 移除 `bottomPanelHeight: 0, rightPanelWidth: 0`（Phase 4/5 要看面板）
+### Phase 3 — Toolbar 全域化（已完成）
+
+- `.storybook/preview.tsx`：`globalTypes`（theme + productLine）+ `initialGlobals` + decorator
+- 原本擔心的 portal 坑不需要另外處理 —— decorator 直接用 Phase 1f 做好的
+  `<ThemeProvider global>`，它已經會把屬性寫在 `documentElement`
+- `storybook-docs.css`：`.sb-show-main` / `.docs-story` 跟著 token 走。
+  **只改故事預覽區，不要改整個 `.sbdocs` 包裝層** —— autodocs 的 props table
+  是 Storybook 自己的淺色 chrome，外層一起改暗會變成深字配深底
+- `.storybook/manager.js`：移除 `bottomPanelHeight: 0` / `rightPanelWidth: 0`
+  與 `api.togglePanel(false)`
+
+補做的驗證（腳本可在 Phase 4 重用）：掃過 90 個 story × 2 主題，對每個
+有文字的葉節點沿祖先找出實際生效的背景色並計算對比度。找到並修正一項
+暗色專屬缺陷：**品牌色被直接當文字用**（Tabs 選中、Pagination 當前頁、
+link 按鈕、docs kicker），`#0066FF` 對暗色頁面底只有 3.97:1。
+新增 `--color-primary-text`（淺色維持原色，暗色往白色混到 60%）。
 
 ### Phase 4 — a11y 啟用
 - `.storybook/main.ts` addons 加 `'@storybook/addon-a11y'`（已在 devDeps）
 - 跑 `npx vitest --project=storybook run` 收集違規 → 修完 → preview 改 `a11y: { test: 'error' }`
 - 重點：Modal focus 管理、Select/Dropdown aria、表單 label 關聯
-- 文字對比已在 Phase 2 用腳本掃過 8 組組合並修正（`--color-text-muted` 已從 #6B7280 加深到 #5C6573）；
-  剩下的是上面提到的 `--color-border` 非文字對比 1.24:1
+- 文字對比已在 Phase 2/3 用腳本掃過（8 組 token 組合 + 90 個 story × 2 主題）並修正
+
+**Phase 3 掃描後仍未解決的對比問題（明暗兩色數值完全相同，皆為既有問題，
+與 dark mode 無關；改動涉及品牌色定義，需先與使用者確認）：**
+
+| 項目 | 對比 | 說明 |
+|---|---|---|
+| `.mds-btn--success` 白字 on `--color-success` `#10B981` | **2.54** | 最嚴重 |
+| `.mds-btn--danger` 白字 on `--color-danger` `#EF4444` | 3.76 | |
+| `--color-border` on `--color-surface`（淺色） | 1.24 | WCAG 1.4.11 要求 3:1 |
+| `.mds-tabs__tab` disabled | 1.18 / 1.53 | WCAG 1.4.3 明文豁免停用中的元件，可不修 |
+
+前兩項的可能作法：(a) 直接加深 `--color-success` / `--color-danger`（會影響
+tone token 混出來的所有淺底）；(b) 另立 `--color-success-solid` 之類只給填底用的
+加深變體，不動品牌色本身。(b) 影響面較小但多一組 token。
 - 無法立即修的個別 story 用 story-level `parameters: { a11y: { test: 'todo' } }` 註記原因
 
 ### Phase 5 — Interaction tests

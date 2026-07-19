@@ -158,7 +158,10 @@ Storybook 排序在 `.storybook/preview.tsx` 的 `storySort.order` 中維護。�
 2. **刻意反轉的表面（Tooltip）要用 `--color-inverse-surface` / `--color-inverse-text`。**
    不要寫 `background: var(--color-text)`，暗色下 `--color-text` 會變淺，
    結果是淺底配白字。
-3. **新增依賴其他 token 的 `color-mix()` token 時，選擇器不能只寫 `:root`。**
+3. **品牌色當「文字」要用 `--color-primary-text`，不是 `--color-primary`。**
+   後者是給填底與邊框用的，暗色頁面底上當文字只有 3.97:1。
+   `--color-primary-text` 在暗色會自動往白色混。
+4. **新增依賴其他 token 的 `color-mix()` token 時，選擇器不能只寫 `:root`。**
    CSS 自訂屬性在宣告的元素上就完成 var() 代換，算出的值會以固定顏色往下繼承，
    巢狀的 `[data-theme]` 不會重算。要跟著現有的
    `:root, [data-theme], [data-product-line]` 區塊一起宣告。

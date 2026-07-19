@@ -40,7 +40,7 @@
 
 .mds-btn--link {
   background: transparent;
-  color: var(--color-primary);
+  color: var(--color-primary-text);
   padding-left: 0;
   padding-right: 0;
 }

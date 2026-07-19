@@ -22,7 +22,7 @@
 }
 
 .mds-tabs__tab[aria-selected="true"] {
-  color: var(--color-primary);
+  color: var(--color-primary-text);
 }
 
 .mds-tabs__tab[aria-selected="true"]::after {
