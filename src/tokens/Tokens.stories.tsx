@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import './tokens.css'
 
@@ -23,6 +24,78 @@ const TokenBox = ({ name, value }: { name: string; value: string }) => (
   </div>
 )
 
+/**
+ * 主題相依的 token 不能再寫死色碼 —— 同一個名稱在 light / dark 下是不同的值，
+ * 而 tone-* 還會再跟著 product line 變。這裡直接讀 computed value。
+ */
+const LiveToken = ({ name, swatch = 'color' }: { name: string; swatch?: 'color' | 'shadow' }) => {
+  const ref = useRef<HTMLDivElement>(null)
+  const [value, setValue] = useState('')
+
+  useEffect(() => {
+    if (!ref.current) return
+    setValue(getComputedStyle(ref.current).getPropertyValue(name).trim())
+  }, [name])
+
+  return (
+    <div className="token-row" ref={ref}>
+      <div
+        className="token-swatch"
+        style={swatch === 'shadow'
+          ? { background: 'var(--color-surface)', boxShadow: `var(${name})` }
+          : { background: `var(${name})` }}
+      />
+      <div>
+        <div className="token-name">{name}</div>
+        <div className="token-value">{value || '—'}</div>
+      </div>
+    </div>
+  )
+}
+
+/** 把一組 token 放進指定主題的容器裡並排比較。 */
+const ThemePanel = ({ theme, names, swatch }: {
+  theme: 'light' | 'dark'
+  names: string[]
+  swatch?: 'color' | 'shadow'
+}) => (
+  <div
+    data-theme={theme}
+    style={{
+      background: 'var(--color-bg)',
+      color: 'var(--color-text)',
+      border: '1px solid var(--color-border)',
+      borderRadius: 'var(--radius-md)',
+      flex: '1 1 320px',
+      minWidth: 0,
+      padding: 'var(--spacing-md)',
+    }}
+  >
+    <h3 style={{ marginTop: 0, fontSize: 'var(--font-size-sm)', textTransform: 'uppercase' }}>
+      {theme}
+    </h3>
+    <div className="token-list">
+      {names.map((name) => <LiveToken name={name} swatch={swatch} key={name} />)}
+    </div>
+  </div>
+)
+
+const ThemeCompare = ({ title, names, swatch, note }: {
+  title: string
+  names: string[]
+  swatch?: 'color' | 'shadow'
+  note?: ReactNode
+}) => (
+  <div className="docs-page">
+    <h2 className="docs-section-title">{title}</h2>
+    {note && <p className="docs-lede">{note}</p>}
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-md)' }}>
+      <ThemePanel theme="light" names={names} swatch={swatch} />
+      <ThemePanel theme="dark" names={names} swatch={swatch} />
+    </div>
+  </div>
+)
+
 const TokenRow = ({ name, value, preview }: { name: string; value: string; preview: ReactNode }) => (
   <div className="token-row token-row--preview">
     <div className="token-preview">{preview}</div>
@@ -34,10 +107,14 @@ const TokenRow = ({ name, value, preview }: { name: string; value: string; previ
   </div>
 )
 
-export const Colors = {
+export const BrandColors = {
+  name: 'Colors / Brand layer',
   render: () => (
     <div className="docs-page">
-      <h2 className="docs-section-title">Color Tokens</h2>
+      <h2 className="docs-section-title">Brand Layer</h2>
+      <p className="docs-lede">
+        只由 <code>[data-product-line]</code> 覆寫，不隨主題改變。
+      </p>
       <div className="token-list">
         <TokenBox name="--color-primary" value="#0066FF" />
         <TokenBox name="--color-primary-hover" value="#0052CC" />
@@ -45,12 +122,51 @@ export const Colors = {
         <TokenBox name="--color-success" value="#10B981" />
         <TokenBox name="--color-danger" value="#EF4444" />
         <TokenBox name="--color-warning" value="#F59E0B" />
-        <TokenBox name="--color-bg" value="#F9FAFB" />
-        <TokenBox name="--color-border" value="#E5E7EB" />
-        <TokenBox name="--color-text" value="#111827" />
-        <TokenBox name="--color-text-muted" value="#6B7280" />
+        <TokenBox name="--color-on-brand" value="#FFFFFF" />
       </div>
     </div>
+  ),
+}
+
+export const SurfaceColors = {
+  name: 'Colors / Surface layer',
+  render: () => (
+    <ThemeCompare
+      title="Surface Layer"
+      note={<>只由 <code>[data-theme]</code> 覆寫，不隨產品線改變。</>}
+      names={[
+        '--color-bg',
+        '--color-bg-subtle',
+        '--color-surface',
+        '--color-surface-hover',
+        '--color-border',
+        '--color-text',
+        '--color-text-muted',
+        '--color-inverse-surface',
+        '--color-inverse-text',
+      ]}
+    />
+  ),
+}
+
+export const SemanticTones = {
+  name: 'Colors / Semantic tones',
+  render: () => (
+    <ThemeCompare
+      title="Semantic Tones"
+      note={(
+        <>
+          Alert / Tag / Badge 的彩色淺底。用 <code>color-mix()</code> 由品牌色與表面色即時混出，
+          因此同時跟隨產品線與主題，不需要維護 4×2 組色票。
+        </>
+      )}
+      names={[
+        '--tone-info-bg', '--tone-info-border', '--tone-info-text',
+        '--tone-success-bg', '--tone-success-border', '--tone-success-text',
+        '--tone-warning-bg', '--tone-warning-border', '--tone-warning-text',
+        '--tone-danger-bg', '--tone-danger-border', '--tone-danger-text',
+      ]}
+    />
   ),
 }
 
@@ -79,23 +195,12 @@ export const Radius = {
 
 export const Shadow = {
   render: () => (
-    <div className="docs-page">
-      <h2 className="docs-section-title">Shadow Tokens</h2>
-      <div className="token-list">
-        {[
-          { name: '--shadow-sm', value: '0 1px 3px rgba(0,0,0,0.1)' },
-          { name: '--shadow-md', value: '0 4px 12px rgba(0,0,0,0.1)' },
-          { name: '--shadow-lg', value: '0 12px 30px rgba(15,23,42,0.14)' },
-        ].map(({ name, value }) => (
-          <TokenRow
-            name={name}
-            value={value}
-            key={name}
-            preview={<span className="token-shape token-shape--surface" style={{ boxShadow: value }} />}
-          />
-        ))}
-      </div>
-    </div>
+    <ThemeCompare
+      title="Shadow Tokens"
+      note="暗底上柔和陰影幾乎不可見，暗色主題改用更深更大的陰影撐出層次。"
+      swatch="shadow"
+      names={['--shadow-sm', '--shadow-md', '--shadow-lg', '--shadow-focus']}
+    />
   ),
 }
 

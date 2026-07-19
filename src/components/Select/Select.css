@@ -1,6 +1,6 @@
 .mds-select {
   align-items: center;
-  background: var(--color-white);
+  background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   color: var(--color-text);
@@ -12,7 +12,7 @@
 
 .mds-select:focus-within {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 2px rgba(0, 102, 255, 0.14);
+  box-shadow: var(--shadow-focus);
 }
 
 .mds-select--sm {
@@ -36,7 +36,7 @@
 }
 
 .mds-select--disabled {
-  background: var(--color-bg);
+  background: var(--color-bg-subtle);
   color: var(--color-text-muted);
   cursor: not-allowed;
 }

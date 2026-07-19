@@ -14,7 +14,7 @@
   align-items: center;
   background: var(--color-secondary);
   border-radius: var(--radius-full);
-  color: var(--color-white);
+  color: var(--color-on-brand);
   cursor: pointer;
   display: inline-flex;
   font-size: var(--font-size-xs);
@@ -34,7 +34,7 @@
 }
 
 .mds-switch__handle {
-  background: var(--color-white);
+  background: var(--color-on-brand);
   border-radius: var(--radius-full);
   box-shadow: var(--shadow-sm);
   height: 18px;
@@ -83,7 +83,7 @@
 }
 
 .mds-switch__input:focus-visible + .mds-switch__track {
-  box-shadow: 0 0 0 2px rgba(0, 102, 255, 0.14);
+  box-shadow: var(--shadow-focus);
 }
 
 .mds-switch__input:disabled + .mds-switch__track {

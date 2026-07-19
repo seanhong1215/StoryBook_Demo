@@ -150,6 +150,19 @@ Storybook 排序在 `.storybook/preview.tsx` 的 `storySort.order` 中維護。�
 
 顏色一律取自 `src/tokens/tokens.css` 的 CSS variables，不要寫死色碼。
 
+### 選 token 時最容易選錯的三個地方
+
+1. **背景要用 `--color-surface`，不是 `--color-white`。** 但疊在品牌色填底上的
+   前景（primary 按鈕文字、checkbox 勾勾、switch 把手）要用 `--color-on-brand`，
+   它在明暗兩種主題下都是白色。選錯的話暗色模式會變成深字配藍底。
+2. **刻意反轉的表面（Tooltip）要用 `--color-inverse-surface` / `--color-inverse-text`。**
+   不要寫 `background: var(--color-text)`，暗色下 `--color-text` 會變淺，
+   結果是淺底配白字。
+3. **新增依賴其他 token 的 `color-mix()` token 時，選擇器不能只寫 `:root`。**
+   CSS 自訂屬性在宣告的元素上就完成 var() 代換，算出的值會以固定顏色往下繼承，
+   巢狀的 `[data-theme]` 不會重算。要跟著現有的
+   `:root, [data-theme], [data-product-line]` 區塊一起宣告。
+
 ## 修改方案回報格式
 
 - 新增檔案
