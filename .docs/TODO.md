@@ -14,7 +14,7 @@
 | 1d | ✅ 完成 | TS 批次 C：Tooltip/Dropdown/Tabs/Pagination/Table（commit `0bab142`） |
 | 1e | ✅ 完成 | TS 批次 D 收尾，全庫 100% TS（commit `601e463`） |
 | 1f | ✅ 完成 | 可共用門檻：打包保險 + forwardRef + `mds-` 前綴 + ThemeProvider global |
-| 2 | ⬜ 待辦 | Dark mode token 架構 |
+| 2 | ✅ 完成 | Dark mode token 架構 |
 | 3 | ⬜ 待辦 | Storybook toolbar 全域化（theme + product-line） |
 | 4 | ⬜ 待辦 | a11y 真正啟用 |
 | 5 | ⬜ 待辦 | Interaction tests（play functions） |
@@ -39,13 +39,32 @@
 **發布前需使用者操作**：建立 classic PAT（`write:packages`）並
 `npm login --registry=https://npm.pkg.github.com`。
 
-### Phase 2 — Dark mode token 架構
-- `src/tokens/tokens.css` 重組兩層：品牌層（primary/success/danger/warning）只由 `[data-product-line]` 控制；表面層（bg/border/text/text-muted/shadow）只由 `[data-theme]` 控制
-- 新增語意 token：`--color-surface`、`--color-surface-hover`、`--color-bg-subtle`；grep 元件 CSS 把寫死 `#fff` / `--color-white` 當背景的地方換掉
-- `[data-theme="dark"]` 區塊：`color-scheme: dark` + 深色表面值 + shadow 補償
-- ThemeProvider 的 `theme` prop 已在 Phase 1e 先做好（`src/theme/ThemeProvider.tsx`）
-- 更新 Foundation/Tokens story 顯示 dark 對照
-- 重點檢查：Table（斑馬紋/hover）、Modal（mask/surface）、Tooltip（深底反轉）、Input/Select（對比）、Tag/Badge（淺色底變體）
+### Phase 2 — Dark mode token 架構（已完成）
+
+實作結果與原規劃的差異，以及過程中踩到的坑：
+
+- token 分三層（不是兩層）：尺度層 / 品牌層 `[data-product-line]` / 表面層 `[data-theme]`
+- 元件 CSS 的寫死顏色全部清空（原本 31 處）
+- **`--color-white` 有兩種語意，不能一律替換**：Card/Input/Modal 等是表面背景（→ `--color-surface`），
+  但 Button 文字、Checkbox 勾勾、Switch 把手是疊在品牌色上的前景（→ 新增 `--color-on-brand`，維持白色）。
+  一律換成 surface 的話暗色下 primary 按鈕會變深字配藍底
+- **Tooltip 原本是 `background: --color-text` + `color: white`**，暗色下會變成淺底白字（看不見）。
+  新增 `--color-inverse-surface` / `--color-inverse-text`
+- Alert/Tag/Badge 的彩色淺底改用 `color-mix()` 由品牌色 + 表面色即時混出，
+  4 產品線 × 2 主題不需要手工維護 8 組色票
+- **踩到的最大的坑**：`--tone-*` 一開始只宣告在 `:root`，但 CSS 自訂屬性在宣告處就完成
+  var() 代換，算出的顏色以固定值往下繼承 —— 巢狀 `[data-theme="dark"]` 完全不會重算。
+  選擇器必須改成 `:root, [data-theme], [data-product-line]`。`--shadow-focus` 同理
+- 順帶補上 `[data-product-line="core"]` 區塊，並在各產品線明確重設 radius，
+  否則巢狀切換產品線時品牌色/圓角會殘留上一層的值
+- Table 實際上沒有斑馬紋也沒有 row hover，原規劃的檢查項不適用
+- 已用 Playwright 對 4 產品線 × 2 主題 = 8 組、每組 11 個顏色對，
+  計算 WCAG 對比度，全部通過 AA（腳本邏輯可在 Phase 4 重用）
+
+留給 Phase 4 的 a11y 問題（**非** dark mode 造成，改動前就存在）：
+`--color-border` 對 `--color-surface` 在淺色下只有 1.24:1，WCAG 1.4.11 對
+「識別控制項所需的邊界」要求 3:1。修它要把所有邊框大幅加深，會動到整體視覺設計，
+需要先與使用者確認。
 
 ### Phase 3 — Toolbar 全域化
 - `.storybook/preview.tsx` 加 `globalTypes`（theme: light/dark + productLine: core/commerce/finance/internal）+ `initialGlobals` + decorator
@@ -56,7 +75,9 @@
 ### Phase 4 — a11y 啟用
 - `.storybook/main.ts` addons 加 `'@storybook/addon-a11y'`（已在 devDeps）
 - 跑 `npx vitest --project=storybook run` 收集違規 → 修完 → preview 改 `a11y: { test: 'error' }`
-- 重點：dark 下 color-contrast（`--color-text-muted` 最常 fail AA）、Modal focus 管理、Select/Dropdown aria、表單 label 關聯
+- 重點：Modal focus 管理、Select/Dropdown aria、表單 label 關聯
+- 文字對比已在 Phase 2 用腳本掃過 8 組組合並修正（`--color-text-muted` 已從 #6B7280 加深到 #5C6573）；
+  剩下的是上面提到的 `--color-border` 非文字對比 1.24:1
 - 無法立即修的個別 story 用 story-level `parameters: { a11y: { test: 'todo' } }` 註記原因
 
 ### Phase 5 — Interaction tests

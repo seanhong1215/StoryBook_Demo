@@ -94,6 +94,7 @@ function App() {
   const [selectedRowKeys, setSelectedRowKeys] = useState<TableRowKey[]>(['ORD-1001'])
   const [modalOpen, setModalOpen] = useState(false)
   const [lastAction, setLastAction] = useState('Ready for local package validation')
+  const [theme, setTheme] = useState<'light' | 'dark'>('light')
 
   const columns = useMemo<TableColumn<Order>[]>(() => [
     {
@@ -146,7 +147,8 @@ function App() {
   }
 
   return (
-    <ThemeProvider productLine="commerce">
+    // global：屬性寫到 <html>，portal 出去的 Modal / body 背景才跟著切換
+    <ThemeProvider global productLine="commerce" theme={theme}>
       <main className="product-shell">
         <header className="product-header">
           <div>
@@ -161,6 +163,12 @@ function App() {
             </p>
           </div>
           <Space className="product-actions" wrap>
+            <Button
+              variant="secondary"
+              onClick={() => setTheme((t) => (t === 'light' ? 'dark' : 'light'))}
+            >
+              {theme === 'light' ? 'Dark mode' : 'Light mode'}
+            </Button>
             <Dropdown
               trigger="Package actions"
               items={packageActions}

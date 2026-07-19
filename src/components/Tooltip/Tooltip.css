@@ -9,9 +9,14 @@
 }
 
 .mds-tooltip__content {
-  background: var(--color-text);
+  /*
+   * Tooltip 刻意與頁面反轉。原本寫成 background: --color-text / color: white，
+   * 在暗色主題下 --color-text 會變淺，結果是淺底配白字（看不見）。
+   * 改用專屬的 inverse token，兩種主題都保證對比。
+   */
+  background: var(--color-inverse-surface);
   border-radius: var(--radius-md);
-  color: var(--color-white);
+  color: var(--color-inverse-text);
   font-size: var(--font-size-xs);
   line-height: 1.4;
   max-width: 220px;

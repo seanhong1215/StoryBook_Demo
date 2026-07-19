@@ -2,8 +2,9 @@
   font-family:
     Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
     sans-serif;
-  color: #172033;
-  background: #f4f6f8;
+  /* 取自 token，demo app 才能跟著 ThemeProvider 一起切換明暗 */
+  color: var(--color-text);
+  background: var(--color-bg);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -18,7 +19,8 @@ body {
   min-width: 320px;
   min-height: 100vh;
   margin: 0;
-  background: #f4f6f8;
+  background: var(--color-bg);
+  transition: background var(--transition-base), color var(--transition-base);
 }
 
 button,

@@ -5,13 +5,13 @@
 }
 
 .mds-modal-mask {
-  background: rgba(17, 24, 39, 0.45);
+  background: var(--color-mask);
   inset: 0;
   position: absolute;
 }
 
 .mds-modal {
-  background: var(--color-white);
+  background: var(--color-surface);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
   color: var(--color-text);
@@ -62,7 +62,7 @@
 
 .mds-modal__footer {
   align-items: center;
-  background: var(--color-bg);
+  background: var(--color-bg-subtle);
   border-top: 1px solid var(--color-border);
   display: flex;
   gap: var(--spacing-sm);

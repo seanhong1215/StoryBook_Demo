@@ -10,7 +10,7 @@
 }
 
 .mds-table__element {
-  background: var(--color-white);
+  background: var(--color-surface);
   border-collapse: collapse;
   min-width: 640px;
   width: 100%;
@@ -26,7 +26,7 @@
 }
 
 .mds-table th {
-  background: var(--color-bg);
+  background: var(--color-bg-subtle);
   color: var(--color-text-muted);
   font-weight: var(--font-weight-bold);
 }
@@ -60,7 +60,7 @@
 
 .mds-table__loading {
   align-items: center;
-  background: rgba(255, 255, 255, 0.72);
+  background: var(--color-surface-overlay);
   color: var(--color-text-muted);
   display: flex;
   font-size: var(--font-size-sm);

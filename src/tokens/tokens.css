@@ -1,18 +1,21 @@
-:root {
-  color-scheme: light;
+/*
+ * Token 分三層，彼此不重疊：
+ *
+ * 1. 尺度層（spacing / size / radius / border / font / opacity / transition）
+ *    與主題和產品線都無關，只在 :root 定義一次。
+ * 2. 品牌層（primary / secondary / success / danger / warning）
+ *    只由 [data-product-line] 覆寫。不要在這裡放表面色。
+ * 3. 表面層（bg / surface / border / text / shadow / mask / tone）
+ *    只由 [data-theme] 覆寫。不要在這裡放品牌色。
+ *
+ * 這個分層是為了避免 4 條產品線 × 2 個主題 = 8 組色票需要手工維護。
+ * 彩色淺底（Alert / Tag / Badge）用 color-mix() 由品牌色與表面色即時混出，
+ * 因此同時跟隨產品線與主題，不需要額外色票。
+ * color-mix() 需要 Chrome 111+ / Safari 16.2+ / Firefox 113+。
+ */
 
-  /* Colors */
-  --color-primary: #0066FF;
-  --color-primary-hover: #0052CC;
-  --color-secondary: #6B7280;
-  --color-success: #10B981;
-  --color-danger: #EF4444;
-  --color-warning: #F59E0B;
-  --color-white: #FFFFFF;
-  --color-bg: #F9FAFB;
-  --color-border: #E5E7EB;
-  --color-text: #111827;
-  --color-text-muted: #6B7280;
+:root {
+  /* ---------- 尺度層 ---------- */
 
   /* Spacing */
   --spacing-xs: 4px;
@@ -53,11 +56,6 @@
   --font-weight-medium: 500;
   --font-weight-bold: 700;
 
-  /* Shadow */
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
-  --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
-  --shadow-lg: 0 12px 30px rgba(15,23,42,0.14);
-
   /* Opacity */
   --opacity-disabled: 0.45;
   --opacity-muted: 0.64;
@@ -67,6 +65,147 @@
   --transition-fast: 120ms ease;
   --transition-base: 160ms ease;
   --transition-slow: 240ms ease;
+
+  /* ---------- 品牌層（預設 = core） ---------- */
+
+  --color-primary: #0066FF;
+  --color-primary-hover: #0052CC;
+  --color-secondary: #6B7280;
+  --color-success: #10B981;
+  --color-danger: #EF4444;
+  --color-warning: #F59E0B;
+
+  /*
+   * 品牌色填底上的文字 / 圖示（primary 按鈕的字、checkbox 勾勾、switch 把手）。
+   * 兩種主題下都維持白色 —— 它疊在品牌色上，不是疊在表面上。
+   * 不要把這個換成 --color-surface，否則暗色下會變成深字配藍底。
+   */
+  --color-on-brand: #FFFFFF;
+
+  /* 舊名保留，避免既有消費端壞掉；新程式碼請用上面兩個語意 token */
+  --color-white: #FFFFFF;
+}
+
+/* ---------- 表面層：淺色（預設） ---------- */
+
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+
+  --color-bg: #F9FAFB;
+  --color-bg-subtle: #F3F4F6;
+  --color-surface: #FFFFFF;
+  /* 必須與 bg-subtle 有可見差距，否則 secondary 按鈕 hover 看不出變化 */
+  --color-surface-hover: #E8EBEF;
+  --color-border: #E5E7EB;
+  --color-text: #111827;
+  /* #6B7280 在 --color-bg-subtle 上只有 4.39:1，未達 AA；加深到 4.5 以上 */
+  --color-text-muted: #5C6573;
+
+  /* 反轉表面（Tooltip）：淺色主題下是深底淺字 */
+  --color-inverse-surface: #111827;
+  --color-inverse-text: #FFFFFF;
+
+  /* 覆蓋層 */
+  --color-mask: rgba(17, 24, 39, 0.45);
+  --color-surface-overlay: rgba(255, 255, 255, 0.72);
+
+  /* Shadow */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 12px 30px rgba(15, 23, 42, 0.14);
+
+  /* 混色比例；實際的 --shadow-focus / --tone-* 在下方統一組出 */
+  --focus-ring-mix: 20%;
+  --tone-bg-mix: 10%;
+  --tone-border-mix: 32%;
+  --tone-text-mix: 55%;
+  --tone-text-base: #111827;
+}
+
+/* ---------- 表面層：暗色 ---------- */
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --color-bg: #0B0F17;
+  --color-bg-subtle: #111827;
+  --color-surface: #151B26;
+  --color-surface-hover: #1E2635;
+  --color-border: #2A3444;
+  --color-text: #E5E7EB;
+  --color-text-muted: #9CA3AF;
+
+  /* 暗色下 Tooltip 反過來是淺底深字 */
+  --color-inverse-surface: #E5E7EB;
+  --color-inverse-text: #111827;
+
+  --color-mask: rgba(0, 0, 0, 0.6);
+  --color-surface-overlay: rgba(21, 27, 38, 0.72);
+
+  /* 暗底上柔和陰影幾乎看不見，改用更深更大的陰影撐出層次 */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 6px 16px rgba(0, 0, 0, 0.55);
+  --shadow-lg: 0 16px 38px rgba(0, 0, 0, 0.62);
+
+  /* 暗底需要更高的混色比例才看得出色調，文字則往白色混以拉開對比 */
+  --focus-ring-mix: 45%;
+  --tone-bg-mix: 20%;
+  --tone-border-mix: 42%;
+  /*
+   * 比例是「品牌色佔比」，愈低愈偏白。72% 對 finance 的深藍 #1D4ED8 與
+   * 深紅 #B91C1C 只有 3.85:1，四條產品線都要過 AA 才降到 55%。
+   */
+  --tone-text-mix: 55%;
+  --tone-text-base: #F9FAFB;
+}
+
+/* ---------- 語意色調：由品牌色 + 表面色即時混出 ---------- */
+
+/*
+ * 選擇器必須涵蓋「任何會改變輸入值的元素」，不能只寫 :root。
+ * CSS 自訂屬性在宣告的那個元素上就完成 var() 代換，算出來的顏色會以固定值
+ * 往下繼承 —— 只寫 :root 的話，巢狀的 [data-theme="dark"] 不會重算，
+ * 暗色下的彩色淺底會維持淺色。
+ * 同理 --shadow-focus 依賴 --color-primary，也要放在這裡。
+ */
+:root,
+[data-theme],
+[data-product-line] {
+  --shadow-focus: 0 0 0 2px color-mix(in srgb, var(--color-primary) var(--focus-ring-mix), transparent);
+
+  --tone-info-bg: color-mix(in srgb, var(--color-primary) var(--tone-bg-mix), var(--color-surface));
+  --tone-info-border: color-mix(in srgb, var(--color-primary) var(--tone-border-mix), var(--color-surface));
+  --tone-info-text: color-mix(in srgb, var(--color-primary) var(--tone-text-mix), var(--tone-text-base));
+
+  --tone-success-bg: color-mix(in srgb, var(--color-success) var(--tone-bg-mix), var(--color-surface));
+  --tone-success-border: color-mix(in srgb, var(--color-success) var(--tone-border-mix), var(--color-surface));
+  --tone-success-text: color-mix(in srgb, var(--color-success) var(--tone-text-mix), var(--tone-text-base));
+
+  --tone-warning-bg: color-mix(in srgb, var(--color-warning) var(--tone-bg-mix), var(--color-surface));
+  --tone-warning-border: color-mix(in srgb, var(--color-warning) var(--tone-border-mix), var(--color-surface));
+  --tone-warning-text: color-mix(in srgb, var(--color-warning) var(--tone-text-mix), var(--tone-text-base));
+
+  --tone-danger-bg: color-mix(in srgb, var(--color-danger) var(--tone-bg-mix), var(--color-surface));
+  --tone-danger-border: color-mix(in srgb, var(--color-danger) var(--tone-border-mix), var(--color-surface));
+  --tone-danger-text: color-mix(in srgb, var(--color-danger) var(--tone-text-mix), var(--tone-text-base));
+}
+
+/* ---------- 品牌層覆寫：只放品牌色與形狀 ---------- */
+
+/*
+ * core 的值與 :root 相同，但必須獨立寫一份 —— 否則在 commerce 的 app 裡巢狀
+ * <ThemeProvider productLine="core"> 時，品牌色會繼續繼承 commerce 而不會重設。
+ */
+[data-product-line="core"] {
+  --color-primary: #0066FF;
+  --color-primary-hover: #0052CC;
+  --color-secondary: #6B7280;
+  --color-success: #10B981;
+  --color-danger: #EF4444;
+  --color-warning: #F59E0B;
+  --radius-md: 8px;
+  --radius-lg: 12px;
 }
 
 [data-product-line="commerce"] {
@@ -75,10 +214,9 @@
   --color-success: #16A34A;
   --color-danger: #DC2626;
   --color-warning: #D97706;
-  --color-bg: #F8FAFC;
-  --color-border: #CBD5E1;
-  --color-text: #0F172A;
-  --color-text-muted: #64748B;
+  /* finance 會改 radius，這裡明確重設，避免巢狀切換時殘留 */
+  --radius-md: 8px;
+  --radius-lg: 12px;
 }
 
 [data-product-line="finance"] {
@@ -87,10 +225,6 @@
   --color-success: #15803D;
   --color-danger: #B91C1C;
   --color-warning: #B45309;
-  --color-bg: #F8FAFC;
-  --color-border: #D6DAE1;
-  --color-text: #111827;
-  --color-text-muted: #4B5563;
   --radius-md: 6px;
   --radius-lg: 8px;
 }
@@ -101,8 +235,6 @@
   --color-success: #059669;
   --color-danger: #E11D48;
   --color-warning: #CA8A04;
-  --color-bg: #FAFAFA;
-  --color-border: #E4E4E7;
-  --color-text: #18181B;
-  --color-text-muted: #71717A;
+  --radius-md: 8px;
+  --radius-lg: 12px;
 }

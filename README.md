@@ -182,12 +182,38 @@ All class names are prefixed with `mds-` (`.mds-btn`, `.mds-card`,
 the host app's own styles or with Bootstrap. A host app defining `.card` or
 `.input` will not affect library components.
 
-Brand colors are driven by `[data-product-line]` on the theme root; the
-available product lines are `core`, `commerce`, `finance`, and `internal`.
+### Theming
 
-> `ThemeProvider` also accepts `theme="light" | "dark"`, but the dark token set
-> is not implemented yet — setting it currently has no visual effect. See
-> `.docs/TODO.md` Phase 2.
+Tokens are split into three layers that never overlap:
+
+| Layer | Controlled by | Examples |
+|---|---|---|
+| Scale | nothing (fixed) | `--spacing-md`, `--font-size-sm`, `--radius-md` |
+| Brand | `[data-product-line]` | `--color-primary`, `--color-success`, `--color-on-brand` |
+| Surface | `[data-theme]` | `--color-surface`, `--color-text`, `--shadow-md` |
+
+Product lines: `core`, `commerce`, `finance`, `internal`.
+Themes: `light` (default), `dark`.
+
+```tsx
+<ThemeProvider global productLine="finance" theme="dark">
+```
+
+The colored soft backgrounds used by `Alert`, `Tag`, and `Badge` (`--tone-*`)
+are mixed at runtime from the brand color and the current surface with
+`color-mix()`, so they follow **both** the product line and the theme without a
+hand-maintained palette per combination. All 4 product lines × 2 themes are
+verified to meet WCAG AA (4.5:1) for text.
+
+> `color-mix()` requires Chrome 111+, Safari 16.2+, or Firefox 113+.
+
+Two tokens exist specifically to avoid common dark-mode bugs:
+
+- `--color-on-brand` — text/icons sitting on a brand-colored fill (primary
+  button label, checkbox tick). Stays white in both themes. Do **not** replace
+  it with `--color-surface`.
+- `--color-inverse-surface` / `--color-inverse-text` — for deliberately
+  inverted surfaces like `Tooltip`, which must flip direction between themes.
 
 ## CDN / UMD Local Test
 

@@ -1,6 +1,6 @@
 .mds-tag {
   align-items: center;
-  background: var(--color-bg);
+  background: var(--color-bg-subtle);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
   color: var(--color-text);
@@ -14,27 +14,27 @@
 }
 
 .mds-tag--primary {
-  background: #EFF6FF;
-  border-color: #BFDBFE;
-  color: var(--color-primary);
+  background: var(--tone-info-bg);
+  border-color: var(--tone-info-border);
+  color: var(--tone-info-text);
 }
 
 .mds-tag--success {
-  background: #ECFDF5;
-  border-color: #A7F3D0;
-  color: var(--color-success);
+  background: var(--tone-success-bg);
+  border-color: var(--tone-success-border);
+  color: var(--tone-success-text);
 }
 
 .mds-tag--warning {
-  background: #FFFBEB;
-  border-color: #FDE68A;
-  color: var(--color-warning);
+  background: var(--tone-warning-bg);
+  border-color: var(--tone-warning-border);
+  color: var(--tone-warning-text);
 }
 
 .mds-tag--danger {
-  background: #FEF2F2;
-  border-color: #FECACA;
-  color: var(--color-danger);
+  background: var(--tone-danger-bg);
+  border-color: var(--tone-danger-border);
+  color: var(--tone-danger-text);
 }
 
 .mds-tag__close {
