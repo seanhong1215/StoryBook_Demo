@@ -1,7 +1,7 @@
 # 企業級設計系統升級 — 進度與待辦
 
 > 完整計畫（含每階段細節）：`C:\Users\Administrator\.claude\plans\storybook-tidy-book.md`
-> 最後更新：2026-07-17
+> 最後更新：2026-07-19
 
 ## 進度總覽
 
@@ -13,6 +13,7 @@
 | 1c | ✅ 完成 | TS 批次 B：Input/Textarea/Checkbox/Switch/Select（commit `d321118`） |
 | 1d | ✅ 完成 | TS 批次 C：Tooltip/Dropdown/Tabs/Pagination/Table（commit `0bab142`） |
 | 1e | ✅ 完成 | TS 批次 D 收尾，全庫 100% TS（commit `601e463`） |
+| 1f | ✅ 完成 | 可共用門檻：打包保險 + forwardRef + `mds-` 前綴 + ThemeProvider global |
 | 2 | ⬜ 待辦 | Dark mode token 架構 |
 | 3 | ⬜ 待辦 | Storybook toolbar 全域化（theme + product-line） |
 | 4 | ⬜ 待辦 | a11y 真正啟用 |
@@ -21,6 +22,22 @@
 | 7 | ⬜ 待辦 | CI/CD（GitHub Actions + Chromatic + Pages） |
 
 ## 待辦細節
+
+### Phase 1f — 可共用門檻（已完成）
+
+目標與 Phase 2–7 正交：讓 library 能安全被私人 / 內部 MVP 專案安裝，而非提升設計系統成熟度。
+
+- package.json：scoped name `@seanhong1215/my-design-system`、version 0.1.0、
+  `prepublishOnly`（dist 未進 git，缺這行會出貨空包）、`sideEffects: ["**/*.css"]`、
+  `publishConfig` 指向 GitHub Packages、`test` script
+- 全部 20 個元件支援 `forwardRef`；Table 用 cast 保留泛型，Form 保留 compound 靜態屬性
+- 所有 class 加 `mds-` 前綴（170 個 class，改動前後集合一致）
+- ThemeProvider 新增 `global` prop，把主題屬性寫到 `documentElement`，解決 Modal portal 吃不到 token
+- 已用臨時消費端專案（vite react-ts + tgz + react-hook-form）實測 7 項通過
+
+散布方式：GitHub Packages 私有 registry 為主，本機 `.tgz` 為 fallback。
+**發布前需使用者操作**：建立 classic PAT（`write:packages`）並
+`npm login --registry=https://npm.pkg.github.com`。
 
 ### Phase 2 — Dark mode token 架構
 - `src/tokens/tokens.css` 重組兩層：品牌層（primary/success/danger/warning）只由 `[data-product-line]` 控制；表面層（bg/border/text/text-muted/shadow）只由 `[data-theme]` 控制
@@ -65,7 +82,7 @@
 - **Chromatic baseline 務必等 Phase 2/4 視覺定型後才建立**
 
 ## 收尾雜項
-- [ ] 全部完成後更新 `AGENTS.md`（目前仍寫 src/index.js、prop-types、src/stories 等舊狀態）
+- [x] 更新 `AGENTS.md` 與 `README.md`（原本仍寫 src/index.js、.jsx、src/stories 等舊狀態）— Phase 1f 已處理
 - [ ] `vite.config.ts` 的 `storybookNonAsciiPathFix` workaround：上游修復（storybookjs/storybook#33700）後可移除
 
 ## 已知環境注意事項

@@ -14,7 +14,8 @@ This project is a lightweight design system built with React, Vite, and Storyboo
 
 ## Components
 
-Public exports are managed in `src/index.js`.
+Public exports are managed in `src/index.ts`. All components are TypeScript,
+support `forwardRef`, and export their prop types.
 
 - `ThemeProvider`
 - `Button`
@@ -46,7 +47,7 @@ Run the Product A adoption demo:
 npm run dev
 ```
 
-`src/App.jsx` imports components from `src/index.js`, the same public entry used by package consumers. This is the fastest way to show an interviewer that the library can be composed into a real product screen.
+`src/App.tsx` imports components from `src/index.ts`, the same public entry used by package consumers. This is the fastest way to show an interviewer that the library can be composed into a real product screen.
 
 Run Storybook documentation:
 
@@ -72,31 +73,56 @@ Lint:
 npm run lint
 ```
 
-## Use In Product A Without Publishing
+## Consuming This Library Privately
 
-Build and pack this library:
+The package is `@seanhong1215/my-design-system`. It is **not** published to the
+public npm registry. There are two supported ways to install it into an internal
+MVP project.
+
+### Option A — GitHub Packages (private registry)
+
+Best when more than one project consumes the library. Free for private repos.
+
+Publish (one-time setup: create a classic PAT with `write:packages`, then
+`npm login --registry=https://npm.pkg.github.com`):
+
+```bash
+npm publish
+```
+
+`prepublishOnly` runs the build automatically, so a stale or missing `dist/`
+can never be shipped — this matters because `dist/` is gitignored.
+
+In the consuming project, add `.npmrc` (the PAT only needs `read:packages`):
+
+```text
+@seanhong1215:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}
+```
+
+```bash
+npm install @seanhong1215/my-design-system
+```
+
+### Option B — local tarball (zero setup)
+
+Good for trying the library in a single project.
 
 ```bash
 npm run build
 npm pack
 ```
 
-This produces a local tarball such as:
-
-```text
-my-design-system-0.0.0.tgz
-```
-
-Install it in Product A:
+This produces `seanhong1215-my-design-system-0.1.0.tgz`. Install it:
 
 ```bash
-npm install ../storybook/my-design-system-0.0.0.tgz
+npm install ../storybook/seanhong1215-my-design-system-0.1.0.tgz
 ```
 
-Then import styles and components:
+### Usage
 
-```jsx
-import 'my-design-system/styles.css'
+```tsx
+import '@seanhong1215/my-design-system/styles.css'
 import {
   Alert,
   Button,
@@ -108,11 +134,12 @@ import {
   Space,
   Table,
   ThemeProvider,
-} from 'my-design-system'
+} from '@seanhong1215/my-design-system'
 
 export function App() {
   return (
-    <ThemeProvider productLine="commerce">
+    // `global` 讓主題屬性寫到 <html>，portal 出去的 Modal 才吃得到品牌 token
+    <ThemeProvider global productLine="commerce">
       <Space direction="vertical" align="stretch">
         <Alert type="success" message="Design system connected" />
         <Card title="Create workspace">
@@ -147,6 +174,21 @@ export function App() {
 }
 ```
 
+### Styling and collisions
+
+All class names are prefixed with `mds-` (`.mds-btn`, `.mds-card`,
+`.mds-form-item__label`). The stylesheet is a single global
+`dist/my-design-system.css`, so the prefix is what keeps it from colliding with
+the host app's own styles or with Bootstrap. A host app defining `.card` or
+`.input` will not affect library components.
+
+Brand colors are driven by `[data-product-line]` on the theme root; the
+available product lines are `core`, `commerce`, `finance`, and `internal`.
+
+> `ThemeProvider` also accepts `theme="light" | "dark"`, but the dark token set
+> is not implemented yet — setting it currently has no visual effect. See
+> `.docs/TODO.md` Phase 2.
+
 ## CDN / UMD Local Test
 
 Build the library first:
@@ -178,17 +220,28 @@ Storybook documents the package through:
 When adding a component:
 
 ```text
-src/components/NewComponent/NewComponent.jsx
+src/components/NewComponent/NewComponent.tsx
 src/components/NewComponent/NewComponent.css
-src/components/NewComponent/NewComponent.stories.jsx
+src/components/NewComponent/NewComponent.stories.tsx
 ```
 
-Also update `src/index.js`:
+Also update `src/index.ts` — both the CSS side-effect import and the exports:
 
-```js
+```ts
 import './components/NewComponent/NewComponent.css'
 
 export { NewComponent } from './components/NewComponent/NewComponent'
+export type { NewComponentProps } from './components/NewComponent/NewComponent'
 ```
 
-Use existing CSS tokens from `src/tokens/tokens.css`, keep JSX exports named, and document variants/states in Storybook.
+Rules:
+
+- **Prefix every class with `mds-`** and keep BEM structure
+  (`.mds-block__element--modifier`).
+- **Wrap the component in `forwardRef`** and set `displayName`. Point the ref at
+  the element a consumer actually needs — for form controls that is the inner
+  native `<input>`/`<select>`, not the wrapper. Merge with
+  `useImperativeHandle` if the component already keeps an internal ref.
+- Use existing CSS tokens from `src/tokens/tokens.css`; do not hardcode colors.
+- Export prop types alongside the component, and document variants/states in
+  Storybook.
