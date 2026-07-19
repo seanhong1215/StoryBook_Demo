@@ -1,5 +1,5 @@
-import { useMemo, useState } from 'react'
-import type { ReactNode } from 'react'
+import { forwardRef, useMemo, useState } from 'react'
+import type { ForwardedRef, ReactElement, ReactNode, Ref } from 'react'
 import { Checkbox } from '../Checkbox/Checkbox'
 import { Empty } from '../Empty/Empty'
 import { Pagination } from '../Pagination/Pagination'
@@ -54,7 +54,7 @@ const getRowKey = <T,>(record: T, rowKey: Extract<keyof T, string> | ((record: T
   typeof rowKey === 'function' ? rowKey(record) : record[rowKey] as TableRowKey
 )
 
-export const Table = <T,>({
+const TableInner = <T,>({
   columns = [],
   dataSource = [],
   rowKey = 'key' as Extract<keyof T, string>,
@@ -63,7 +63,7 @@ export const Table = <T,>({
   rowSelection,
   emptyText = 'No data',
   className = '',
-}: TableProps<T>) => {
+}: TableProps<T>, ref: ForwardedRef<HTMLDivElement>) => {
   const [sortState, setSortState] = useState<SortState>()
   const [page, setPage] = useState(1)
 
@@ -122,7 +122,7 @@ export const Table = <T,>({
   }
 
   return (
-    <div className={['table', loading ? 'table--loading' : '', className].filter(Boolean).join(' ')}>
+    <div ref={ref} className={['table', loading ? 'table--loading' : '', className].filter(Boolean).join(' ')}>
       <div className="table__scroll">
         <table className="table__element">
           <thead>
@@ -209,3 +209,11 @@ export const Table = <T,>({
     </div>
   )
 }
+
+/**
+ * forwardRef 會把泛型參數抹成 unknown，因此包完之後 cast 回帶 <T> 的函式型別，
+ * 保留 columns / dataSource / rowKey 之間的型別推導。
+ */
+export const Table = forwardRef(TableInner) as <T,>(
+  props: TableProps<T> & { ref?: Ref<HTMLDivElement> },
+) => ReactElement

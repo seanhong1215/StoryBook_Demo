@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { forwardRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import './Tabs.css'
 
@@ -29,7 +29,7 @@ export interface TabsProps {
   className?: string
 }
 
-export const Tabs = ({
+export const Tabs = forwardRef<HTMLDivElement, TabsProps>(({
   items = [],
   activeKey,
   defaultActiveKey,
@@ -37,7 +37,7 @@ export const Tabs = ({
   type = 'line',
   onChange,
   className = '',
-}: TabsProps) => {
+}, ref) => {
   const firstKey = items[0]?.key
   const [internalActiveKey, setInternalActiveKey] = useState(defaultActiveKey || firstKey)
   const currentKey = activeKey || internalActiveKey
@@ -59,7 +59,7 @@ export const Tabs = ({
   ].filter(Boolean).join(' ')
 
   return (
-    <div className={classes}>
+    <div ref={ref} className={classes}>
       <div className="tabs__list" role="tablist">
         {items.map((item) => (
           <button
@@ -82,4 +82,6 @@ export const Tabs = ({
       )}
     </div>
   )
-}
+})
+
+Tabs.displayName = 'Tabs'

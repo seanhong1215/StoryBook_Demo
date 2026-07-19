@@ -1,3 +1,4 @@
+import { forwardRef } from 'react'
 import type { ReactNode, SelectHTMLAttributes } from 'react'
 import './Select.css'
 
@@ -23,7 +24,8 @@ export interface SelectProps extends Omit<SelectHTMLAttributes<HTMLSelectElement
   children?: ReactNode
 }
 
-export const Select = ({
+/** ref 指向內層的原生 `<select>`，而非外層 wrapper。 */
+export const Select = forwardRef<HTMLSelectElement, SelectProps>(({
   size = 'md',
   status,
   options = [],
@@ -34,7 +36,7 @@ export const Select = ({
   className = '',
   children,
   ...props
-}: SelectProps) => {
+}, ref) => {
   const classes = [
     'select',
     `select--${size}`,
@@ -46,6 +48,7 @@ export const Select = ({
   return (
     <span className={classes}>
       <select
+        ref={ref}
         className="select__control"
         value={value}
         defaultValue={defaultValue}
@@ -69,4 +72,6 @@ export const Select = ({
       </select>
     </span>
   )
-}
+})
+
+Select.displayName = 'Select'

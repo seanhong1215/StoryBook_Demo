@@ -1,3 +1,4 @@
+import { forwardRef } from 'react'
 import type { ElementType, HTMLAttributes, ReactNode } from 'react'
 import './Space.css'
 
@@ -16,7 +17,8 @@ export interface SpaceProps extends HTMLAttributes<HTMLElement> {
   children?: ReactNode
 }
 
-export const Space = ({
+/** ref 指向 as 指定的容器元素（預設 div）。 */
+export const Space = forwardRef<HTMLElement, SpaceProps>(({
   as: Component = 'div',
   direction = 'horizontal',
   size = 'md',
@@ -25,7 +27,7 @@ export const Space = ({
   className = '',
   children,
   ...props
-}: SpaceProps) => {
+}, ref) => {
   const classes = [
     'space',
     `space--${direction}`,
@@ -36,8 +38,10 @@ export const Space = ({
   ].filter(Boolean).join(' ')
 
   return (
-    <Component className={classes} {...props}>
+    <Component ref={ref} className={classes} {...props}>
       {children}
     </Component>
   )
-}
+})
+
+Space.displayName = 'Space'

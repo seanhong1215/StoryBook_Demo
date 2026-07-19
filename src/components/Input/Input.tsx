@@ -1,3 +1,4 @@
+import { forwardRef } from 'react'
 import type { ChangeEvent, InputHTMLAttributes, ReactNode } from 'react'
 import './Input.css'
 
@@ -14,7 +15,11 @@ export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 
   allowClear?: boolean
 }
 
-export const Input = ({
+/**
+ * ref 指向內層的原生 `<input>`（而非外層 wrapper），
+ * 這樣 react-hook-form 的 register() 與 focus() 才能正常運作。
+ */
+export const Input = forwardRef<HTMLInputElement, InputProps>(({
   size = 'md',
   status,
   prefix,
@@ -26,7 +31,7 @@ export const Input = ({
   className = '',
   onChange,
   ...props
-}: InputProps) => {
+}, ref) => {
   const hasControls = prefix || suffix || allowClear
   const classes = [
     'input',
@@ -47,6 +52,7 @@ export const Input = ({
     <span className={classes}>
       {prefix && <span className="input__addon input__addon--prefix">{prefix}</span>}
       <input
+        ref={ref}
         className="input__control"
         value={value}
         defaultValue={defaultValue}
@@ -67,4 +73,6 @@ export const Input = ({
       {suffix && <span className="input__addon input__addon--suffix">{suffix}</span>}
     </span>
   )
-}
+})
+
+Input.displayName = 'Input'

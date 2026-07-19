@@ -1,3 +1,4 @@
+import { forwardRef } from 'react'
 import type { MouseEventHandler, ReactNode } from 'react'
 import { Button } from '../Button/Button'
 import './Empty.css'
@@ -18,7 +19,7 @@ export interface EmptyProps {
   className?: string
 }
 
-export const Empty = ({
+export const Empty = forwardRef<HTMLDivElement, EmptyProps>(({
   title = 'No data',
   description,
   image,
@@ -26,9 +27,9 @@ export const Empty = ({
   actionText,
   onAction,
   className = '',
-}: EmptyProps) => {
+}, ref) => {
   return (
-    <div className={['empty', className].filter(Boolean).join(' ')}>
+    <div ref={ref} className={['empty', className].filter(Boolean).join(' ')}>
       <div className="empty__image" aria-hidden="true">
         {image || <span className="empty__box" />}
       </div>
@@ -41,4 +42,6 @@ export const Empty = ({
       )}
     </div>
   )
-}
+})
+
+Empty.displayName = 'Empty'

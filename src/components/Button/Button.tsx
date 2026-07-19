@@ -1,3 +1,4 @@
+import { forwardRef } from 'react'
 import type { ButtonHTMLAttributes, ReactNode } from 'react'
 import './Button.css'
 
@@ -30,7 +31,7 @@ export interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement
   children?: ReactNode
 }
 
-export const Button = ({
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(({
   type,
   htmlType = 'button',
   variant = 'primary',
@@ -45,7 +46,7 @@ export const Button = ({
   children,
   onClick,
   ...props
-}: ButtonProps) => {
+}, ref) => {
   const visualType = isNativeType(type) ? variant : (type || variant)
   const buttonType = isNativeType(type) ? type : htmlType
 
@@ -60,6 +61,7 @@ export const Button = ({
 
   return (
     <button
+      ref={ref}
       className={classes}
       disabled={disabled || loading}
       onClick={onClick}
@@ -73,4 +75,6 @@ export const Button = ({
       {!loading && rightIcon && <span className="btn__icon btn__icon--right">{rightIcon}</span>}
     </button>
   )
-}
+})
+
+Button.displayName = 'Button'

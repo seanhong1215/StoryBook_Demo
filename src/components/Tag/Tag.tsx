@@ -1,3 +1,4 @@
+import { forwardRef } from 'react'
 import type { HTMLAttributes, MouseEventHandler, ReactNode } from 'react'
 import './Tag.css'
 
@@ -12,16 +13,17 @@ export interface TagProps extends HTMLAttributes<HTMLSpanElement> {
   children?: ReactNode
 }
 
-export const Tag = ({
+export const Tag = forwardRef<HTMLSpanElement, TagProps>(({
   color = 'default',
   closable = false,
   className = '',
   children,
   onClose,
   ...props
-}: TagProps) => {
+}, ref) => {
   return (
     <span
+      ref={ref}
       className={['tag', `tag--${color}`, className].filter(Boolean).join(' ')}
       {...props}
     >
@@ -38,4 +40,6 @@ export const Tag = ({
       )}
     </span>
   )
-}
+})
+
+Tag.displayName = 'Tag'

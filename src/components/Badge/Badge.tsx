@@ -1,3 +1,4 @@
+import { forwardRef } from 'react'
 import type { HTMLAttributes, ReactNode } from 'react'
 import './Badge.css'
 
@@ -12,14 +13,14 @@ export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
   children?: ReactNode
 }
 
-export const Badge = ({
+export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(({
   variant = 'primary',
   size = 'md',
   dot = false,
   className = '',
   children,
   ...props
-}: BadgeProps) => {
+}, ref) => {
   const classes = [
     'badge',
     `badge--${variant}`,
@@ -29,9 +30,11 @@ export const Badge = ({
   ].filter(Boolean).join(' ')
 
   return (
-    <span className={classes} {...props}>
+    <span ref={ref} className={classes} {...props}>
       {dot && <span className="badge__dot" aria-hidden="true" />}
       {children}
     </span>
   )
-}
+})
+
+Badge.displayName = 'Badge'
