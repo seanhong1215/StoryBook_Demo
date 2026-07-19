@@ -1,23 +1,23 @@
-.table {
+.mds-table {
   color: var(--color-text);
   position: relative;
 }
 
-.table__scroll {
+.mds-table__scroll {
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   overflow: auto;
 }
 
-.table__element {
+.mds-table__element {
   background: var(--color-white);
   border-collapse: collapse;
   min-width: 640px;
   width: 100%;
 }
 
-.table th,
-.table td {
+.mds-table th,
+.mds-table td {
   border-bottom: 1px solid var(--color-border);
   font-size: var(--font-size-sm);
   padding: 12px 14px;
@@ -25,21 +25,21 @@
   vertical-align: middle;
 }
 
-.table th {
+.mds-table th {
   background: var(--color-bg);
   color: var(--color-text-muted);
   font-weight: var(--font-weight-bold);
 }
 
-.table tr:last-child td {
+.mds-table tr:last-child td {
   border-bottom: 0;
 }
 
-.table__selection {
+.mds-table__selection {
   width: 48px;
 }
 
-.table__sort {
+.mds-table__sort {
   align-items: center;
   background: transparent;
   border: 0;
@@ -52,13 +52,13 @@
   padding: 0;
 }
 
-.table__sort-indicator {
+.mds-table__sort-indicator {
   color: var(--color-text-muted);
   font-size: 10px;
   text-transform: uppercase;
 }
 
-.table__loading {
+.mds-table__loading {
   align-items: center;
   background: rgba(255, 255, 255, 0.72);
   color: var(--color-text-muted);
@@ -70,7 +70,7 @@
   position: absolute;
 }
 
-.table__pagination {
+.mds-table__pagination {
   display: flex;
   justify-content: flex-end;
   margin-top: var(--spacing-md);

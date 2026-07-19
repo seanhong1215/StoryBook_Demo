@@ -146,7 +146,7 @@ const FormBase = forwardRef<HTMLFormElement, FormProps>(({
     <FormContext.Provider value={contextValue}>
       <form
         ref={ref}
-        className={['form', `form--${layout}`, className].filter(Boolean).join(' ')}
+        className={['mds-form', `mds-form--${layout}`, className].filter(Boolean).join(' ')}
         onSubmit={handleSubmit}
         {...props}
       >
@@ -225,11 +225,11 @@ export const FormItem = forwardRef<HTMLDivElement, FormItemProps>(({
     : children
 
   return (
-    <div ref={ref} className={['form-item', error ? 'form-item--error' : ''].filter(Boolean).join(' ')}>
-      {label && <label className="form-item__label">{label}</label>}
-      <div className="form-item__control">{child}</div>
-      {error && <div className="form-item__message">{error}</div>}
-      {extra && !error && <div className="form-item__extra">{extra}</div>}
+    <div ref={ref} className={['mds-form-item', error ? 'mds-form-item--error' : ''].filter(Boolean).join(' ')}>
+      {label && <label className="mds-form-item__label">{label}</label>}
+      <div className="mds-form-item__control">{child}</div>
+      {error && <div className="mds-form-item__message">{error}</div>}
+      {extra && !error && <div className="mds-form-item__extra">{extra}</div>}
     </div>
   )
 })

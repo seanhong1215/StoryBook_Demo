@@ -1,14 +1,14 @@
-.tooltip {
+.mds-tooltip {
   display: inline-flex;
   position: relative;
   vertical-align: middle;
 }
 
-.tooltip__trigger {
+.mds-tooltip__trigger {
   display: inline-flex;
 }
 
-.tooltip__content {
+.mds-tooltip__content {
   background: var(--color-text);
   border-radius: var(--radius-md);
   color: var(--color-white);
@@ -24,51 +24,51 @@
   z-index: 30;
 }
 
-.tooltip:hover .tooltip__content,
-.tooltip:focus-within .tooltip__content {
+.mds-tooltip:hover .mds-tooltip__content,
+.mds-tooltip:focus-within .mds-tooltip__content {
   opacity: 1;
 }
 
-.tooltip--top .tooltip__content {
+.mds-tooltip--top .mds-tooltip__content {
   bottom: calc(100% + 8px);
   left: 50%;
   transform: translate(-50%, 4px);
 }
 
-.tooltip--top:hover .tooltip__content,
-.tooltip--top:focus-within .tooltip__content {
+.mds-tooltip--top:hover .mds-tooltip__content,
+.mds-tooltip--top:focus-within .mds-tooltip__content {
   transform: translate(-50%, 0);
 }
 
-.tooltip--bottom .tooltip__content {
+.mds-tooltip--bottom .mds-tooltip__content {
   left: 50%;
   top: calc(100% + 8px);
   transform: translate(-50%, -4px);
 }
 
-.tooltip--bottom:hover .tooltip__content,
-.tooltip--bottom:focus-within .tooltip__content {
+.mds-tooltip--bottom:hover .mds-tooltip__content,
+.mds-tooltip--bottom:focus-within .mds-tooltip__content {
   transform: translate(-50%, 0);
 }
 
-.tooltip--right .tooltip__content {
+.mds-tooltip--right .mds-tooltip__content {
   left: calc(100% + 8px);
   top: 50%;
   transform: translate(-4px, -50%);
 }
 
-.tooltip--right:hover .tooltip__content,
-.tooltip--right:focus-within .tooltip__content {
+.mds-tooltip--right:hover .mds-tooltip__content,
+.mds-tooltip--right:focus-within .mds-tooltip__content {
   transform: translate(0, -50%);
 }
 
-.tooltip--left .tooltip__content {
+.mds-tooltip--left .mds-tooltip__content {
   right: calc(100% + 8px);
   top: 50%;
   transform: translate(4px, -50%);
 }
 
-.tooltip--left:hover .tooltip__content,
-.tooltip--left:focus-within .tooltip__content {
+.mds-tooltip--left:hover .mds-tooltip__content,
+.mds-tooltip--left:focus-within .mds-tooltip__content {
   transform: translate(0, -50%);
 }

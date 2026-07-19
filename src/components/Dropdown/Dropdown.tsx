@@ -70,11 +70,11 @@ export const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
 
   return (
     <div
-      className={['dropdown', `dropdown--${placement}`, className].filter(Boolean).join(' ')}
+      className={['mds-dropdown', `mds-dropdown--${placement}`, className].filter(Boolean).join(' ')}
       ref={rootRef}
     >
       <button
-        className="dropdown__trigger"
+        className="mds-dropdown__trigger"
         type="button"
         disabled={disabled}
         aria-haspopup="menu"
@@ -84,10 +84,10 @@ export const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
         {trigger}
       </button>
       {open && (
-        <div className="dropdown__menu" role="menu">
+        <div className="mds-dropdown__menu" role="menu">
           {items.map((item) => (
             <button
-              className="dropdown__item"
+              className="mds-dropdown__item"
               type="button"
               role="menuitem"
               disabled={item.disabled}

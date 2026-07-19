@@ -22,16 +22,16 @@ export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(({
   ...props
 }, ref) => {
   const classes = [
-    'badge',
-    `badge--${variant}`,
-    `badge--${size}`,
-    dot ? 'badge--dot' : '',
+    'mds-badge',
+    `mds-badge--${variant}`,
+    `mds-badge--${size}`,
+    dot ? 'mds-badge--dot' : '',
     className,
   ].filter(Boolean).join(' ')
 
   return (
     <span ref={ref} className={classes} {...props}>
-      {dot && <span className="badge__dot" aria-hidden="true" />}
+      {dot && <span className="mds-badge__dot" aria-hidden="true" />}
       {children}
     </span>
   )

@@ -43,10 +43,10 @@ export const Pagination = forwardRef<HTMLElement, PaginationProps>(({
   return (
     <nav
       ref={ref}
-      className={['pagination', className].filter(Boolean).join(' ')}
+      className={['mds-pagination', className].filter(Boolean).join(' ')}
       aria-label="Pagination"
     >
-      {showTotal && <span className="pagination__total">{total} items</span>}
+      {showTotal && <span className="mds-pagination__total">{total} items</span>}
       <Button
         variant="secondary"
         size="sm"
@@ -55,16 +55,16 @@ export const Pagination = forwardRef<HTMLElement, PaginationProps>(({
       >
         Previous
       </Button>
-      <div className="pagination__pages">
+      <div className="mds-pagination__pages">
         {pages.map((page, index) => {
           const previous = pages[index - 1]
           const showGap = previous && page - previous > 1
 
           return (
-            <span className="pagination__item" key={page}>
-              {showGap && <span className="pagination__ellipsis">...</span>}
+            <span className="mds-pagination__item" key={page}>
+              {showGap && <span className="mds-pagination__ellipsis">...</span>}
               <button
-                className="pagination__page"
+                className="mds-pagination__page"
                 type="button"
                 aria-current={page === current ? 'page' : undefined}
                 disabled={disabled}

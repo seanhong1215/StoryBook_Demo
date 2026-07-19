@@ -71,25 +71,25 @@ export const Modal = forwardRef<HTMLElement, ModalProps>(({
   if (!open) return null
 
   const content = (
-    <div className="modal-root" role="presentation">
+    <div className="mds-modal-root" role="presentation">
       <div
-        className="modal-mask"
+        className="mds-modal-mask"
         onClick={maskClosable ? onCancel : undefined}
       />
       <section
         ref={ref}
-        className={['modal', className].filter(Boolean).join(' ')}
+        className={['mds-modal', className].filter(Boolean).join(' ')}
         role="dialog"
         aria-modal="true"
         aria-labelledby={title ? 'modal-title' : undefined}
         style={{ width }}
       >
         {(title || closable) && (
-          <header className="modal__header">
-            {title && <h2 className="modal__title" id="modal-title">{title}</h2>}
+          <header className="mds-modal__header">
+            {title && <h2 className="mds-modal__title" id="modal-title">{title}</h2>}
             {closable && (
               <button
-                className="modal__close"
+                className="mds-modal__close"
                 type="button"
                 aria-label="Close modal"
                 onClick={onCancel}
@@ -99,8 +99,8 @@ export const Modal = forwardRef<HTMLElement, ModalProps>(({
             )}
           </header>
         )}
-        <div className="modal__body">{children}</div>
-        <footer className="modal__footer">
+        <div className="mds-modal__body">{children}</div>
+        <footer className="mds-modal__footer">
           {footer === undefined ? (
             <>
               <Button variant="secondary" onClick={onCancel}>{cancelText}</Button>

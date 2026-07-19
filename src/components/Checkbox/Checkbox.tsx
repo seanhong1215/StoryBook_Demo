@@ -25,9 +25,9 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(({
   const inputRef = useRef<HTMLInputElement>(null)
   useImperativeHandle(ref, () => inputRef.current as HTMLInputElement, [])
   const classes = [
-    'checkbox',
-    disabled ? 'checkbox--disabled' : '',
-    indeterminate ? 'checkbox--indeterminate' : '',
+    'mds-checkbox',
+    disabled ? 'mds-checkbox--disabled' : '',
+    indeterminate ? 'mds-checkbox--indeterminate' : '',
     className,
   ].filter(Boolean).join(' ')
 
@@ -41,15 +41,15 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(({
     <label className={classes}>
       <input
         ref={inputRef}
-        className="checkbox__input"
+        className="mds-checkbox__input"
         type="checkbox"
         checked={checked}
         defaultChecked={defaultChecked}
         disabled={disabled}
         {...props}
       />
-      <span className="checkbox__box" aria-hidden="true" />
-      {children && <span className="checkbox__label">{children}</span>}
+      <span className="mds-checkbox__box" aria-hidden="true" />
+      {children && <span className="mds-checkbox__label">{children}</span>}
     </label>
   )
 })

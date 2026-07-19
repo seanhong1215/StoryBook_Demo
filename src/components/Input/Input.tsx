@@ -34,11 +34,11 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(({
 }, ref) => {
   const hasControls = prefix || suffix || allowClear
   const classes = [
-    'input',
-    `input--${size}`,
-    status ? `input--${status}` : '',
-    disabled ? 'input--disabled' : '',
-    hasControls ? 'input--with-controls' : '',
+    'mds-input',
+    `mds-input--${size}`,
+    status ? `mds-input--${status}` : '',
+    disabled ? 'mds-input--disabled' : '',
+    hasControls ? 'mds-input--with-controls' : '',
     className,
   ].filter(Boolean).join(' ')
 
@@ -50,10 +50,10 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(({
 
   return (
     <span className={classes}>
-      {prefix && <span className="input__addon input__addon--prefix">{prefix}</span>}
+      {prefix && <span className="mds-input__addon mds-input__addon--prefix">{prefix}</span>}
       <input
         ref={ref}
-        className="input__control"
+        className="mds-input__control"
         value={value}
         defaultValue={defaultValue}
         disabled={disabled}
@@ -62,7 +62,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(({
       />
       {allowClear && value && !disabled && (
         <button
-          className="input__clear"
+          className="mds-input__clear"
           type="button"
           aria-label="Clear input"
           onClick={clearValue}
@@ -70,7 +70,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(({
           x
         </button>
       )}
-      {suffix && <span className="input__addon input__addon--suffix">{suffix}</span>}
+      {suffix && <span className="mds-input__addon mds-input__addon--suffix">{suffix}</span>}
     </span>
   )
 })

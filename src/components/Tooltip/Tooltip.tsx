@@ -22,12 +22,12 @@ export const Tooltip = forwardRef<HTMLSpanElement, TooltipProps>(({
   return (
     <span
       ref={ref}
-      className={['tooltip', `tooltip--${placement}`, className].filter(Boolean).join(' ')}
+      className={['mds-tooltip', `mds-tooltip--${placement}`, className].filter(Boolean).join(' ')}
     >
-      <span className="tooltip__trigger" tabIndex={0}>
+      <span className="mds-tooltip__trigger" tabIndex={0}>
         {children}
       </span>
-      <span className="tooltip__content" role="tooltip">
+      <span className="mds-tooltip__content" role="tooltip">
         {title}
       </span>
     </span>

@@ -1,4 +1,4 @@
-.textarea {
+.mds-textarea {
   background: var(--color-white);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
@@ -10,38 +10,38 @@
   width: 100%;
 }
 
-.textarea:focus-within {
+.mds-textarea:focus-within {
   border-color: var(--color-primary);
   box-shadow: 0 0 0 2px rgba(0, 102, 255, 0.14);
 }
 
-.textarea--sm {
+.mds-textarea--sm {
   padding: 6px 8px;
 }
 
-.textarea--md {
+.mds-textarea--md {
   padding: 8px 11px;
 }
 
-.textarea--lg {
+.mds-textarea--lg {
   padding: 10px 14px;
 }
 
-.textarea--error {
+.mds-textarea--error {
   border-color: var(--color-danger);
 }
 
-.textarea--warning {
+.mds-textarea--warning {
   border-color: var(--color-warning);
 }
 
-.textarea--disabled {
+.mds-textarea--disabled {
   background: var(--color-bg);
   color: var(--color-text-muted);
   cursor: not-allowed;
 }
 
-.textarea__control {
+.mds-textarea__control {
   background: transparent;
   border: 0;
   color: inherit;
@@ -53,15 +53,15 @@
   width: 100%;
 }
 
-.textarea__control::placeholder {
+.mds-textarea__control::placeholder {
   color: var(--color-text-muted);
 }
 
-.textarea__control:disabled {
+.mds-textarea__control:disabled {
   cursor: not-allowed;
 }
 
-.textarea__count {
+.mds-textarea__count {
   color: var(--color-text-muted);
   font-size: var(--font-size-xs);
   justify-self: end;

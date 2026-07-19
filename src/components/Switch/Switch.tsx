@@ -26,9 +26,9 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(({
   ...props
 }, ref) => {
   const classes = [
-    'switch',
-    `switch--${size}`,
-    loading ? 'switch--loading' : '',
+    'mds-switch',
+    `mds-switch--${size}`,
+    loading ? 'mds-switch--loading' : '',
     className,
   ].filter(Boolean).join(' ')
 
@@ -36,17 +36,17 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(({
     <label className={classes}>
       <input
         ref={ref}
-        className="switch__input"
+        className="mds-switch__input"
         type="checkbox"
         checked={checked}
         defaultChecked={defaultChecked}
         disabled={disabled || loading}
         {...props}
       />
-      <span className="switch__track">
-        <span className="switch__label switch__label--checked">{checkedChildren}</span>
-        <span className="switch__label switch__label--unchecked">{unCheckedChildren}</span>
-        <span className="switch__handle" />
+      <span className="mds-switch__track">
+        <span className="mds-switch__label mds-switch__label--checked">{checkedChildren}</span>
+        <span className="mds-switch__label mds-switch__label--unchecked">{unCheckedChildren}</span>
+        <span className="mds-switch__handle" />
       </span>
     </label>
   )
