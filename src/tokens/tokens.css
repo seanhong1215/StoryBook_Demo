@@ -117,6 +117,8 @@
 
   /* 混色比例；實際的 --shadow-focus / --tone-* 在下方統一組出 */
   --focus-ring-mix: 20%;
+  /* 淺色下品牌色直接當文字就夠對比，不需要調整 */
+  --primary-text-mix: 100%;
   --tone-bg-mix: 10%;
   --tone-border-mix: 32%;
   --tone-text-mix: 55%;
@@ -150,6 +152,11 @@
 
   /* 暗底需要更高的混色比例才看得出色調，文字則往白色混以拉開對比 */
   --focus-ring-mix: 45%;
+  /*
+   * 暗底上品牌色直接當文字不夠亮：#0066FF 對 --color-bg #0B0F17 只有 3.97:1。
+   * 往白色混到 60% 才過 AA。
+   */
+  --primary-text-mix: 60%;
   --tone-bg-mix: 20%;
   --tone-border-mix: 42%;
   /*
@@ -173,6 +180,13 @@
 [data-theme],
 [data-product-line] {
   --shadow-focus: 0 0 0 2px color-mix(in srgb, var(--color-primary) var(--focus-ring-mix), transparent);
+
+  /*
+   * 品牌色「當文字」用（Tabs 選中、Pagination 當前頁、link 按鈕）。
+   * 不要直接用 --color-primary 當 color —— 那是給填底和邊框用的，
+   * 在暗底上當文字對比不足。
+   */
+  --color-primary-text: color-mix(in srgb, var(--color-primary) var(--primary-text-mix), var(--tone-text-base));
 
   --tone-info-bg: color-mix(in srgb, var(--color-primary) var(--tone-bg-mix), var(--color-surface));
   --tone-info-border: color-mix(in srgb, var(--color-primary) var(--tone-border-mix), var(--color-surface));

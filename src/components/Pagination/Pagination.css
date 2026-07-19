@@ -37,7 +37,7 @@
 
 .mds-pagination__page[aria-current="page"] {
   border-color: var(--color-primary);
-  color: var(--color-primary);
+  color: var(--color-primary-text);
   font-weight: var(--font-weight-bold);
 }
 

@@ -214,6 +214,12 @@ Two tokens exist specifically to avoid common dark-mode bugs:
   it with `--color-surface`.
 - `--color-inverse-surface` / `--color-inverse-text` — for deliberately
   inverted surfaces like `Tooltip`, which must flip direction between themes.
+- `--color-primary-text` — the brand color used as **text** (active tab, link
+  button). `--color-primary` itself is for fills and borders; as text on a dark
+  page it only reaches 3.97:1.
+
+In Storybook, the toolbar has **Theme** and **Product line** switchers that
+apply to every story.
 
 ## CDN / UMD Local Test
 
