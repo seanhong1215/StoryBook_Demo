@@ -25,3 +25,6 @@ dist-ssr
 
 *storybook.log
 storybook-static
+
+# npm pack 的產物，不要提交
+*.tgz

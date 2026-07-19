@@ -126,6 +126,16 @@ tone token 混出來的所有淺底）；(b) 另立 `--color-success-solid` 之�
 - `deploy-pages.yml`：`upload-pages-artifact` + `deploy-pages`；repo Settings > Pages source 改 "GitHub Actions"；之後刪 `scripts/deploy-storybook.ps1` 與 `deploy` script
 - **Chromatic baseline 務必等 Phase 2/4 視覺定型後才建立**
 
+## 已知缺陷（由消費端範例 `../product-a-demo` 實測發現）
+
+- **`Select` 的 placeholder 無效。** `src/components/Select/Select.tsx` 的
+  placeholder option 帶 `disabled`，瀏覽器會跳過它自動選第一個真實選項。
+  結果：(1) 畫面顯示第一個選項而非 placeholder；(2) 非受控用法下 value 永遠非空，
+  **`required` 驗證永遠不會觸發**。
+  修法：非受控且有 placeholder 時給 select `defaultValue=""`，
+  並把 placeholder option 加上 `hidden` 讓它不出現在展開清單中。
+  注意不要在受控（有傳 `value`）時同時給 `defaultValue`，React 會警告。
+
 ## 收尾雜項
 - [x] 更新 `AGENTS.md` 與 `README.md`（原本仍寫 src/index.js、.jsx、src/stories 等舊狀態）— Phase 1f 已處理
 - [ ] `vite.config.ts` 的 `storybookNonAsciiPathFix` workaround：上游修復（storybookjs/storybook#33700）後可移除
