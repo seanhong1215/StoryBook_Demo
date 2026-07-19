@@ -43,6 +43,8 @@ export default defineConfig({
     },
   ],
   build: {
+    // public/ 只服務本機 demo 與 Storybook；不要把 favicon.svg / icons.svg 打進發布的 dist/
+    copyPublicDir: false,
     lib: {
       entry: path.resolve(dirname, 'src/index.ts'),
       name: 'MyDesignSystem',
