@@ -1,8 +1,17 @@
 {
-  "name": "my-design-system",
+  "name": "@seanhong1215/my-design-system",
   "private": false,
-  "version": "0.0.0",
+  "version": "0.1.0",
+  "description": "A React design system with product-line theming, built with Vite and documented in Storybook.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/seanhong1215/StoryBook_Demo.git"
+  },
   "type": "module",
+  "sideEffects": [
+    "**/*.css"
+  ],
   "main": "./dist/my-design-system.umd.cjs",
   "module": "./dist/my-design-system.js",
   "style": "./dist/my-design-system.css",
@@ -18,11 +27,16 @@
   "files": [
     "dist"
   ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "prepublishOnly": "npm run build",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit -p tsconfig.app.json",
+    "test": "vitest --project=storybook run",
     "preview": "vite preview",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
