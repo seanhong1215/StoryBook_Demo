@@ -51,11 +51,11 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(({
   const buttonType = isNativeType(type) ? type : htmlType
 
   const classes = [
-    'btn',
-    `btn--${visualType}`,
-    `btn--${size}`,
-    fullWidth || block ? 'btn--full' : '',
-    loading ? 'btn--loading' : '',
+    'mds-btn',
+    `mds-btn--${visualType}`,
+    `mds-btn--${size}`,
+    fullWidth || block ? 'mds-btn--full' : '',
+    loading ? 'mds-btn--loading' : '',
     className,
   ].filter(Boolean).join(' ')
 
@@ -69,10 +69,10 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(({
       aria-busy={loading || undefined}
       {...props}
     >
-      {loading && <span className="btn__spinner" aria-hidden="true" />}
-      {!loading && leftIcon && <span className="btn__icon btn__icon--left">{leftIcon}</span>}
-      <span className="btn__label">{children}</span>
-      {!loading && rightIcon && <span className="btn__icon btn__icon--right">{rightIcon}</span>}
+      {loading && <span className="mds-btn__spinner" aria-hidden="true" />}
+      {!loading && leftIcon && <span className="mds-btn__icon mds-btn__icon--left">{leftIcon}</span>}
+      <span className="mds-btn__label">{children}</span>
+      {!loading && rightIcon && <span className="mds-btn__icon mds-btn__icon--right">{rightIcon}</span>}
     </button>
   )
 })

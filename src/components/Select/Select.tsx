@@ -38,10 +38,10 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(({
   ...props
 }, ref) => {
   const classes = [
-    'select',
-    `select--${size}`,
-    status ? `select--${status}` : '',
-    disabled ? 'select--disabled' : '',
+    'mds-select',
+    `mds-select--${size}`,
+    status ? `mds-select--${status}` : '',
+    disabled ? 'mds-select--disabled' : '',
     className,
   ].filter(Boolean).join(' ')
 
@@ -49,7 +49,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(({
     <span className={classes}>
       <select
         ref={ref}
-        className="select__control"
+        className="mds-select__control"
         value={value}
         defaultValue={defaultValue}
         disabled={disabled}

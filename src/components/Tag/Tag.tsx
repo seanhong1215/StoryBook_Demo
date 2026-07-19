@@ -24,13 +24,13 @@ export const Tag = forwardRef<HTMLSpanElement, TagProps>(({
   return (
     <span
       ref={ref}
-      className={['tag', `tag--${color}`, className].filter(Boolean).join(' ')}
+      className={['mds-tag', `mds-tag--${color}`, className].filter(Boolean).join(' ')}
       {...props}
     >
-      <span className="tag__label">{children}</span>
+      <span className="mds-tag__label">{children}</span>
       {closable && (
         <button
-          className="tag__close"
+          className="mds-tag__close"
           type="button"
           aria-label="Close tag"
           onClick={onClose}

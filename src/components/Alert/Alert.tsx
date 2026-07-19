@@ -33,25 +33,25 @@ export const Alert = forwardRef<HTMLDivElement, AlertProps>(({
   ...props
 }, ref) => {
   const classes = [
-    'alert',
-    `alert--${type}`,
-    description || children ? 'alert--with-description' : '',
+    'mds-alert',
+    `mds-alert--${type}`,
+    description || children ? 'mds-alert--with-description' : '',
     className,
   ].filter(Boolean).join(' ')
 
   return (
     <div ref={ref} className={classes} role="alert" {...props}>
-      {showIcon && <span className="alert__icon" aria-hidden="true" />}
-      <div className="alert__content">
-        {message && <div className="alert__message">{message}</div>}
+      {showIcon && <span className="mds-alert__icon" aria-hidden="true" />}
+      <div className="mds-alert__content">
+        {message && <div className="mds-alert__message">{message}</div>}
         {(description || children) && (
-          <div className="alert__description">{description || children}</div>
+          <div className="mds-alert__description">{description || children}</div>
         )}
       </div>
-      {action && <div className="alert__action">{action}</div>}
+      {action && <div className="mds-alert__action">{action}</div>}
       {closable && (
         <button
-          className="alert__close"
+          className="mds-alert__close"
           type="button"
           aria-label="Close alert"
           onClick={onClose}

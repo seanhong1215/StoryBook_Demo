@@ -26,10 +26,10 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(({
 }, ref) => {
   const countValue = value ?? defaultValue ?? ''
   const classes = [
-    'textarea',
-    `textarea--${size}`,
-    status ? `textarea--${status}` : '',
-    disabled ? 'textarea--disabled' : '',
+    'mds-textarea',
+    `mds-textarea--${size}`,
+    status ? `mds-textarea--${status}` : '',
+    disabled ? 'mds-textarea--disabled' : '',
     className,
   ].filter(Boolean).join(' ')
 
@@ -37,7 +37,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(({
     <span className={classes}>
       <textarea
         ref={ref}
-        className="textarea__control"
+        className="mds-textarea__control"
         rows={rows}
         value={value}
         defaultValue={defaultValue}
@@ -46,7 +46,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(({
         {...props}
       />
       {showCount && (
-        <span className="textarea__count">
+        <span className="mds-textarea__count">
           {String(countValue).length}{maxLength ? ` / ${maxLength}` : ''}
         </span>
       )}

@@ -1,45 +1,45 @@
-.form {
+.mds-form {
   color: var(--color-text);
   display: grid;
   gap: var(--spacing-md);
 }
 
-.form--horizontal {
+.mds-form--horizontal {
   gap: var(--spacing-lg);
 }
 
-.form-item {
+.mds-form-item {
   display: grid;
   gap: var(--spacing-xs);
 }
 
-.form--horizontal .form-item {
+.mds-form--horizontal .mds-form-item {
   align-items: start;
   grid-template-columns: 140px minmax(0, 1fr);
 }
 
-.form-item__label {
+.mds-form-item__label {
   color: var(--color-text);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
 }
 
-.form-item__control {
+.mds-form-item__control {
   min-width: 0;
 }
 
-.form-item__message,
-.form-item__extra {
+.mds-form-item__message,
+.mds-form-item__extra {
   color: var(--color-text-muted);
   font-size: var(--font-size-xs);
   line-height: 1.5;
 }
 
-.form-item__message {
+.mds-form-item__message {
   color: var(--color-danger);
 }
 
-.form--horizontal .form-item__message,
-.form--horizontal .form-item__extra {
+.mds-form--horizontal .mds-form-item__message,
+.mds-form--horizontal .mds-form-item__extra {
   grid-column: 2;
 }

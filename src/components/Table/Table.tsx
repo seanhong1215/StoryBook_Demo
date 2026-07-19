@@ -122,13 +122,13 @@ const TableInner = <T,>({
   }
 
   return (
-    <div ref={ref} className={['table', loading ? 'table--loading' : '', className].filter(Boolean).join(' ')}>
-      <div className="table__scroll">
-        <table className="table__element">
+    <div ref={ref} className={['mds-table', loading ? 'mds-table--loading' : '', className].filter(Boolean).join(' ')}>
+      <div className="mds-table__scroll">
+        <table className="mds-table__element">
           <thead>
             <tr>
               {rowSelection && (
-                <th className="table__selection">
+                <th className="mds-table__selection">
                   <Checkbox
                     checked={allVisibleSelected}
                     indeterminate={someVisibleSelected}
@@ -145,13 +145,13 @@ const TableInner = <T,>({
                   <th key={key}>
                     {column.sorter ? (
                       <button
-                        className="table__sort"
+                        className="mds-table__sort"
                         type="button"
                         aria-sort={sorted === 'ascend' ? 'ascending' : sorted === 'descend' ? 'descending' : 'none'}
                         onClick={() => toggleSort(column)}
                       >
                         {column.title}
-                        <span className="table__sort-indicator">
+                        <span className="mds-table__sort-indicator">
                           {sorted === 'ascend' ? 'up' : sorted === 'descend' ? 'down' : 'sort'}
                         </span>
                       </button>
@@ -168,7 +168,7 @@ const TableInner = <T,>({
               return (
                 <tr key={key}>
                   {rowSelection && (
-                    <td className="table__selection">
+                    <td className="mds-table__selection">
                       <Checkbox
                         checked={selectedRowKeys.includes(key)}
                         onChange={() => toggleRow(key)}
@@ -195,9 +195,9 @@ const TableInner = <T,>({
           <Empty title={emptyText} />
         )}
       </div>
-      {loading && <div className="table__loading">Loading</div>}
+      {loading && <div className="mds-table__loading">Loading</div>}
       {pagination && sortedData.length > pageSize && (
-        <div className="table__pagination">
+        <div className="mds-table__pagination">
           <Pagination
             current={page}
             total={sortedData.length}

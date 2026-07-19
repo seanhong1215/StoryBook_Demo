@@ -52,18 +52,18 @@ export const Tabs = forwardRef<HTMLDivElement, TabsProps>(({
   }
 
   const classes = [
-    'tabs',
-    `tabs--${size}`,
-    `tabs--${type}`,
+    'mds-tabs',
+    `mds-tabs--${size}`,
+    `mds-tabs--${type}`,
     className,
   ].filter(Boolean).join(' ')
 
   return (
     <div ref={ref} className={classes}>
-      <div className="tabs__list" role="tablist">
+      <div className="mds-tabs__list" role="tablist">
         {items.map((item) => (
           <button
-            className="tabs__tab"
+            className="mds-tabs__tab"
             type="button"
             role="tab"
             aria-selected={item.key === currentKey}
@@ -76,7 +76,7 @@ export const Tabs = forwardRef<HTMLDivElement, TabsProps>(({
         ))}
       </div>
       {currentItem && (
-        <div className="tabs__panel" role="tabpanel">
+        <div className="mds-tabs__panel" role="tabpanel">
           {currentItem.children}
         </div>
       )}

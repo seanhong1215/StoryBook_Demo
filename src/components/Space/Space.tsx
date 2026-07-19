@@ -29,11 +29,11 @@ export const Space = forwardRef<HTMLElement, SpaceProps>(({
   ...props
 }, ref) => {
   const classes = [
-    'space',
-    `space--${direction}`,
-    `space--${size}`,
-    `space--align-${align}`,
-    wrap ? 'space--wrap' : '',
+    'mds-space',
+    `mds-space--${direction}`,
+    `mds-space--${size}`,
+    `mds-space--align-${align}`,
+    wrap ? 'mds-space--wrap' : '',
     className,
   ].filter(Boolean).join(' ')
 

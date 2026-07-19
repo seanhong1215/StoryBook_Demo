@@ -29,14 +29,14 @@ export const Empty = forwardRef<HTMLDivElement, EmptyProps>(({
   className = '',
 }, ref) => {
   return (
-    <div ref={ref} className={['empty', className].filter(Boolean).join(' ')}>
-      <div className="empty__image" aria-hidden="true">
-        {image || <span className="empty__box" />}
+    <div ref={ref} className={['mds-empty', className].filter(Boolean).join(' ')}>
+      <div className="mds-empty__image" aria-hidden="true">
+        {image || <span className="mds-empty__box" />}
       </div>
-      <h3 className="empty__title">{title}</h3>
-      {description && <p className="empty__description">{description}</p>}
+      <h3 className="mds-empty__title">{title}</h3>
+      {description && <p className="mds-empty__description">{description}</p>}
       {(action || actionText) && (
-        <div className="empty__action">
+        <div className="mds-empty__action">
           {action || <Button type="primary" size="sm" onClick={onAction}>{actionText}</Button>}
         </div>
       )}

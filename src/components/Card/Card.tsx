@@ -53,28 +53,28 @@ export const Card = forwardRef<HTMLElement, CardProps>(({
   const cardPadding = size === 'small' ? 'sm' : padding
 
   const classes = [
-    'card',
-    `card--${variant}`,
-    `card--padding-${cardPadding}`,
-    bordered ? '' : 'card--borderless',
-    interactive || hoverable ? 'card--interactive' : '',
+    'mds-card',
+    `mds-card--${variant}`,
+    `mds-card--padding-${cardPadding}`,
+    bordered ? '' : 'mds-card--borderless',
+    interactive || hoverable ? 'mds-card--interactive' : '',
     className,
   ].filter(Boolean).join(' ')
 
   return (
     <Component ref={ref} className={classes} {...props}>
       {title && (
-        <div className="card__header">
-          <h3 className="card__title">{title}</h3>
-          {extra && <div className="card__extra">{extra}</div>}
+        <div className="mds-card__header">
+          <h3 className="mds-card__title">{title}</h3>
+          {extra && <div className="mds-card__extra">{extra}</div>}
         </div>
       )}
-      <div className="card__body">
-        {description && <p className="card__description">{description}</p>}
+      <div className="mds-card__body">
+        {description && <p className="mds-card__description">{description}</p>}
         {children}
       </div>
       {footer && (
-        <div className={`card__footer card__footer--${footerAlign}`}>{footer}</div>
+        <div className={`mds-card__footer mds-card__footer--${footerAlign}`}>{footer}</div>
       )}
     </Component>
   )

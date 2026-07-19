@@ -1,4 +1,4 @@
-.tag {
+.mds-tag {
   align-items: center;
   background: var(--color-bg);
   border: 1px solid var(--color-border);
@@ -13,31 +13,31 @@
   white-space: nowrap;
 }
 
-.tag--primary {
+.mds-tag--primary {
   background: #EFF6FF;
   border-color: #BFDBFE;
   color: var(--color-primary);
 }
 
-.tag--success {
+.mds-tag--success {
   background: #ECFDF5;
   border-color: #A7F3D0;
   color: var(--color-success);
 }
 
-.tag--warning {
+.mds-tag--warning {
   background: #FFFBEB;
   border-color: #FDE68A;
   color: var(--color-warning);
 }
 
-.tag--danger {
+.mds-tag--danger {
   background: #FEF2F2;
   border-color: #FECACA;
   color: var(--color-danger);
 }
 
-.tag__close {
+.mds-tag__close {
   background: transparent;
   border: 0;
   color: currentColor;
