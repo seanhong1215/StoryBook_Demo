@@ -14,7 +14,12 @@ export interface DropdownItem {
 export interface DropdownProps {
   /** Menu items. */
   items?: DropdownItem[]
-  /** Trigger content rendered inside the built-in button. */
+  /**
+   * Content of the built-in trigger button — text or an icon.
+   *
+   * Do not pass a `<Button>` here: Dropdown already renders its own `<button>`,
+   * so it would nest interactive controls (invalid HTML, breaks keyboard nav).
+   */
   trigger?: ReactNode
   /** Menu alignment relative to the trigger. */
   placement?: 'bottom-start' | 'bottom-end'

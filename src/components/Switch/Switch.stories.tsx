@@ -8,7 +8,12 @@ const meta = {
   parameters: {
     docs: {
       description: {
-        component: 'Switch toggles an immediate on/off setting with size, loading, and disabled states.',
+        component: [
+          'Switch toggles an immediate on/off setting with size, loading, and disabled states.',
+          '',
+          '**Accessibility:** a Switch with no `checkedChildren`/`unCheckedChildren` has no',
+          'accessible name. Always pass `aria-label`, or associate a visible `<label>`.',
+        ].join('\n'),
       },
     },
   },
@@ -24,6 +29,7 @@ type Story = StoryObj<typeof meta>
 export const Basic: Story = {
   args: {
     defaultChecked: true,
+    'aria-label': 'Enable workspace',
   },
 }
 
@@ -39,9 +45,9 @@ export const WithLabels: Story = {
 export const Sizes: Story = {
   render: () => (
     <div className="story-surface">
-      <Switch size="sm" defaultChecked />
-      <Switch size="md" defaultChecked />
-      <Switch size="lg" defaultChecked />
+      <Switch size="sm" defaultChecked aria-label="Small switch" />
+      <Switch size="md" defaultChecked aria-label="Medium switch" />
+      <Switch size="lg" defaultChecked aria-label="Large switch" />
     </div>
   ),
 }
@@ -49,9 +55,9 @@ export const Sizes: Story = {
 export const States: Story = {
   render: () => (
     <div className="story-surface">
-      <Switch defaultChecked />
-      <Switch disabled />
-      <Switch loading defaultChecked />
+      <Switch defaultChecked aria-label="Checked switch" />
+      <Switch disabled aria-label="Disabled switch" />
+      <Switch loading defaultChecked aria-label="Loading switch" />
     </div>
   ),
 }

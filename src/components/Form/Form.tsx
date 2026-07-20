@@ -5,6 +5,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useId,
   useMemo,
   useRef,
   useState,
@@ -196,6 +197,18 @@ export const FormItem = forwardRef<HTMLDivElement, FormItemProps>(({
   const value = name ? form?.values[name] : undefined
   const registerField = form?.registerField
 
+  /*
+   * label 必須真的關聯到控制項，否則螢幕閱讀器讀不出欄位名稱
+   * （axe 的 label / select-name 規則會判為 critical）。
+   * 子元素若自帶 id 就沿用，否則用 useId 產生一個穩定 id。
+   */
+  const generatedId = useId()
+  const childId = (children?.props.id as string | undefined) ?? `${generatedId}-control`
+  const errorId = `${generatedId}-error`
+  const extraId = `${generatedId}-extra`
+  const showExtra = Boolean(extra) && !error
+  const describedBy = [error ? errorId : '', showExtra ? extraId : ''].filter(Boolean).join(' ')
+
   useEffect(() => {
     rulesRef.current = rules
   }, [rules])
@@ -209,27 +222,45 @@ export const FormItem = forwardRef<HTMLDivElement, FormItemProps>(({
     })
   }, [name, registerField])
 
-  const child = name && form && children
-    ? cloneElement(children, {
-      [valuePropName]: value ?? (valuePropName === 'checked' ? false : ''),
-      status: error ? 'error' as const : children.props.status,
-      onChange: (...args: unknown[]) => {
-        const nextValue = getValueFromEvent
-          ? getValueFromEvent(...args)
-          : getEventValue(args[0], valuePropName)
+  // a11y 相關的 props 不依賴 name / form，未接上 Form 時也要套用
+  const a11yProps = children
+    ? {
+      id: childId,
+      'aria-invalid': error ? true : undefined,
+      'aria-describedby': describedBy || undefined,
+    }
+    : {}
 
-        form.setFieldValue(name, nextValue)
-        children.props.onChange?.(...args)
-      },
-    })
+  const child = children
+    ? cloneElement(children, name && form
+      ? {
+        ...a11yProps,
+        [valuePropName]: value ?? (valuePropName === 'checked' ? false : ''),
+        status: error ? 'error' as const : children.props.status,
+        onChange: (...args: unknown[]) => {
+          const nextValue = getValueFromEvent
+            ? getValueFromEvent(...args)
+            : getEventValue(args[0], valuePropName)
+
+          form.setFieldValue(name, nextValue)
+          children.props.onChange?.(...args)
+        },
+      }
+      : a11yProps)
     : children
 
   return (
     <div ref={ref} className={['mds-form-item', error ? 'mds-form-item--error' : ''].filter(Boolean).join(' ')}>
-      {label && <label className="mds-form-item__label">{label}</label>}
+      {label && (
+        <label className="mds-form-item__label" htmlFor={childId}>{label}</label>
+      )}
       <div className="mds-form-item__control">{child}</div>
-      {error && <div className="mds-form-item__message">{error}</div>}
-      {extra && !error && <div className="mds-form-item__extra">{extra}</div>}
+      {error && (
+        <div className="mds-form-item__message" id={errorId} role="alert">{error}</div>
+      )}
+      {showExtra && (
+        <div className="mds-form-item__extra" id={extraId}>{extra}</div>
+      )}
     </div>
   )
 })

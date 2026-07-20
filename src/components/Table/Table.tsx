@@ -142,16 +142,22 @@ const TableInner = <T,>({
                 const sorted = sortState && sortState.key === key ? sortState.order : undefined
 
                 return (
-                  <th key={key}>
+                  // aria-sort 屬於 columnheader（<th>），不是裡面的 button。
+                  // 放在 button 上會被 axe 判為 aria-allowed-attr 違規，螢幕閱讀器也讀不到排序狀態。
+                  <th
+                    key={key}
+                    aria-sort={column.sorter
+                      ? (sorted === 'ascend' ? 'ascending' : sorted === 'descend' ? 'descending' : 'none')
+                      : undefined}
+                  >
                     {column.sorter ? (
                       <button
                         className="mds-table__sort"
                         type="button"
-                        aria-sort={sorted === 'ascend' ? 'ascending' : sorted === 'descend' ? 'descending' : 'none'}
                         onClick={() => toggleSort(column)}
                       >
                         {column.title}
-                        <span className="mds-table__sort-indicator">
+                        <span className="mds-table__sort-indicator" aria-hidden="true">
                           {sorted === 'ascend' ? 'up' : sorted === 'descend' ? 'down' : 'sort'}
                         </span>
                       </button>

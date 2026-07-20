@@ -73,7 +73,8 @@ const CommerceOperationsTemplate = () => (
           </Space>
         </div>
         <div className="commerce-command">
-          <Card title="今日營運概況" extra={<Badge variant="warning">18 筆逾期</Badge>}>
+          {/* 緊接在 h1 之後，標題要是 h2；卡片預設的 h3 會跳級 */}
+          <Card title="今日營運概況" titleAs="h2" extra={<Badge variant="warning">18 筆逾期</Badge>}>
             <div className="commerce-command__grid">
               <Card title="待處理訂單" size="small"><strong>248</strong></Card>
               <Card title="高價值訂單" size="small"><strong>$42.8K</strong></Card>
@@ -124,9 +125,10 @@ const CommerceOperationsTemplate = () => (
         </div>
         <Card title="取得版型">
           <Space direction="vertical" align="stretch">
-            <Input placeholder="公司信箱" />
+            <Input placeholder="公司信箱" aria-label="公司信箱" />
             <Select
               placeholder="營運規模"
+              aria-label="營運規模"
               options={[
                 { label: '1-5 間門市', value: 'small' },
                 { label: '6-20 間門市', value: 'medium' },
@@ -165,7 +167,8 @@ const FinanceServicesTemplate = () => (
             建立信任，並引導企業客戶進入風險審查、案件管理與合規諮詢。
           </p>
         </div>
-        <Card className="finance-review-card" title="風險審查摘要" extra={<Tag color="primary">安全工作區</Tag>}>
+        {/* hero 內、緊接在 h1 之後的第一個標題，要是 h2 */}
+        <Card className="finance-review-card" title="風險審查摘要" titleAs="h2" extra={<Tag color="primary">安全工作區</Tag>}>
           {[
             ['高風險案件', '11', '需主管覆核'],
             ['KYC 更新', '26', '處理中'],
@@ -187,6 +190,7 @@ const FinanceServicesTemplate = () => (
           ['SOC 2', '合規敘事'],
           ['99.9%', '服務可用性'],
         ].map(([value, label]) => (
+          // 前面已有 h2（風險審查摘要），這裡維持預設 h3
           <Card title={label} key={label}>
             <strong className="template-stat">{value}</strong>
           </Card>
@@ -257,7 +261,8 @@ const SaasServicesTemplate = () => (
       </section>
 
       <section className="saas-dashboard" id="platform">
-        <Card title="工作區健康度" extra={<Badge variant="success">即時摘要</Badge>}>
+        {/* 緊接在 h1 之後，標題要是 h2 */}
+        <Card title="工作區健康度" titleAs="h2" extra={<Badge variant="success">即時摘要</Badge>}>
           <div className="saas-dashboard__bars" aria-hidden="true">
             <span style={{ height: '72%' }} />
             <span style={{ height: '48%' }} />
@@ -319,9 +324,10 @@ const SaasServicesTemplate = () => (
         </div>
         <Card title="申請產品試用">
           <Space direction="vertical" align="stretch">
-            <Input placeholder="工作信箱" />
+            <Input placeholder="工作信箱" aria-label="工作信箱" />
             <Select
               placeholder="公司規模"
+              aria-label="公司規模"
               options={[
                 { label: '1-20 人', value: 'small' },
                 { label: '21-100 人', value: 'medium' },
