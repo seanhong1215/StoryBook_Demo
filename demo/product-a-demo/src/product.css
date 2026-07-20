@@ -1,0 +1,101 @@
+/*
+ * 這是「你的產品」自己的樣式。
+ * 重點：顏色一律取自 design system 的 token，不要寫死色碼 ——
+ * 這樣你自己的版面才會跟著 ThemeProvider 一起切換明暗與產品線。
+ */
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif;
+  transition: background var(--transition-base), color var(--transition-base);
+}
+
+.page {
+  margin: 0 auto;
+  max-width: 1120px;
+  padding: var(--spacing-xl) var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.page__header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.page__title {
+  margin: var(--spacing-sm) 0 0;
+  font-size: var(--font-size-xl);
+  color: var(--color-text);
+}
+
+.page__lede {
+  margin: var(--spacing-xs) 0 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.page__grid {
+  display: grid;
+  gap: var(--spacing-md);
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  align-items: start;
+}
+
+/* 表單欄位 */
+.field {
+  margin-bottom: var(--spacing-md);
+}
+
+.field__label {
+  display: block;
+  margin-bottom: var(--spacing-xs);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text);
+}
+
+.field__error {
+  margin: var(--spacing-xs) 0 0;
+  font-size: var(--font-size-xs);
+  color: var(--color-danger);
+}
+
+/*
+ * 卡片用 --color-surface（不是 --color-bg）——
+ * surface 是「浮在頁面上的表面」，bg 是頁面本身。
+ */
+.panel {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+}
+
+.panel__title {
+  margin: 0 0 var(--spacing-sm);
+  font-size: var(--font-size-lg);
+  color: var(--color-text);
+}
+
+.panel__body {
+  margin: 0;
+  color: var(--color-text-muted);
+  line-height: 1.7;
+}
+
+.panel__code {
+  margin: var(--spacing-md) 0 0;
+  padding: var(--spacing-sm);
+  background: var(--color-bg-subtle);
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  font-size: var(--font-size-xs);
+  overflow: auto;
+}
