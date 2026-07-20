@@ -66,6 +66,8 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(({
       <select
         ref={ref}
         className="mds-select__control"
+        // status="error" 只是 class，螢幕閱讀器讀不到；自動補 aria-invalid
+        aria-invalid={status === 'error' ? true : undefined}
         {...(isControlled ? { value } : { defaultValue: uncontrolledDefault })}
         disabled={disabled}
         {...props}

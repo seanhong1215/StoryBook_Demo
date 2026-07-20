@@ -10,10 +10,18 @@ const meta = {
   parameters: {
     docs: {
       description: {
-        component: 'Card groups related content and optional actions in a contained surface.',
+        component: [
+          'Card groups related content and optional actions in a contained surface.',
+          '',
+          '**Card does not set its own width.** It fills whatever container you put it in —',
+          'width is a layout decision, so constrain it with your own grid/flex container.',
+          'These stories are wrapped in a 520px container for demonstration.',
+        ].join('\n'),
       },
     },
   },
+  // Card 本身不限制寬度，所以 story 要自己給容器 —— 這也正是使用端該做的事
+  decorators: [(Story) => <div className="story-stack"><Story /></div>],
 } satisfies Meta<typeof Card>
 
 export default meta

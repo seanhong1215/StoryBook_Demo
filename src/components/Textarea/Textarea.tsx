@@ -38,6 +38,8 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(({
       <textarea
         ref={ref}
         className="mds-textarea__control"
+        // status="error" 只是 class，螢幕閱讀器讀不到；自動補 aria-invalid
+        aria-invalid={status === 'error' ? true : undefined}
         rows={rows}
         value={value}
         defaultValue={defaultValue}

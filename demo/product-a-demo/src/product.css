@@ -67,6 +67,106 @@ body {
   color: var(--color-danger);
 }
 
+.field__hint {
+  margin: var(--spacing-xs) 0 0;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.field code,
+.panel__body code {
+  background: var(--color-bg-subtle);
+  border-radius: var(--radius-sm);
+  padding: 1px 4px;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+/*
+ * 載入佔位（skeleton）。
+ * library 目前沒有 Skeleton 元件，所以在消費端自己刻 —— 但一樣只用 token，
+ * 這樣它在四條產品線與明暗主題下都會自動合拍。
+ */
+.orders-skeleton {
+  display: grid;
+  gap: var(--spacing-sm);
+}
+
+.skeleton-row {
+  height: 44px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(
+    90deg,
+    var(--color-bg-subtle) 25%,
+    var(--color-surface-hover) 37%,
+    var(--color-bg-subtle) 63%
+  );
+  background-size: 400% 100%;
+  animation: skeleton-shimmer 1.4s ease infinite;
+}
+
+@keyframes skeleton-shimmer {
+  from { background-position: 100% 50%; }
+  to   { background-position: 0 50%; }
+}
+
+/* 尊重使用者的減少動態偏好 */
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-row {
+    animation: none;
+    background: var(--color-bg-subtle);
+  }
+}
+
+/* ---- 訂單：夠寬用表格 / 窄的時候用卡片 ---- */
+
+.orders {
+  container-type: inline-size;
+}
+
+.orders-cards {
+  display: none;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: var(--spacing-sm);
+}
+
+.order-card {
+  display: grid;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-subtle);
+}
+
+.order-card__top,
+.order-card__bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+}
+
+.order-card__customer {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.order-card__amount {
+  font-weight: var(--font-weight-bold);
+}
+
+/*
+ * 卡片容器窄於 560px 就換成卡片列表。
+ * 用 container query 而不是 media query —— 決定表格塞不塞得下的是「卡片寬度」，
+ * 不是螢幕寬度。這一頁是兩欄佈局，即使在寬螢幕，單一卡片也可能很窄。
+ */
+@container (max-width: 560px) {
+  .orders-table { display: none; }
+  .orders-cards { display: grid; }
+}
+
 /*
  * 卡片用 --color-surface（不是 --color-bg）——
  * surface 是「浮在頁面上的表面」，bg 是頁面本身。
