@@ -1,0 +1,87 @@
+name: CI
+
+on:
+  push:
+    branches: [master, feature]
+  pull_request:
+  workflow_dispatch:
+
+# 同一分支的新 push 取消還在跑的舊 run —— private repo 的 Actions 分鐘數是計量的
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Build library
+        run: npm run build
+
+      # a11y 檢查在 preview.tsx 設為 'error'，這一步等同 a11y 迴歸測試
+      - name: Install Playwright chromium
+        run: npx playwright install chromium --with-deps
+
+      - name: Test (92 stories, a11y enforced)
+        run: npm test
+
+      - name: Build Storybook
+        run: npm run build-storybook
+
+      # private repo 無法用 GitHub Pages 做「只給內部看」的站台
+      # （免費/Pro 方案的 Pages 一律公開）。改成上傳 artifact：
+      # 有 repo 權限的人才下載得到，權限直接沿用 GitHub 的存取控制。
+      - name: Upload Storybook
+        uses: actions/upload-artifact@v4
+        with:
+          name: storybook-${{ github.sha }}
+          path: storybook-static
+          retention-days: 14
+
+  # 驗證「打包出來的東西真的裝得起來」——
+  # 這一步抓的是 files / exports / sideEffects 設定錯誤，
+  # 那類問題在 repo 內部怎麼測都測不出來。
+  consumer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: verify
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Pack and install into demo
+        run: npm run demo:sync
+
+      - name: Typecheck demo against the packed library
+        working-directory: demo/product-a-demo
+        run: npx tsc --noEmit -p tsconfig.app.json
+
+      - name: Build demo
+        working-directory: demo/product-a-demo
+        run: npx vite build
