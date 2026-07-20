@@ -81,7 +81,22 @@ npm run demo:sync    # build → pack → 安裝進 demo
 | 4 | ✅ 完成 | a11y 真正啟用 |
 | 5 | ⬜ 待辦 | Interaction tests（play functions） |
 | 6 | ⬜ 待辦 | MDX 使用指南 |
-| 7 | ⬜ 待辦 | CI/CD（GitHub Actions + Chromatic + Pages） |
+| 7 | 🟡 部分 | CI 已建立（含 consumer job）；Pages/Chromatic 待對外發布階段 |
+
+## 目前優先序：內部試用
+
+使用者的目標是**先讓內部人員試用、沒問題才對外發布**，因此優先序與原本的
+Phase 順序不同：
+
+| 順序 | 事項 | 狀態 |
+|---|---|---|
+| 1 | 推送 commit 到 `origin/feature` | ⬜ **需使用者執行** `git push origin feature` |
+| 2 | `ci.yml`（不含 Pages） | ✅ 已建立 |
+| 3 | 內部試用指南 | ✅ `.docs/INTERNAL-ROLLOUT.md` |
+| 4 | 發布 0.1.0 到 GitHub Packages | ⬜ **需使用者設 token 後 `npm publish`** |
+| 5 | 收內部回饋 → 修 → 0.1.x | ⬜ |
+
+Phase 5（測試）與 6（MDX）在內部試用階段**不是必要的**，可往後放。
 
 ## 待辦細節
 
@@ -204,8 +219,20 @@ WCAG 1.4.11 對「識別控制項所需的邊界」要求 3:1。修它要把所�
 - 更新 `storySort` 把 docs 頁排最前
 
 ### Phase 7 — CI/CD
-- repo：`github.com/seanhong1215/StoryBook_Demo`（branch: feature）
-- `ci.yml`：node 22 → lint → typecheck → build → `npx playwright install chromium --with-deps` → test-storybook → build-storybook
+
+> **repo 是 private，這改變了原本的規劃。**
+> GitHub Pages 在免費/Pro 方案下一律公開，不能用來做「只給內部看」的文件站。
+> 已改為把 `storybook-static` 上傳成 Actions artifact —— 下載權限直接沿用
+> GitHub 的 repo 存取控制。`deploy-pages.yml` 要等**對外發布**階段再做。
+
+- [x] `ci.yml` 已建立：lint / typecheck / build / `npm test` / build-storybook
+      → 上傳 Storybook artifact；另有 **consumer job** 把 library 打包後裝進
+      `demo/product-a-demo` 並 build，驗證 `files`/`exports`/`sideEffects`
+      （這類問題在 repo 內部測不出來）
+- [x] 設 `concurrency` 取消同分支的舊 run —— private repo 的 Actions 分鐘數計量
+- [ ] `deploy-pages.yml`：**對外發布階段才做**；屆時 repo Settings > Pages
+      source 改 "GitHub Actions"，並刪掉 `scripts/deploy-storybook.ps1` 與 `deploy` script
+- 舊規劃保留備查：
 - `chromatic.yml`：`chromaui/action@latest` + `fetch-depth: 0` + `onlyChanged: true`；**需先到 chromatic.com 建專案，token 存 repo secret `CHROMATIC_PROJECT_TOKEN`**（要使用者操作）
 - Chromatic 額度：只對 Showcase + 6 個重點元件 default story 加 dark `modes`，其餘 light-only
 - `deploy-pages.yml`：`upload-pages-artifact` + `deploy-pages`；repo Settings > Pages source 改 "GitHub Actions"；之後刪 `scripts/deploy-storybook.ps1` 與 `deploy` script
