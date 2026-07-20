@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Button } from '../Button/Button'
 import { Dropdown } from './Dropdown'
 import type { DropdownItem } from './Dropdown'
 
@@ -17,7 +16,13 @@ const meta = {
   parameters: {
     docs: {
       description: {
-        component: 'Dropdown reveals contextual actions from a trigger with click outside dismissal.',
+        component: [
+          'Dropdown reveals contextual actions from a trigger with click outside dismissal.',
+          '',
+          '`trigger` is the **content** of the built-in trigger button — pass text or an icon.',
+          'Do not pass a `<Button>`: it would render a button inside a button, which is invalid',
+          'HTML and breaks keyboard navigation.',
+        ].join('\n'),
       },
     },
   },
@@ -29,7 +34,7 @@ type Story = StoryObj<typeof meta>
 export const Basic: Story = {
   args: {
     items,
-    trigger: <Button variant="secondary">Actions</Button>,
+    trigger: 'Actions',
   },
 }
 
@@ -37,6 +42,6 @@ export const EndAligned: Story = {
   args: {
     items,
     placement: 'bottom-end',
-    trigger: <Button>Release menu</Button>,
+    trigger: 'Release menu',
   },
 }

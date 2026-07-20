@@ -37,6 +37,7 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit -p tsconfig.app.json",
     "test": "vitest --project=storybook run",
+    "test-storybook": "vitest --project=storybook run",
     "preview": "vite preview",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",

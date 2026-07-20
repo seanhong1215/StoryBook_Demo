@@ -16,7 +16,7 @@
 | 1f | ✅ 完成 | 可共用門檻：打包保險 + forwardRef + `mds-` 前綴 + ThemeProvider global |
 | 2 | ✅ 完成 | Dark mode token 架構 |
 | 3 | ✅ 完成 | Storybook toolbar 全域化（theme + product-line） |
-| 4 | ⬜ 待辦 | a11y 真正啟用 |
+| 4 | ✅ 完成 | a11y 真正啟用 |
 | 5 | ⬜ 待辦 | Interaction tests（play functions） |
 | 6 | ⬜ 待辦 | MDX 使用指南 |
 | 7 | ⬜ 待辦 | CI/CD（GitHub Actions + Chromatic + Pages） |
@@ -85,26 +85,39 @@
 link 按鈕、docs kicker），`#0066FF` 對暗色頁面底只有 3.97:1。
 新增 `--color-primary-text`（淺色維持原色，暗色往白色混到 60%）。
 
-### Phase 4 — a11y 啟用
-- `.storybook/main.ts` addons 加 `'@storybook/addon-a11y'`（已在 devDeps）
-- 跑 `npx vitest --project=storybook run` 收集違規 → 修完 → preview 改 `a11y: { test: 'error' }`
-- 重點：Modal focus 管理、Select/Dropdown aria、表單 label 關聯
-- 文字對比已在 Phase 2/3 用腳本掃過（8 組 token 組合 + 90 個 story × 2 主題）並修正
+### Phase 4 — a11y 啟用（已完成）
 
-**Phase 3 掃描後仍未解決的對比問題（明暗兩色數值完全相同，皆為既有問題，
-與 dark mode 無關；改動涉及品牌色定義，需先與使用者確認）：**
+`addon-a11y` 已註冊，`preview.tsx` 的 `a11y.test` 從 `'todo'` 轉為 `'error'`。
+`npm test`（= `vitest --project=storybook run`）目前 **92 個 story 全過**。
 
-| 項目 | 對比 | 說明 |
+修掉的元件真 bug：
+
+| 元件 | 問題 | 修法 |
 |---|---|---|
-| `.mds-btn--success` 白字 on `--color-success` `#10B981` | **2.54** | 最嚴重 |
-| `.mds-btn--danger` 白字 on `--color-danger` `#EF4444` | 3.76 | |
-| `--color-border` on `--color-surface`（淺色） | 1.24 | WCAG 1.4.11 要求 3:1 |
-| `.mds-tabs__tab` disabled | 1.18 / 1.53 | WCAG 1.4.3 明文豁免停用中的元件，可不修 |
+| Table | `aria-sort` 放在 `<button>` 上 | ARIA 規定它屬於 columnheader，移到 `<th>`；排序指示符加 `aria-hidden` |
+| Form / FormItem | 渲染了 `<label>` 卻沒關聯控制項 | 用 `useId` 產生 id，補 `htmlFor`；並加 `aria-invalid` 與指向錯誤訊息的 `aria-describedby`（錯誤訊息加 `role="alert"`） |
+| Card | 標題寫死 `<h3>`，跟在 h1 後就跳級 | 新增 `titleAs` prop，預設仍是 `h3` |
+| Tabs | disabled 用 `--color-border` 當文字色（1.18:1，看不見） | 改用 `--color-text-muted` + `--opacity-disabled` |
+| Button | disabled 寫死 `opacity: 0.4` | 改用 `--opacity-disabled` token（該 token 原本定義了卻沒人用） |
 
-前兩項的可能作法：(a) 直接加深 `--color-success` / `--color-danger`（會影響
-tone token 混出來的所有淺底）；(b) 另立 `--color-success-solid` 之類只給填底用的
-加深變體，不動品牌色本身。(b) 影響面較小但多一組 token。
-- 無法立即修的個別 story 用 story-level `parameters: { a11y: { test: 'todo' } }` 註記原因
+修掉的 story 錯誤示範（story 本身就是文件，寫錯等於教錯）：
+Dropdown 的 `trigger` 塞了 `<Button>` 造成按鈕包按鈕；Select / Textarea / Switch
+缺少可及名稱；Showcase 的表單控制項缺 `aria-label`。
+
+品牌色對比（Phase 3 掃描留下的）依決議採「另立只給填底用的加深變體」：
+新增 `--color-success-solid` / `--color-danger-solid`（及對應 hover），
+用腳本算出讓四條產品線都過 AA 的最小加深比例（success 70%、danger 85%）。
+**刻意不動 `--color-success` / `--color-danger` 本身** —— 它們還被 `tone-*`
+用 color-mix 混出 Tag / Badge / Alert 的淺底。
+按鈕 hover 也從 `opacity: 0.85` 改為更深的實色，避免透明度稀釋剛拉起來的對比。
+
+> **踩到的坑**：自己寫的 axe 掃描腳本只跑 `wcag2a/2aa/21a/21aa` 標籤，
+> 會漏掉 best-practice 規則。addon-a11y 跑的是完整規則集，多抓到 3 個
+> `heading-order`。要驗 a11y 請用 `npm test`，不要只信自訂腳本。
+
+仍未處理（需要動到整體視覺設計，留待與使用者確認）：
+`--color-border` 對 `--color-surface` 在淺色下只有 1.24:1，
+WCAG 1.4.11 對「識別控制項所需的邊界」要求 3:1。修它要把所有邊框大幅加深。
 
 ### Phase 5 — Interaction tests
 - package.json 加 `"test-storybook": "vitest --project=storybook run"`

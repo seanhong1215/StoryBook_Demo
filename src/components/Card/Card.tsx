@@ -8,6 +8,13 @@ export interface CardProps extends Omit<AllHTMLAttributes<HTMLElement>, 'title' 
   as?: ElementType
   /** Header title. */
   title?: ReactNode
+  /**
+   * Heading level for `title`. Defaults to `h3`.
+   *
+   * The correct level depends on the surrounding document outline — headings must
+   * not skip levels. If the card sits directly under an `<h1>`, pass `titleAs="h2"`.
+   */
+  titleAs?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'div'
   /** Extra node aligned to the end of the header. */
   extra?: ReactNode
   /** Muted copy rendered before the body content. */
@@ -36,6 +43,7 @@ export interface CardProps extends Omit<AllHTMLAttributes<HTMLElement>, 'title' 
 export const Card = forwardRef<HTMLElement, CardProps>(({
   as: Component = 'div',
   title,
+  titleAs: TitleTag = 'h3',
   extra,
   description,
   footer,
@@ -65,7 +73,7 @@ export const Card = forwardRef<HTMLElement, CardProps>(({
     <Component ref={ref} className={classes} {...props}>
       {title && (
         <div className="mds-card__header">
-          <h3 className="mds-card__title">{title}</h3>
+          <TitleTag className="mds-card__title">{title}</TitleTag>
           {extra && <div className="mds-card__extra">{extra}</div>}
         </div>
       )}

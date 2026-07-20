@@ -188,6 +188,21 @@
    */
   --color-primary-text: color-mix(in srgb, var(--color-primary) var(--primary-text-mix), var(--tone-text-base));
 
+  /*
+   * 語意色「當實心填底 + 白字」用（danger / success 按鈕）。
+   *
+   * 品牌色本身太亮，白字撐不起 AA：core 的 success #10B981 只有 2.54:1、
+   * danger #EF4444 只有 3.76:1。這裡各自往黑色加深到「四條產品線都 >= 4.5:1」
+   * 所需的比例（success 70%、danger 85%，已含餘裕）。
+   *
+   * 刻意不動 --color-success / --color-danger 本身 —— 那兩個還被 tone-* 用
+   * color-mix 混出 Tag / Badge / Alert 的淺底，加深會連帶改變那些元件的色調。
+   */
+  --color-success-solid: color-mix(in srgb, var(--color-success) 70%, black);
+  --color-success-solid-hover: color-mix(in srgb, var(--color-success) 58%, black);
+  --color-danger-solid: color-mix(in srgb, var(--color-danger) 85%, black);
+  --color-danger-solid-hover: color-mix(in srgb, var(--color-danger) 70%, black);
+
   --tone-info-bg: color-mix(in srgb, var(--color-primary) var(--tone-bg-mix), var(--color-surface));
   --tone-info-border: color-mix(in srgb, var(--color-primary) var(--tone-border-mix), var(--color-surface));
   --tone-info-text: color-mix(in srgb, var(--color-primary) var(--tone-text-mix), var(--tone-text-base));

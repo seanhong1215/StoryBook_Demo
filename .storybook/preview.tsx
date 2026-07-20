@@ -68,10 +68,10 @@ const preview: Preview = {
     },
 
     a11y: {
-      // 'todo' - show a11y violations in the test UI only
-      // 'error' - fail CI on a11y violations
-      // 'off' - skip a11y checks entirely
-      test: 'todo',
+      // Phase 4 已把 92 個 story × light/dark 的 axe 違規清到 0，
+      // 因此從 'todo' 轉為 'error'：之後任何退步都會讓測試失敗。
+      // 個別暫時無法修的 story 可用 story-level parameters 覆寫回 'todo' 並註明原因。
+      test: 'error',
     },
     options: {
       storySort: {

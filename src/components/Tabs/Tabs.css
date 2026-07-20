@@ -35,8 +35,14 @@
   right: 0;
 }
 
+/*
+ * 用 text-muted + opacity token，不要用 --color-border 當文字色 ——
+ * 那是邊框色，當文字只有 1.18:1，使用者會看不出這個分頁存在。
+ * WCAG 1.4.3 雖然豁免停用中的元件，但仍要讓人看得出「這裡有東西但不能點」。
+ */
 .mds-tabs__tab:disabled {
-  color: var(--color-border);
+  color: var(--color-text-muted);
+  opacity: var(--opacity-disabled);
   cursor: not-allowed;
 }
 

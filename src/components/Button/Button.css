@@ -48,20 +48,25 @@
   color: var(--color-primary-hover);
 }
 
+/*
+ * 用 -solid 變體而非 --color-danger / --color-success 本身：
+ * 品牌色太亮，白字達不到 AA。hover 也不要用 opacity —— 透明會讓按鈕與頁面
+ * 底色混合，把剛拉起來的對比又稀釋掉，改用更深的實色。
+ */
 .mds-btn--danger {
-  background: var(--color-danger);
+  background: var(--color-danger-solid);
   color: var(--color-on-brand);
 }
 .mds-btn--danger:hover:not(:disabled) {
-  opacity: 0.85;
+  background: var(--color-danger-solid-hover);
 }
 
 .mds-btn--success {
-  background: var(--color-success);
+  background: var(--color-success-solid);
   color: var(--color-on-brand);
 }
 .mds-btn--success:hover:not(:disabled) {
-  opacity: 0.85;
+  background: var(--color-success-solid-hover);
 }
 
 /* Sizes */
@@ -109,7 +114,7 @@
 
 /* Disabled */
 .mds-btn:disabled {
-  opacity: 0.4;
+  opacity: var(--opacity-disabled);
   cursor: not-allowed;
 }
 
