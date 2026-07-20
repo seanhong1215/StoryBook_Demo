@@ -9,7 +9,7 @@
  * 否則 demo 的 npm install 會找不到依賴。
  */
 import { execFileSync } from 'node:child_process'
-import { readFileSync, readdirSync, unlinkSync } from 'node:fs'
+import { existsSync, readFileSync, readdirSync, rmSync, unlinkSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -38,4 +38,17 @@ console.log(`\n打包完成：${tarball}（v${version}）`)
 
 run(npm, ['install', join('..', '..', tarball)], demo)
 
-console.log('\n完成。啟動 demo：npm --prefix demo/product-a-demo run dev')
+/*
+ * 必須清掉 Vite 的依賴預打包快取。
+ *
+ * 版本號沒變時，npm install 同名套件不會讓 node_modules/.vite 失效，
+ * Vite 會繼續提供舊的預打包結果 —— 症狀是「library 明明改了，demo 卻沒變」，
+ * 而且 dist 與 node_modules 裡的檔案看起來都是新的，非常難查。
+ */
+const viteCache = join(demo, 'node_modules', '.vite')
+if (existsSync(viteCache)) {
+  rmSync(viteCache, { recursive: true, force: true })
+  console.log('\n已清除 demo 的 Vite 依賴快取')
+}
+
+console.log('\n完成。啟動 demo：npm run demo:dev')

@@ -54,6 +54,12 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(({
       <input
         ref={ref}
         className="mds-input__control"
+        /*
+         * status="error" 是視覺狀態，但螢幕閱讀器讀不到 class。
+         * 這裡自動補上 aria-invalid，避免每個使用端都要記得自己加。
+         * 使用端可傳 aria-invalid 覆寫（{...props} 在後面）。
+         */
+        aria-invalid={status === 'error' ? true : undefined}
         value={value}
         defaultValue={defaultValue}
         disabled={disabled}

@@ -7,10 +7,16 @@
   display: block;
   font: inherit;
   overflow: hidden;
-  max-width: 400px;
   text-align: left;
   text-decoration: none;
 }
+
+/*
+ * 這裡刻意沒有 max-width。
+ * Card 是「表面」，多寬是使用端的佈局決定 —— 之前寫死 max-width: 400px，
+ * 導致想在 Card 裡放寬版內容（例如多欄資料表）的人必須覆寫 library CSS。
+ * 需要限制寬度請在外層的 grid / flex 容器上做。
+ */
 
 .mds-card--outlined {
   box-shadow: none;
