@@ -83,11 +83,20 @@ MVP project.
 
 Best when more than one project consumes the library. Free for private repos.
 
-One-time setup: create a classic PAT with `write:packages`, then store it:
+One-time setup: create a **classic** PAT at
+<https://github.com/settings/tokens> with `write:packages` **and `repo`** —
+`repo` is required for private repositories; without it you get a `404`, not a
+permission error.
 
-```bash
-npm config set //npm.pkg.github.com/:_authToken <YOUR_PAT>
+Add it to your **personal** `~/.npmrc` (`C:\Users\<you>\.npmrc` on Windows)
+rather than passing it on the command line — the command line ends up in shell
+history, and npm writes failed invocations to its debug log:
+
 ```
+//npm.pkg.github.com/:_authToken=YOUR_PAT
+```
+
+Verify with `npm whoami --registry=https://npm.pkg.github.com`.
 
 > Do **not** use `npm login` here. npm 11 defaults to a browser-based OAuth flow
 > that GitHub Packages does not support, so it hangs at the `Username:` prompt.

@@ -60,7 +60,7 @@ npm run demo:sync    # build → pack → 安裝進 demo
 |---|---|---|---|
 | 1 | `--color-border` 對 `--color-surface` 淺色下只有 **1.24:1** | 大 | WCAG 1.4.11 對「識別控制項所需的邊界」要求 3:1。修它要把**所有元件的邊框大幅加深**，會明顯改變整體視覺設計。非 dark mode 造成，改動前就存在 |
 | 2 | 下一步做哪個 Phase | — | 5（interaction tests）/ 6（MDX）/ 7（CI/CD）。以面試作品而言 7 的對外可見度最高，5 最能證明工程嚴謹度 |
-| 3 | 發布到 GitHub Packages | — | 需你執行 `npm config set //npm.pkg.github.com/:_authToken <PAT>`（**不要**用 `npm login`，見 Phase 1f） |
+| 3 | 發布到 GitHub Packages | — | 需你建 classic PAT（`write:packages` + `repo`）並寫入個人 `~/.npmrc`。細節見 `.docs/INTERNAL-ROLLOUT.md` |
 | 4 | `ProductLine` 型別是固定四個字串聯集 | 小 | 消費端若要加自訂品牌線，CSS 可直接加但 TS 型別需放寬 |
 
 ---
@@ -113,10 +113,17 @@ Phase 5（測試）與 6（MDX）在內部試用階段**不是必要的**，可�
 - 已用臨時消費端專案（vite react-ts + tgz + react-hook-form）實測 7 項通過
 
 散布方式：GitHub Packages 私有 registry 為主，本機 `.tgz` 為 fallback。
-**發布前需使用者操作**：建立 classic PAT（`write:packages`），然後
-`npm config set //npm.pkg.github.com/:_authToken <PAT>`。
-不要用 `npm login` —— npm 11 預設走瀏覽器 OAuth，GitHub Packages 不支援，會卡在
-`Username:` 提示。
+
+**發布前需使用者操作**（完整步驟見 `.docs/INTERNAL-ROLLOUT.md`）：
+建 classic PAT，勾 `write:packages` + **`repo`**
+（`repo` 是 private repo 必需，缺了會拿到 **404** 而非權限錯誤，極易誤判），
+再寫入個人 `~/.npmrc`：`//npm.pkg.github.com/:_authToken=<PAT>`。
+
+- **不要在指令列貼 token** —— 會進入 shell 歷史，失敗時還會被寫進
+  `%LOCALAPPDATA%\npm-cache\_logs\` 的除錯日誌
+- **不要用 `npm login`** —— npm 11 預設走瀏覽器 OAuth，GitHub Packages 不支援，
+  會卡在 `Username:` 提示
+- 驗證：`npm whoami --registry=https://npm.pkg.github.com`
 
 ### Phase 2 — Dark mode token 架構（已完成）
 

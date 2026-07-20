@@ -34,16 +34,39 @@ Personal access tokens → **Tokens (classic)**）
 > 請用 **classic token**。fine-grained token 對 GitHub Packages 的 npm registry
 > 支援仍不完整，容易出現難以診斷的失敗。
 
-然後在終端機執行（把 `<你的PAT>` 換掉）：
+## 步驟 2：把 token 寫進你的個人 npmrc
+
+**建議直接編輯檔案，不要用 `npm config set` 在指令列貼 token** ——
+指令列會進入 shell 歷史，失敗時還會被寫進 npm 的除錯日誌
+（`%LOCALAPPDATA%\npm-cache\_logs\`），等於把憑證散落在好幾個地方。
+
+編輯個人設定檔（**不是**專案裡的那個）：
+
+- Windows：`C:\Users\<你>\.npmrc`
+- macOS / Linux：`~/.npmrc`
+
+加入這一行：
+
+```
+//npm.pkg.github.com/:_authToken=你的PAT
+```
+
+驗證：
 
 ```bash
-npm config set //npm.pkg.github.com/:_authToken <你的PAT>
+npm whoami --registry=https://npm.pkg.github.com
 ```
+
+印出你的 GitHub 帳號就表示認證正常。**先驗這一步**，比之後 install 失敗
+再回頭猜原因快得多。
 
 > **不要用 `npm login`。** npm 11 預設走瀏覽器 OAuth 流程，GitHub Packages
 > 不支援，會卡在 `Username:` 提示動不了。
 
-## 步驟 2：在你的專案指定 registry
+> 若真的用了 `npm config set` 而且打錯，注意 token 可能已進入
+> `_logs` 底下的除錯日誌。最保險的做法是**撤銷該 token 重建一個**。
+
+## 步驟 3：在你的專案指定 registry
 
 在專案根目錄建立 `.npmrc`：
 
@@ -54,7 +77,7 @@ npm config set //npm.pkg.github.com/:_authToken <你的PAT>
 > 這個檔案**可以**進版控（裡面沒有 token）。token 在你個人的 `~/.npmrc`，
 > 不要提交。
 
-## 步驟 3：安裝
+## 步驟 4：安裝
 
 ```bash
 npm install @seanhong1215/my-design-system
@@ -62,7 +85,7 @@ npm install @seanhong1215/my-design-system
 
 peer dependency 是 React >= 18（React 19 也支援）。
 
-## 步驟 4：接上去
+## 步驟 5：接上去
 
 ```tsx
 // 整個 app 只需要匯入一次樣式
@@ -118,13 +141,16 @@ Storybook 右上角的 toolbar 可以切換 **Theme**（明/暗）與 **Product 
 
 一次性設定。到 **https://github.com/settings/tokens** 建 classic token，
 勾 **`write:packages`** 和 **`repo`**（勾 write 會自動含 read；
-`repo` 是 private repo 必需，缺了會拿到 404）：
+`repo` 是 private repo 必需，缺了會拿到 404）。
 
-```bash
-npm config set //npm.pkg.github.com/:_authToken <你的PAT>
+與步驟 2 相同：**直接編輯 `C:\Users\<你>\.npmrc`（或 `~/.npmrc`），
+不要用 `npm config set` 在指令列貼 token**：
+
+```
+//npm.pkg.github.com/:_authToken=你的PAT
 ```
 
-驗證有沒有設對：
+驗證：
 
 ```bash
 npm whoami --registry=https://npm.pkg.github.com
