@@ -1,7 +1,67 @@
 # 企業級設計系統升級 — 進度與待辦
 
 > 完整計畫（含每階段細節）：`C:\Users\Administrator\.claude\plans\storybook-tidy-book.md`
-> 最後更新：2026-07-19
+> 最後更新：2026-07-20
+
+---
+
+## 現在的狀態（Phase 0–4 完成，等待使用者驗收）
+
+Phase 4 結束時的驗證結果：
+
+- `npm test` — **92 個 story 全過**（a11y 已設為 `error` 模式）
+- 消費端範例 `../product-a-demo` 實測 **9/9 通過**（含在消費端頁面跑 axe）
+- lint / typecheck / build / build-storybook 全綠
+
+**library 已跨過「可被 MVP 專案共用」的門檻**（Phase 1f 即達成，2–4 是加值）。
+
+### 怎麼啟動
+
+背景執行的 dev server 在 agent session 內留不住，請自己開終端機各跑一個：
+
+```bash
+# Storybook（右上 toolbar 可切 Theme / Product line）
+cd <repo>            && npm run storybook     # http://localhost:6006
+
+# 消費端範例（真實產品端接法）
+cd ../product-a-demo && npm run dev           # http://localhost:5173
+```
+
+消費端範例若要用最新的 library，需重新打包安裝：
+
+```bash
+cd <repo> && npm run build && npm pack
+cd ../product-a-demo && npm install ../storybook/seanhong1215-my-design-system-0.1.0.tgz
+```
+
+### 建議驗收清單
+
+| 看什麼 | 在哪 | 預期 |
+|---|---|---|
+| 明暗 + 四條產品線 | Storybook toolbar | 全部元件都跟著變，無殘留白底 |
+| token 明暗對照 | `Foundation/Tokens` → Colors / Semantic tones | 並排顯示實際計算值 |
+| Select placeholder | `Data Entry/Select` → Placeholder / 預設值 | 未選取時停在 placeholder，required 會擋 |
+| 表單 label 關聯 | `Data Entry/Form` | 點 label 會 focus 到控制項 |
+| 真實產品情境 | 消費端範例 | 表單驗證、Modal 主題、產品線切換 |
+| a11y 迴歸 | `npm test` | 92 passed |
+
+### 已知的體驗瑕疵（不影響功能，未處理）
+
+- Table 放在窄容器（如 350px 的卡片內）時會水平捲動，但**沒有捲動提示**，
+  使用者可能不知道右邊還有欄位。`overflow-x: auto` 運作正常，非 bug。
+
+---
+
+## 等待使用者決定
+
+| # | 事項 | 影響 | 備註 |
+|---|---|---|---|
+| 1 | `--color-border` 對 `--color-surface` 淺色下只有 **1.24:1** | 大 | WCAG 1.4.11 對「識別控制項所需的邊界」要求 3:1。修它要把**所有元件的邊框大幅加深**，會明顯改變整體視覺設計。非 dark mode 造成，改動前就存在 |
+| 2 | 下一步做哪個 Phase | — | 5（interaction tests）/ 6（MDX）/ 7（CI/CD）。以面試作品而言 7 的對外可見度最高，5 最能證明工程嚴謹度 |
+| 3 | 發布到 GitHub Packages | — | 需你執行 `npm config set //npm.pkg.github.com/:_authToken <PAT>`（**不要**用 `npm login`，見 Phase 1f） |
+| 4 | `ProductLine` 型別是固定四個字串聯集 | 小 | 消費端若要加自訂品牌線，CSS 可直接加但 TS 型別需放寬 |
+
+---
 
 ## 進度總覽
 
@@ -120,11 +180,19 @@ Dropdown 的 `trigger` 塞了 `<Button>` 造成按鈕包按鈕；Select / Textar
 WCAG 1.4.11 對「識別控制項所需的邊界」要求 3:1。修它要把所有邊框大幅加深。
 
 ### Phase 5 — Interaction tests
-- package.json 加 `"test-storybook": "vitest --project=storybook run"`
+
+> 前置條件已在 Phase 4 完成：`test` 與 `test-storybook` script 都已加好，
+> vitest + playwright + addon-vitest 可正常運作（`npm test` 目前 92 passed）。
+> 現在跑的只有 a11y 檢查，**還沒有任何 play function**。
+
 - 統一從 `storybook/test` import `expect/fn/userEvent/within/waitFor`；callback args 用 `fn()` spy
 - P0：Modal（portal 用 `within(document.body)`！）、Dropdown、Form、Tabs、Pagination、Select
 - P1：Checkbox/Switch、Input/Textarea、Tooltip（hover+focus）、Button（disabled/loading 不觸發）
 - 坑：React 19 + browser mode 斷言用 `waitFor`/`findBy*` 避免 flaky
+- 建議優先補的回歸案例（都是實際踩過的雷）：
+  - Select 未選取時 value 為空、required 會擋（Phase 4 修的缺陷）
+  - FormItem 的 label 點擊會 focus 到控制項（Phase 4 修的缺陷）
+  - Modal 開啟時主題屬性在 `documentElement` 上（ThemeProvider global）
 
 ### Phase 6 — MDX 使用指南
 - main.ts glob 加 `'../src/docs/**/*.mdx'`、`'../src/components/**/*.mdx'`
@@ -159,7 +227,24 @@ WCAG 1.4.11 對「識別控制項所需的邊界」要求 3:1。修它要把所�
 - [x] 更新 `AGENTS.md` 與 `README.md`（原本仍寫 src/index.js、.jsx、src/stories 等舊狀態）— Phase 1f 已處理
 - [ ] `vite.config.ts` 的 `storybookNonAsciiPathFix` workaround：上游修復（storybookjs/storybook#33700）後可移除
 
+## 驗證方法備忘（之後要重複做的話）
+
+- **a11y 一律用 `npm test`**，不要只信自己寫的 axe 腳本。
+  自訂腳本若只跑 `wcag2a/2aa/21a/21aa` 標籤會漏掉 best-practice 規則
+  （Phase 4 就因此漏掉 3 個 `heading-order`）。addon-a11y 跑的是完整規則集。
+- **顏色對比**目前沒有被 `npm test` 涵蓋（axe 只在單一主題下檢查實際渲染）。
+  Phase 2/3 是用 Playwright 自寫腳本掃「4 產品線 × 2 主題」的 token 組合，
+  以及「所有 story × 2 主題」的實際渲染節點。改動 token 後值得重跑一次。
+- **元件單看正常不代表可用**：Select 的 required 缺陷是組成真實表單才爆的。
+  保留 `../product-a-demo` 當真實消費端的迴歸驗證場。
+- 消費端驗收涵蓋：型別解析、CSS 實際套用、CSS 隔離（注入衝突 class）、
+  react-hook-form 綁定、required 驗證、Modal portal 主題、四產品線切換、
+  暗色、消費端頁面 axe、console error。
+
 ## 已知環境注意事項
 - 本機路徑含中文會踩 addon-vitest 的 "No test suite found" bug，`vite.config.ts` 已有 workaround（CI 不受影響）
 - 首次在新環境跑測試需 `npx playwright install chromium`
 - git identity 已設在 repo local（bennyhong / seanhong1215@gmail.com）
+- **agent session 內的背景 dev server 留不住**（會被環境回收），
+  要看畫面請自己開終端機跑；用 `--strictPort` 避免撞埠時默默換號
+- 消費端範例位置：`../product-a-demo`（與本 repo 平行，非 git repo）
