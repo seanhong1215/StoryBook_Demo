@@ -15,10 +15,24 @@ Repo：`github.com/seanhong1215/StoryBook_Demo`（**private**）
 你需要 **StoryBook_Demo 這個 repo 的存取權**。沒有的話請先找維護者開通 ——
 GitHub Packages 的私有套件會沿用 repo 權限，沒權限就裝不起來。
 
-## 步驟 1：設定 npm 認證
+## 步驟 1：建立 Personal Access Token
 
-到 GitHub → Settings → Developer settings → Personal access tokens →
-**Tokens (classic)** → Generate new token，勾選 **`read:packages`**（只需要這一個）。
+網址：**https://github.com/settings/tokens**
+（或：右上頭像 → Settings → 左側最底 Developer settings →
+Personal access tokens → **Tokens (classic)**）
+
+點 **Generate new token → Generate new token (classic)**，然後：
+
+- **Note**：取個好認的名字，例如 `design-system-read`
+- **Expiration**：建議 90 天
+- **Select scopes**：勾 **`read:packages`** 和 **`repo`**
+
+> **`repo` 這個 scope 不能省。** 本 repo 是 private，GitHub Packages 會去檢查
+> 你對來源 repo 的存取權。少了 `repo` 會拿到 **`404 Not Found`** ——
+> 注意它不是回權限錯誤，很容易被誤判成套件名打錯而查錯方向。
+
+> 請用 **classic token**。fine-grained token 對 GitHub Packages 的 npm registry
+> 支援仍不完整，容易出現難以診斷的失敗。
 
 然後在終端機執行（把 `<你的PAT>` 換掉）：
 
@@ -102,11 +116,21 @@ Storybook 右上角的 toolbar 可以切換 **Theme**（明/暗）與 **Product 
 
 ## 發布一個版本
 
-一次性設定（建 classic PAT，勾 **`write:packages`**）：
+一次性設定。到 **https://github.com/settings/tokens** 建 classic token，
+勾 **`write:packages`** 和 **`repo`**（勾 write 會自動含 read；
+`repo` 是 private repo 必需，缺了會拿到 404）：
 
 ```bash
 npm config set //npm.pkg.github.com/:_authToken <你的PAT>
 ```
+
+驗證有沒有設對：
+
+```bash
+npm whoami --registry=https://npm.pkg.github.com
+```
+
+會印出你的 GitHub 帳號就表示認證正常。
 
 發布：
 
