@@ -121,11 +121,26 @@ npm run build
 npm pack
 ```
 
-This produces `seanhong1215-my-design-system-0.1.0.tgz`. Install it:
+This produces `seanhong1215-my-design-system-0.1.0.tgz`. Install it from your
+project, pointing at wherever this repo lives:
 
 ```bash
-npm install ../storybook/seanhong1215-my-design-system-0.1.0.tgz
+npm install /path/to/storybook/seanhong1215-my-design-system-0.1.0.tgz
 ```
+
+### Working example
+
+`demo/product-a-demo` is a real consumer project inside this repo. It installs
+the packed tarball — not a `file:` link to the source — so it exercises the same
+`files` / `exports` / `sideEffects` resolution a published consumer would.
+
+```bash
+npm run demo:sync   # build → pack → install into the demo
+npm run demo:dev    # http://localhost:5173
+```
+
+Its `README` doubles as the adoption guide (theming, token mapping, forms,
+adding your own product line).
 
 ### Usage
 

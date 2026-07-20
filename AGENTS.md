@@ -44,6 +44,15 @@
   - `Overview.stories.tsx`: Storybook component overview
   - `Usage.stories.tsx`: 本機 npm pack/file dependency、匯入與 product line theme 使用說明
   - `storybook-docs.css`: docs/stories 共用版面樣式
+- `demo/product-a-demo/`
+  - 真實消費端範例，**獨立的專案**（自己的 package.json 與 node_modules）
+  - 裝的是 `npm pack` 出來的 `.tgz`，不是 `file:` 連到原始碼 ——
+    這樣才驗得到 `files` / `exports` / `sideEffects` 是否正確
+  - 改動 library 後要 `npm run demo:sync` 才會生效；`.tgz` 有進 .gitignore，
+    剛 clone 的 repo 必須先跑一次
+  - 它的 `README.md` 同時是「如何導入到自己產品」的使用指南
+  - **不要把它加進 library 的 build / stories glob / tsconfig include**；
+    它是消費端，不是 library 的一部分
 
 ## Public API
 

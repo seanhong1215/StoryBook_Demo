@@ -10,29 +10,31 @@
 Phase 4 結束時的驗證結果：
 
 - `npm test` — **92 個 story 全過**（a11y 已設為 `error` 模式）
-- 消費端範例 `../product-a-demo` 實測 **9/9 通過**（含在消費端頁面跑 axe）
+- 消費端範例 `demo/product-a-demo` 實測 **9/9 通過**（含在消費端頁面跑 axe）
 - lint / typecheck / build / build-storybook 全綠
 
 **library 已跨過「可被 MVP 專案共用」的門檻**（Phase 1f 即達成，2–4 是加值）。
 
 ### 怎麼啟動
 
-背景執行的 dev server 在 agent session 內留不住，請自己開終端機各跑一個：
+背景執行的 dev server 在 agent session 內留不住，請自己開終端機各跑一個
+（都在 repo 根目錄執行）：
 
 ```bash
-# Storybook（右上 toolbar 可切 Theme / Product line）
-cd <repo>            && npm run storybook     # http://localhost:6006
-
-# 消費端範例（真實產品端接法）
-cd ../product-a-demo && npm run dev           # http://localhost:5173
+npm run storybook    # http://localhost:6006  右上 toolbar 可切 Theme / Product line
+npm run demo:dev     # http://localhost:5173  消費端範例
 ```
 
-消費端範例若要用最新的 library，需重新打包安裝：
+`demo/product-a-demo` 裝的是**打包後的 `.tgz`**（不是 `file:` 連到原始碼），
+這樣才會真的驗到 `files` / `exports` / `sideEffects` 的設定。
+代價是改動 library 之後要重新同步：
 
 ```bash
-cd <repo> && npm run build && npm pack
-cd ../product-a-demo && npm install ../storybook/seanhong1215-my-design-system-0.1.0.tgz
+npm run demo:sync    # build → pack → 安裝進 demo
 ```
+
+> `.tgz` 有進 `.gitignore`，所以**剛 clone 下來的 repo 必須先跑一次 `npm run demo:sync`**，
+> 否則 demo 的依賴會找不到。
 
 ### 建議驗收清單
 
@@ -209,7 +211,7 @@ WCAG 1.4.11 對「識別控制項所需的邊界」要求 3:1。修它要把所�
 - `deploy-pages.yml`：`upload-pages-artifact` + `deploy-pages`；repo Settings > Pages source 改 "GitHub Actions"；之後刪 `scripts/deploy-storybook.ps1` 與 `deploy` script
 - **Chromatic baseline 務必等 Phase 2/4 視覺定型後才建立**
 
-## 由消費端範例 `../product-a-demo` 實測發現的缺陷
+## 由消費端範例 `demo/product-a-demo` 實測發現的缺陷
 
 - ~~**`Select` 的 placeholder 無效**~~ — 已修正。
   原因：placeholder option 帶 `disabled`，瀏覽器會跳過它自動選第一個真實選項。
@@ -221,7 +223,7 @@ WCAG 1.4.11 對「識別控制項所需的邊界」要求 3:1。修它要把所�
   已加 `Select / Placeholder 預設值` story 釘住此行為。
 
   > 這類「元件單看正常、組成真實表單才會爆」的缺陷，靠 Storybook 看不出來。
-  > 保留 `../product-a-demo` 當作真實消費端的迴歸驗證場。
+  > 保留 `demo/product-a-demo` 當作真實消費端的迴歸驗證場。
 
 ## 收尾雜項
 - [x] 更新 `AGENTS.md` 與 `README.md`（原本仍寫 src/index.js、.jsx、src/stories 等舊狀態）— Phase 1f 已處理
@@ -236,7 +238,7 @@ WCAG 1.4.11 對「識別控制項所需的邊界」要求 3:1。修它要把所�
   Phase 2/3 是用 Playwright 自寫腳本掃「4 產品線 × 2 主題」的 token 組合，
   以及「所有 story × 2 主題」的實際渲染節點。改動 token 後值得重跑一次。
 - **元件單看正常不代表可用**：Select 的 required 缺陷是組成真實表單才爆的。
-  保留 `../product-a-demo` 當真實消費端的迴歸驗證場。
+  保留 `demo/product-a-demo` 當真實消費端的迴歸驗證場。
 - 消費端驗收涵蓋：型別解析、CSS 實際套用、CSS 隔離（注入衝突 class）、
   react-hook-form 綁定、required 驗證、Modal portal 主題、四產品線切換、
   暗色、消費端頁面 axe、console error。
@@ -247,4 +249,4 @@ WCAG 1.4.11 對「識別控制項所需的邊界」要求 3:1。修它要把所�
 - git identity 已設在 repo local（bennyhong / seanhong1215@gmail.com）
 - **agent session 內的背景 dev server 留不住**（會被環境回收），
   要看畫面請自己開終端機跑；用 `--strictPort` 避免撞埠時默默換號
-- 消費端範例位置：`../product-a-demo`（與本 repo 平行，非 git repo）
+- 消費端範例位置：`demo/product-a-demo`（在本 repo 內，有進 git；它裝的是打包後的 .tgz，見 `npm run demo:sync`）
