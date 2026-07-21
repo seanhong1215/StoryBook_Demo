@@ -140,13 +140,29 @@ npm install /path/to/storybook/seanhong1215-my-design-system-0.1.0.tgz
 ### Working example
 
 `demo/product-a-demo` is a real consumer project inside this repo. It installs
-the packed tarball — not a `file:` link to the source — so it exercises the same
-`files` / `exports` / `sideEffects` resolution a published consumer would.
+`@seanhong1215/my-design-system` from GitHub Packages — the exact same way any
+other consumer would — so its `package.json` doubles as a working example of
+the real setup, not just a local shortcut.
 
 ```bash
-npm run demo:sync   # build → pack → install into the demo
-npm run demo:dev    # http://localhost:5173
+cd demo/product-a-demo
+npm install   # requires GitHub Packages auth, see .npmrc / .docs/INTERNAL-ROLLOUT.md
+npm run dev   # http://localhost:5173
 ```
+
+If you're developing the library and want the demo to reflect unpublished
+local changes instead of the last published version, run from the repo root:
+
+```bash
+npm run demo:sync   # pack the current source and install it into the demo
+                     # with --no-save, leaving package.json pointed at the
+                     # registry version
+```
+
+Packaging correctness (`files` / `exports` / `sideEffects` / type resolution)
+is verified independently via `npm run verify:pack`, which builds a fresh
+throwaway consumer against the current source — this is what CI runs, and it
+doesn't depend on the demo or registry auth.
 
 Its `README` doubles as the adoption guide (theming, token mapping, forms,
 adding your own product line).
