@@ -112,14 +112,50 @@ export default function App() {
 因為 repo 是 private，**沒有公開的文件網站**（GitHub Pages 在免費/Pro 方案下
 一律公開，不適合內部專用）。三種方式擇一：
 
-| 方式 | 做法 | 適合 |
-|---|---|---|
-| **本機跑**（最推薦） | clone repo → `npm ci` → `npm run storybook` → http://localhost:6006 | 開發者，隨時查閱 |
-| **下載打包好的** | repo → Actions → 最新一次成功的 run → 下載 `storybook-<sha>` artifact → 解壓後 `npx serve` | 不想 clone 的人 |
-| **看實際範例** | `demo/product-a-demo` 是一個完整的消費端範例，它的 `README` 就是導入指南 | 想看真實用法 |
+### 方式 A：本機跑（開發者最推薦）
 
-Storybook 右上角的 toolbar 可以切換 **Theme**（明/暗）與 **Product line**
-（四條品牌線），所有元件都會即時跟著變。
+```bash
+git clone git@github.com:seanhong1215/StoryBook_Demo.git
+cd StoryBook_Demo
+npm ci
+npm run storybook        # http://localhost:6006
+```
+
+### 方式 B：下載 CI 打包好的（不想 clone 的人）
+
+1. 到 repo 的 **Actions** 分頁 → 點最近一次成功的 CI run
+2. 頁面底部 **Artifacts** → 下載 `storybook-<sha>`
+3. 解壓縮後，**用能處理帶 query 網址的 static server** 起：
+
+   ```bash
+   cd storybook-static
+   npx http-server -p 6006 -c-1
+   # 然後開 http://localhost:6006
+   ```
+
+> ⚠️ **不要用 `npx serve`。** 它預設會把 `.html` 網址「清乾淨」（301 重導到
+> 去掉副檔名），導致 Storybook 內部載入的 `iframe.html` 失敗，畫面會一直
+> 停在 **No Preview**。若一定要用 serve，得加 `--no-clean-urls`。
+> `http-server` 沒這問題。
+>
+> 也不能直接雙擊 `index.html` 用 `file://` 開 —— 瀏覽器的檔案協議限制會讓
+> 元件無法載入。一定要透過 http server。
+
+### 方式 C：看實際範例
+
+`demo/product-a-demo` 是一個完整的消費端範例（含載入中、空資料、錯誤、
+表單驗證等真實狀態），它的 `README` 就是導入指南。clone 後：
+
+```bash
+npm run demo:sync        # 打包 library 裝進 demo（第一次必跑）
+npm run demo:dev         # http://localhost:5173
+```
+
+---
+
+不論哪種方式，Storybook 右上角的 toolbar 都可以切換 **Theme**（明/暗）與
+**Product line**（四條品牌線），所有元件會即時跟著變；下方面板的
+**Accessibility** 分頁會即時顯示該元件的 a11y 檢查結果。
 
 ## 回報問題
 
