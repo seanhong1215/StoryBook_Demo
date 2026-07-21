@@ -1,12 +1,19 @@
 /*
- * 把目前的 library 打包並安裝進 demo/product-a-demo。
+ * 讓 demo/product-a-demo 跑「目前這份（尚未發布的）library 原始碼」。
  *
- * demo 刻意裝「打包後的 .tgz」而不是用 file: 直接連到原始碼目錄 ——
- * 這樣才會真的驗到 package.json 的 files / exports / sideEffects 設定，
- * 也就是消費端實際拿到的東西。代價是每次改動 library 都要重跑這支腳本。
+ * demo 的 package.json 依賴的是 registry 上的正式版本（`^0.1.0`），
+ * 因為 demo 的角色是「示範同事實際會用的接入方式」。
+ * 但維護者在本地改了 library 之後，會想立刻在 demo 看到效果 ——
+ * registry 上只有已發布的版本，看不到當前改動。
  *
- * .tgz 有進 .gitignore，所以剛 clone 下來的 repo 必須先跑這支，
- * 否則 demo 的 npm install 會找不到依賴。
+ * 這支腳本打包當前原始碼，用 `npm install <tgz> --no-save` 覆蓋掉
+ * node_modules 裡那份 registry 版本：
+ *   - node_modules 變成當前代碼（維護者看得到改動）
+ *   - package.json 維持 registry 依賴不被改脏（同事看到的仍是正確接入方式）
+ *
+ * 前提：demo 必須先裝過一次（有 node_modules）。若沒有，會先提示。
+ * 這也是 pre-publish 驗證的一環：tgz 裝得起來，代表 files / exports /
+ * sideEffects 設定正確。
  */
 import { execFileSync } from 'node:child_process'
 import { existsSync, readFileSync, readdirSync, rmSync, unlinkSync } from 'node:fs'
@@ -20,6 +27,15 @@ const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm'
 const run = (cmd, args, cwd) => {
   console.log(`\n> ${cmd} ${args.join(' ')}  (${cwd === root ? '.' : 'demo/product-a-demo'})`)
   execFileSync(cmd, args, { cwd, stdio: 'inherit', shell: process.platform === 'win32' })
+}
+
+// demo 尚未裝過 registry 依賴時，--no-save 沒有基底可覆蓋。先講清楚該怎麼做。
+if (!existsSync(join(demo, 'node_modules', '@seanhong1215'))) {
+  console.error(
+    '\ndemo 還沒安裝過依賴。請先在 demo/product-a-demo 設好 npm 認證並 `npm install`\n' +
+    '（見 demo/product-a-demo/README.md），再回來跑 demo:sync。\n',
+  )
+  process.exit(1)
 }
 
 // 舊的 tgz 先清掉，避免版本升級後留下多個檔案而選錯
@@ -36,7 +52,8 @@ if (!tarball) throw new Error('npm pack 沒有產出 .tgz')
 const { version } = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'))
 console.log(`\n打包完成：${tarball}（v${version}）`)
 
-run(npm, ['install', join('..', '..', tarball)], demo)
+// --no-save：覆蓋 node_modules 但不動 package.json / package-lock.json
+run(npm, ['install', join('..', '..', tarball), '--no-save'], demo)
 
 /*
  * 必須清掉 Vite 的依賴預打包快取。
@@ -51,4 +68,5 @@ if (existsSync(viteCache)) {
   console.log('\n已清除 demo 的 Vite 依賴快取')
 }
 
-console.log('\n完成。啟動 demo：npm run demo:dev')
+console.log('\n完成 —— demo 現在跑的是當前原始碼（package.json 仍指向 registry 版本）。')
+console.log('啟動 demo：npm run demo:dev')

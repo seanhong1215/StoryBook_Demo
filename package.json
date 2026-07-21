@@ -43,6 +43,7 @@
     "build-storybook": "storybook build",
     "demo:sync": "node scripts/sync-demo.mjs",
     "demo:dev": "npm --prefix demo/product-a-demo run dev",
+    "verify:pack": "node scripts/verify-pack.mjs",
     "deploy": "powershell -ExecutionPolicy Bypass -File scripts/deploy-storybook.ps1"
   },
   "peerDependencies": {
