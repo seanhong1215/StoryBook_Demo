@@ -1,19 +1,20 @@
 # 企業級設計系統升級 — 進度與待辦
 
 > 完整計畫（含每階段細節）：`C:\Users\Administrator\.claude\plans\storybook-tidy-book.md`
-> 最後更新：2026-07-20
+> 最後更新：2026-07-21
 
 ---
 
-## 現在的狀態（Phase 0–4 完成，等待使用者驗收）
-
-Phase 4 結束時的驗證結果：
+## 現在的狀態（Phase 0–4 完成，已發布 0.1.0，內部試用階段）
 
 - `npm test` — **92 個 story 全過**（a11y 已設為 `error` 模式）
-- 消費端範例 `demo/product-a-demo` 實測 **9/9 通過**（含在消費端頁面跑 axe）
 - lint / typecheck / build / build-storybook 全綠
+- `@seanhong1215/my-design-system@0.1.0` **已發布到 GitHub Packages**，
+  已用全新專案從 registry 實測安裝成功
+- commit 已推送到 `origin/feature`
 
-**library 已跨過「可被 MVP 專案共用」的門檻**（Phase 1f 即達成，2–4 是加值）。
+**library 已跨過「可被 MVP 專案共用」的門檻**（Phase 1f 即達成，2–4 是加值），
+且已經是同事實際能安裝使用的狀態。詳細安裝與試用步驟見 `.docs/INTERNAL-ROLLOUT.md`。
 
 ### 怎麼啟動
 
@@ -25,16 +26,27 @@ npm run storybook    # http://localhost:6006  右上 toolbar 可切 Theme / Prod
 npm run demo:dev     # http://localhost:5173  消費端範例
 ```
 
-`demo/product-a-demo` 裝的是**打包後的 `.tgz`**（不是 `file:` 連到原始碼），
-這樣才會真的驗到 `files` / `exports` / `sideEffects` 的設定。
-代價是改動 library 之後要重新同步：
+**`demo/product-a-demo` 現在裝的是 registry 上的正式版本**（`^0.1.0`），
+跟同事實際會用的接入方式完全一樣 —— 這是刻意的，demo 存在的意義就是
+示範真實接入流程，見 `demo/product-a-demo/README.md`。
+
+第一次跑之前，`demo/product-a-demo` 資料夾需要先 `npm install` 一次
+（需要 GitHub Packages 認證，見 `.docs/INTERNAL-ROLLOUT.md`）。
+
+如果你在改 library 原始碼，想立刻在 demo 看到效果（而不是等發布新版），
+用：
 
 ```bash
-npm run demo:sync    # build → pack → 安裝進 demo
+npm run demo:sync    # build → pack → 用 --no-save 覆蓋 demo 的 node_modules
 ```
 
-> `.tgz` 有進 `.gitignore`，所以**剛 clone 下來的 repo 必須先跑一次 `npm run demo:sync`**，
-> 否則 demo 的依賴會找不到。
+`--no-save` 是關鍵：只換掉 demo 實際跑的程式碼，**不會**把 demo 的
+`package.json` 改回本地路徑 —— 那個檔案要繼續指向 registry 版本，
+同事看到的才是正確的接入方式。
+
+打包本身的正確性（`files` / `exports` / `sideEffects` / 型別解析）
+改由 `npm run verify:pack` 驗證，它自建一個臨時消費端測試，跟 demo
+完全解耦（demo 裝的是已發布版本，verify:pack 測的是當前原始碼）。
 
 ### 建議驗收清單
 
@@ -59,9 +71,10 @@ npm run demo:sync    # build → pack → 安裝進 demo
 | # | 事項 | 影響 | 備註 |
 |---|---|---|---|
 | 1 | `--color-border` 對 `--color-surface` 淺色下只有 **1.24:1** | 大 | WCAG 1.4.11 對「識別控制項所需的邊界」要求 3:1。修它要把**所有元件的邊框大幅加深**，會明顯改變整體視覺設計。非 dark mode 造成，改動前就存在 |
-| 2 | 下一步做哪個 Phase | — | 5（interaction tests）/ 6（MDX）/ 7（CI/CD）。以面試作品而言 7 的對外可見度最高，5 最能證明工程嚴謹度 |
-| 3 | 發布到 GitHub Packages | — | 需你建 classic PAT（`write:packages` + `repo`）並寫入個人 `~/.npmrc`。細節見 `.docs/INTERNAL-ROLLOUT.md` |
-| 4 | `ProductLine` 型別是固定四個字串聯集 | 小 | 消費端若要加自訂品牌線，CSS 可直接加但 TS 型別需放寬 |
+| 2 | 下一步做哪個 Phase | — | 5（interaction tests）/ 6（MDX）/ 7（CI/CD 的 Pages/Chromatic）。建議先收內部回饋，等 API 因真實使用穩定下來再做 |
+| 3 | `ProductLine` 型別是固定四個字串聯集 | 小 | 消費端若要加自訂品牌線，CSS 可直接加但 TS 型別需放寬 |
+
+~~發布到 GitHub Packages~~ — 已完成，`0.1.0` 在 registry 上，已實測全新安裝成功。
 
 ---
 
@@ -81,7 +94,7 @@ npm run demo:sync    # build → pack → 安裝進 demo
 | 4 | ✅ 完成 | a11y 真正啟用 |
 | 5 | ⬜ 待辦 | Interaction tests（play functions） |
 | 6 | ⬜ 待辦 | MDX 使用指南 |
-| 7 | 🟡 部分 | CI 已建立（含 consumer job）；Pages/Chromatic 待對外發布階段 |
+| 7 | 🟡 部分 | CI 已建立（含 pack job）；Pages/Chromatic 待對外發布階段 |
 
 ## 目前優先序：內部試用
 
@@ -90,13 +103,32 @@ Phase 順序不同：
 
 | 順序 | 事項 | 狀態 |
 |---|---|---|
-| 1 | 推送 commit 到 `origin/feature` | ⬜ **需使用者執行** `git push origin feature` |
-| 2 | `ci.yml`（不含 Pages） | ✅ 已建立 |
+| 1 | 推送 commit 到 `origin/feature` | ✅ 已推送 |
+| 2 | `ci.yml`（不含 Pages） | ✅ 已建立，含獨立的 pack 驗證 job |
 | 3 | 內部試用指南 | ✅ `.docs/INTERNAL-ROLLOUT.md` |
-| 4 | 發布 0.1.0 到 GitHub Packages | ⬜ **需使用者設 token 後 `npm publish`** |
-| 5 | 收內部回饋 → 修 → 0.1.x | ⬜ |
+| 4 | 發布 0.1.0 到 GitHub Packages | ✅ 已發布，已實測全新安裝成功 |
+| 5 | demo 改用 registry 依賴，示範真實接入方式 | ✅ 見下方「demo 定位調整」 |
+| 6 | 收內部回饋 → 修 → 0.1.x | ⬜ 進行中 |
 
 Phase 5（測試）與 6（MDX）在內部試用階段**不是必要的**，可往後放。
+
+### demo 定位調整（2026-07-21）
+
+`demo/product-a-demo` 原本裝的是本地打包的 `.tgz`，這在「demo 是維護者的
+回歸驗證場」這個角色下沒問題，但跟「demo 示範同事怎麼接入」這個角色衝突 ——
+同事照著 demo 的 `package.json` 學，會學到一個只存在於維護者電腦上的路徑。
+
+調整後兩個角色分開：
+
+- **demo** 現在裝 registry 版本（`^0.1.0` + `.npmrc`），`package.json` 就是
+  同事接入時該長的樣子。維護者想在 demo 看到未發布的改動，用
+  `npm run demo:sync`（`--no-save`，不弄髒 `package.json`）。
+- **打包正確性驗證**（`files`/`exports`/`sideEffects`/型別）獨立成
+  `npm run verify:pack`，自建臨時消費端測試當前原始碼，CI 的 pack job
+  改呼叫它，不再依賴 demo 也不需要 registry 認證。
+
+已驗證：全新安裝、`demo:sync` 不動 `package.json`、`demo:dev` 實際渲染
+無誤（11 個卡片、0 個 page error）、`verify:pack` 全綠。
 
 ## 待辦細節
 
@@ -233,9 +265,11 @@ WCAG 1.4.11 對「識別控制項所需的邊界」要求 3:1。修它要把所�
 > GitHub 的 repo 存取控制。`deploy-pages.yml` 要等**對外發布**階段再做。
 
 - [x] `ci.yml` 已建立：lint / typecheck / build / `npm test` / build-storybook
-      → 上傳 Storybook artifact；另有 **consumer job** 把 library 打包後裝進
-      `demo/product-a-demo` 並 build，驗證 `files`/`exports`/`sideEffects`
-      （這類問題在 repo 內部測不出來）
+      → 上傳 Storybook artifact；另有 **pack job** 呼叫 `npm run verify:pack`，
+      自建臨時消費端驗證 `files`/`exports`/`sideEffects`/型別解析
+      （這類問題在 repo 內部測不出來）。原本這一步是裝進
+      `demo/product-a-demo` 並 build，後來 demo 改裝 registry 版本
+      （示範同事真實接入方式）後與此驗證解耦，見上方「demo 定位調整」
 - [x] 設 `concurrency` 取消同分支的舊 run —— private repo 的 Actions 分鐘數計量
 - [ ] `deploy-pages.yml`：**對外發布階段才做**；屆時 repo Settings > Pages
       source 改 "GitHub Actions"，並刪掉 `scripts/deploy-storybook.ps1` 與 `deploy` script
