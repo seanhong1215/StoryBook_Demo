@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@seanhong1215/my-design-system": "file:../../seanhong1215-my-design-system-0.1.0.tgz",
+    "@seanhong1215/my-design-system": "^0.1.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "react-hook-form": "^7.82.0"

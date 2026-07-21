@@ -59,7 +59,11 @@ jobs:
   # 驗證「打包出來的東西真的裝得起來」——
   # 這一步抓的是 files / exports / sideEffects 設定錯誤，
   # 那類問題在 repo 內部怎麼測都測不出來。
-  consumer:
+  # 驗證「當前代碼打包後，全新消費端裝得起來、型別解析得到」。
+  # 刻意不用 demo —— demo 現在裝的是 registry 上的正式版本（示範同事的接入
+  # 方式），從 registry 裝需要認證、且測的是已發布版本而非這個 PR 的代碼。
+  # verify:pack 自建臨時消費端測當前 tgz，與 demo 完全解耦。
+  pack:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     needs: verify
@@ -75,13 +79,5 @@ jobs:
       - name: Install
         run: npm ci
 
-      - name: Pack and install into demo
-        run: npm run demo:sync
-
-      - name: Typecheck demo against the packed library
-        working-directory: demo/product-a-demo
-        run: npx tsc --noEmit -p tsconfig.app.json
-
-      - name: Build demo
-        working-directory: demo/product-a-demo
-        run: npx vite build
+      - name: Verify packed tarball installs in a fresh consumer
+        run: npm run verify:pack
