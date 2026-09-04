@@ -1,23 +1,32 @@
 .mds-dropdown {
   display: inline-flex;
-  position: relative;
   vertical-align: middle;
 }
 
 .mds-dropdown__trigger {
   background: transparent;
   border: 0;
+  border-radius: var(--radius-sm);
   color: inherit;
   cursor: pointer;
   font: inherit;
   padding: 0;
 }
 
-.mds-dropdown__trigger:disabled {
-  cursor: not-allowed;
-  opacity: 0.45;
+.mds-dropdown__trigger:focus-visible {
+  box-shadow: var(--shadow-focus);
+  outline: none;
 }
 
+.mds-dropdown__trigger:disabled {
+  cursor: not-allowed;
+  opacity: var(--opacity-disabled);
+}
+
+/*
+ * 位置由 usePopup 用 position: fixed 算，這裡不寫 top / left / 對齊方向。
+ * portal 到 body，因此不會被 Card / Table 的 overflow: hidden 裁掉。
+ */
 .mds-dropdown__menu {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
@@ -26,17 +35,12 @@
   display: grid;
   min-width: 180px;
   padding: var(--spacing-xs);
-  position: absolute;
-  top: calc(100% + 6px);
-  z-index: 20;
+  z-index: var(--z-dropdown);
 }
 
-.mds-dropdown--bottom-start .mds-dropdown__menu {
-  left: 0;
-}
-
-.mds-dropdown--bottom-end .mds-dropdown__menu {
-  right: 0;
+/* 選單本身只是鍵盤事件的容器（沒有可用項目時才會拿到焦點），不需要焦點框 */
+.mds-dropdown__menu:focus {
+  outline: none;
 }
 
 .mds-dropdown__item {
@@ -52,6 +56,16 @@
 
 .mds-dropdown__item:hover:not(:disabled) {
   background: var(--color-surface-hover);
+}
+
+/*
+ * 方向鍵移動焦點時要看得見停在哪。用 :focus-visible 而不是 :focus，
+ * 這樣滑鼠點開選單（我們會自動 focus 第一項）不會多出一個焦點框。
+ */
+.mds-dropdown__item:focus-visible {
+  background: var(--color-surface-hover);
+  box-shadow: var(--shadow-focus);
+  outline: none;
 }
 
 .mds-dropdown__item:disabled {

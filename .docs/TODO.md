@@ -1,13 +1,13 @@
 # 企業級設計系統升級 — 進度與待辦
 
 > 完整計畫（含每階段細節）：`C:\Users\Administrator\.claude\plans\storybook-tidy-book.md`
-> 最後更新：2026-07-21
+> 最後更新：2026-09-05
 
 ---
 
 ## 現在的狀態（Phase 0–4 完成，已發布 0.1.0，內部試用階段）
 
-- `npm test` — **92 個 story 全過**（a11y 已設為 `error` 模式）
+- `npm test` — **99 個 story 全過**（a11y 已設為 `error` 模式，含 4 個 play function）
 - lint / typecheck / build / build-storybook 全綠
 - `@seanhong1215/my-design-system@0.1.0` **已發布到 GitHub Packages**，
   已用全新專案從 registry 實測安裝成功
@@ -92,7 +92,7 @@ npm run demo:sync    # build → pack → 用 --no-save 覆蓋 demo 的 node_mod
 | 2 | ✅ 完成 | Dark mode token 架構 |
 | 3 | ✅ 完成 | Storybook toolbar 全域化（theme + product-line） |
 | 4 | ✅ 完成 | a11y 真正啟用 |
-| 5 | ⬜ 待辦 | Interaction tests（play functions） |
+| 5 | 🟡 部分 | Interaction tests：Dropdown / Tooltip 已有 4 個 play function，其餘元件待補 |
 | 6 | ⬜ 待辦 | MDX 使用指南 |
 | 7 | 🟡 部分 | CI 已建立（含 pack job）；Pages/Chromatic 待對外發布階段 |
 
@@ -131,6 +131,37 @@ Phase 5（測試）與 6（MDX）在內部試用階段**不是必要的**，可�
 無誤（11 個卡片、0 個 page error）、`verify:pack` 全綠。
 
 ## 待辦細節
+
+### 浮層共用層 `usePopup`（2026-09-05 完成）
+
+Tooltip 與 Dropdown 原本各自用 `position: absolute` + CSS 方向 class 硬寫位置，
+沒有邊界偵測，而且會被父層 `overflow: hidden` 裁掉。抽成
+`src/hooks/usePopup.ts`（約 230 行、零外部相依）統一處理：
+
+- **定位**：flip（偏好方向放不下且對向放得下才翻面）+ shift（沿交叉軸夾回視窗內），
+  `position: fixed` + scroll(capture)/resize/ResizeObserver 重算
+- **portal**：掛到 `document.body`，容器可由 `container` 選項覆寫（之後接 ConfigProvider）
+- **關閉時機**：點擊外部（pointerdown）、Escape；監聽器只在開啟時掛上
+- 新增 `--z-modal` / `--z-dropdown` / `--z-tooltip` token，數值與 Ant Design 對齊；
+  Modal 的寫死 `z-index: 1000` 一併改用 token
+
+元件層順帶修掉的缺陷：
+
+- **Dropdown** 補完鍵盤操作（ArrowDown/Up 開啟與移動、Home/End、Escape/Tab 關閉並
+  還原焦點、跳過 disabled 項、roving tabindex），新增受控 `open` / `defaultOpen`
+- **Tooltip** 改成開啟時才掛 `aria-describedby`（指向不存在的 id 會被 axe 判違規），
+  並移除「wrapper 恆為 tabIndex=0」造成的雙 tab stop —— 改成偵測 children 有無可
+  focus 元素再決定。移除 `white-space: nowrap`（它讓 `max-width` 失效，長字會衝出泡泡）
+
+**踩到的坑**：浮層首次 render 還量不到尺寸，原本用 `visibility: hidden` 佔位，
+但 `visibility: hidden` 的子元素**無法被 `focus()`** —— Dropdown 開啟時要立刻把焦點
+送進選單，那個時間點座標還沒回填，焦點會靜靜地失敗（測試抓到，畫面上看不出來）。
+改用 `opacity: 0` + `pointer-events: none`。
+
+驗證：99 tests passed、lint/typecheck/build/build-storybook 全綠；
+另用瀏覽器實測選單確實 portal 到 body 且未被 `overflow: hidden` 容器裁切、
+Tooltip 在視窗上緣自動由 top 翻到 bottom 並夾回視窗內。
+
 
 ### Phase 1f — 可共用門檻（已完成）
 
