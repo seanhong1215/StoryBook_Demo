@@ -66,6 +66,17 @@
   --transition-base: 160ms ease;
   --transition-slow: 240ms ease;
 
+  /*
+   * Z-index：浮層分層。
+   *
+   * 數值刻意與 Ant Design 對齊（modal 1000 / dropdown 1050 / tooltip 1070），
+   * 這樣與既有系統混用時不會互相蓋掉。dropdown / tooltip 比 modal 大是刻意的：
+   * 在 Modal 裡開的選單與提示必須疊在 Modal 之上，否則會被自己的對話框裁掉。
+   */
+  --z-modal: 1000;
+  --z-dropdown: 1050;
+  --z-tooltip: 1070;
+
   /* ---------- 品牌層（預設 = core） ---------- */
 
   --color-primary: #0066FF;

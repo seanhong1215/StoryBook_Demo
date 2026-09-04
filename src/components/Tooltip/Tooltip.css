@@ -1,13 +1,22 @@
 .mds-tooltip {
   display: inline-flex;
-  position: relative;
   vertical-align: middle;
 }
 
-.mds-tooltip__trigger {
-  display: inline-flex;
+/*
+ * children 自己不可 focus 時，wrapper 會拿到 tabIndex={0}（見 Tooltip.tsx），
+ * 這種情況要有自己的焦點樣式，否則鍵盤使用者不知道停在哪。
+ */
+.mds-tooltip:focus-visible {
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-focus);
+  outline: none;
 }
 
+/*
+ * 位置由 usePopup 用 position: fixed 算，這裡只負責外觀。
+ * 浮層 portal 到 body，因此不受觸發元素父層 overflow 影響。
+ */
 .mds-tooltip__content {
   /*
    * Tooltip 刻意與頁面反轉。原本寫成 background: --color-text / color: white，
@@ -19,61 +28,13 @@
   color: var(--color-inverse-text);
   font-size: var(--font-size-xs);
   line-height: 1.4;
-  max-width: 220px;
-  opacity: 0;
+  /*
+   * 這裡不能用 white-space: nowrap —— 它會讓 max-width 失效，
+   * 長字串會直接衝出泡泡。改成允許換行並強制長單字斷行。
+   */
+  max-width: 240px;
+  overflow-wrap: break-word;
   padding: 6px 8px;
   pointer-events: none;
-  position: absolute;
-  transition: opacity 0.12s ease, transform 0.12s ease;
-  white-space: nowrap;
-  z-index: 30;
-}
-
-.mds-tooltip:hover .mds-tooltip__content,
-.mds-tooltip:focus-within .mds-tooltip__content {
-  opacity: 1;
-}
-
-.mds-tooltip--top .mds-tooltip__content {
-  bottom: calc(100% + 8px);
-  left: 50%;
-  transform: translate(-50%, 4px);
-}
-
-.mds-tooltip--top:hover .mds-tooltip__content,
-.mds-tooltip--top:focus-within .mds-tooltip__content {
-  transform: translate(-50%, 0);
-}
-
-.mds-tooltip--bottom .mds-tooltip__content {
-  left: 50%;
-  top: calc(100% + 8px);
-  transform: translate(-50%, -4px);
-}
-
-.mds-tooltip--bottom:hover .mds-tooltip__content,
-.mds-tooltip--bottom:focus-within .mds-tooltip__content {
-  transform: translate(-50%, 0);
-}
-
-.mds-tooltip--right .mds-tooltip__content {
-  left: calc(100% + 8px);
-  top: 50%;
-  transform: translate(-4px, -50%);
-}
-
-.mds-tooltip--right:hover .mds-tooltip__content,
-.mds-tooltip--right:focus-within .mds-tooltip__content {
-  transform: translate(0, -50%);
-}
-
-.mds-tooltip--left .mds-tooltip__content {
-  right: calc(100% + 8px);
-  top: 50%;
-  transform: translate(4px, -50%);
-}
-
-.mds-tooltip--left:hover .mds-tooltip__content,
-.mds-tooltip--left:focus-within .mds-tooltip__content {
-  transform: translate(0, -50%);
+  z-index: var(--z-tooltip);
 }

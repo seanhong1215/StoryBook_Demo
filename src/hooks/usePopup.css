@@ -1,0 +1,47 @@
+/*
+ * 所有 portal 浮層的共用底座（Tooltip / Dropdown，之後的 Popover 也走這裡）。
+ *
+ * 位置由 usePopup 用 inline style 的 top / left 給，這裡刻意不碰位置，
+ * 把 transform 完整留給進場動畫用。
+ */
+
+.mds-popup {
+  animation: mds-popup-in var(--transition-fast) both;
+  /* portal 到 body 之後，字體不會從觸發元素繼承過來，要自己宣告 */
+  font-family: inherit;
+}
+
+/* 從觸發元素的方向長出來，而不是從自己的正中間放大 */
+.mds-popup[data-placement^='top'] {
+  transform-origin: bottom center;
+}
+
+.mds-popup[data-placement^='bottom'] {
+  transform-origin: top center;
+}
+
+.mds-popup[data-placement^='left'] {
+  transform-origin: center right;
+}
+
+.mds-popup[data-placement^='right'] {
+  transform-origin: center left;
+}
+
+@keyframes mds-popup-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mds-popup {
+    animation: none;
+  }
+}
