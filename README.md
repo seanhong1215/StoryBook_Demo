@@ -296,6 +296,34 @@ Storybook documents the package through:
 - Component stories under `General`, `Data Display`, `Data Entry`, `Feedback`, `Navigation`, and `Layout`.
 - Token stories under `Foundation`.
 
+## Releasing
+
+Versions follow SemVer. Before 1.0 the API is still settling, so breaking
+changes land in a minor bump (`0.x.0`) and are always listed under **Changed**
+in [CHANGELOG.md](CHANGELOG.md).
+
+1. Move the `## [Unreleased]` entries in `CHANGELOG.md` under the new version
+   heading.
+2. Bump and tag:
+
+   ```bash
+   npm version minor        # or patch
+   git push --follow-tags
+   ```
+
+   `npm version` runs `preversion`, which is `npm run verify` — lint, typecheck,
+   the full Storybook test suite, and the library build. A version that does not
+   pass never gets a tag.
+
+3. Pushing the `v*` tag triggers `.github/workflows/publish.yml`. It re-runs the
+   verification, fails if the tag and `package.json` version disagree, checks
+   that the packed tarball installs in a fresh consumer, and publishes to GitHub
+   Packages.
+
+Publishing from a laptop still works (`npm publish`): `prepublishOnly` runs the
+same `npm run verify`, so a build that fails lint, typecheck, or tests cannot be
+published either way.
+
 ## Development Rules
 
 When adding a component:
