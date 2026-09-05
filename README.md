@@ -296,6 +296,35 @@ Storybook documents the package through:
 - Component stories under `General`, `Data Display`, `Data Entry`, `Feedback`, `Navigation`, and `Layout`.
 - Token stories under `Foundation`.
 
+## Visual Regression
+
+`npm test` runs axe on every story, which catches accessibility violations but
+says nothing about whether a colour drifted. That matters here: the surface
+token layer is overridden only by `[data-theme]`, so one bad value can break
+dark mode while every test stays green.
+
+`.github/workflows/chromatic.yml` covers that gap. Each story is snapshotted in
+both light and dark (`parameters.chromatic.modes` in `.storybook/preview.tsx`),
+diffs are reported on the Chromatic build rather than failing CI, and merging to
+`master` accepts the current look as the new baseline.
+
+**One-time setup** (the workflow skips itself silently until this is done):
+
+1. Create a project at <https://www.chromatic.com/> and link this repository.
+2. Copy the project token into **Settings → Secrets and variables → Actions →
+   New repository secret**, named `CHROMATIC_PROJECT_TOKEN`.
+
+To run it from a laptop:
+
+```bash
+CHROMATIC_PROJECT_TOKEN=<token> npm run chromatic
+```
+
+Product lines (`core` / `commerce` / `finance` / `internal`) are deliberately
+left out of the snapshot modes — including them would quadruple the snapshot
+count and blow past the free tier. Check those by hand when brand colours
+change.
+
 ## Releasing
 
 Versions follow SemVer. Before 1.0 the API is still settling, so breaking

@@ -44,6 +44,7 @@
     "preview": "vite preview",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
+    "chromatic": "npx --yes chromatic --only-changed",
     "demo:sync": "node scripts/sync-demo.mjs",
     "demo:dev": "npm --prefix demo/product-a-demo run dev",
     "verify:pack": "node scripts/verify-pack.mjs",
