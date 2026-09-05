@@ -1,0 +1,60 @@
+name: Publish
+
+# 推 v* tag 才發布。發布動作綁在 tag 上而不是分支上，
+# 才不會有人不小心 push 到 master 就把新版推上 registry。
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+  # 發布到 GitHub Packages 需要，GITHUB_TOKEN 才拿得到寫入權限
+  packages: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          registry-url: https://npm.pkg.github.com
+          scope: '@seanhong1215'
+
+      - name: Install
+        run: npm ci
+
+      # tag 與 package.json 的版本不一致的話，registry 上的版本會跟 tag 對不起來，
+      # 之後追「這個版本是哪個 commit」就會失準。寧可在這裡擋下來。
+      - name: Tag 必須與 package.json 的版本一致
+        run: |
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          PKG_VERSION="$(node -p "require('./package.json').version")"
+          if [ "$TAG_VERSION" != "$PKG_VERSION" ]; then
+            echo "tag 是 v$TAG_VERSION，但 package.json 是 $PKG_VERSION"
+            exit 1
+          fi
+          echo "版本一致：$PKG_VERSION"
+
+      - name: Install Playwright chromium
+        run: npx playwright install chromium --with-deps
+
+      # 與 prepublishOnly 是同一個 script。這裡明確跑一次是為了讓失敗時
+      # 在 Actions 上看得到是哪一關掛掉，而不是埋在 npm publish 的輸出裡。
+      - name: Verify (lint / typecheck / test / build)
+        run: npm run verify
+
+      - name: Verify packed tarball installs in a fresh consumer
+        run: npm run verify:pack
+
+      # 上一步已經跑完 verify，--ignore-scripts 是為了不讓 prepublishOnly 再跑一次
+      - name: Publish to GitHub Packages
+        run: npm publish --ignore-scripts
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

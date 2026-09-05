@@ -25,7 +25,8 @@
     "./styles.css": "./dist/my-design-system.css"
   },
   "files": [
-    "dist"
+    "dist",
+    "CHANGELOG.md"
   ],
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
@@ -33,7 +34,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "prepublishOnly": "npm run build",
+    "verify": "npm run lint && npm run typecheck && npm test && npm run build",
+    "preversion": "npm run verify",
+    "prepublishOnly": "npm run verify",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit -p tsconfig.app.json",
     "test": "vitest --project=storybook run",
