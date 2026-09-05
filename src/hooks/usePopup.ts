@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useId, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import type { CSSProperties, ReactNode, RefObject } from 'react'
+import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect'
 import './usePopup.css'
 
 export type PopupSide = 'top' | 'bottom' | 'left' | 'right'
@@ -95,9 +96,6 @@ const computePosition = (
     placement: align === 'center' ? side : `${side}-${align}`,
   }
 }
-
-// SSR 下沒有 layout 階段；直接用 useLayoutEffect 會在 server render 時噴警告
-const useIsomorphicLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect
 
 export interface UsePopupOptions {
   /** 浮層是否顯示。狀態由呼叫端持有，hook 只負責定位與關閉時機。 */

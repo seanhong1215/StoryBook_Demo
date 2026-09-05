@@ -1,6 +1,7 @@
-import { forwardRef, useEffect } from 'react'
+import { forwardRef, useEffect, useId, useImperativeHandle } from 'react'
 import type { ReactNode } from 'react'
 import { createPortal } from 'react-dom'
+import { useFocusTrap } from '../../hooks/useFocusTrap'
 import { Button } from '../Button/Button'
 import { Icon } from '../Icon/Icon'
 import './Modal.css'
@@ -33,7 +34,10 @@ export interface ModalProps {
   onCancel?: () => void
 }
 
-/** ref 指向 dialog 面板本身（`<section class="modal">`），供 focus 管理 / measure 使用。 */
+/**
+ * ref 指向 dialog 面板本身（`<section class="mds-modal">`）。
+ * 內部另有 useFocusTrap 的 containerRef，兩者用 useImperativeHandle 合併。
+ */
 export const Modal = forwardRef<HTMLElement, ModalProps>(({
   open = false,
   title,
@@ -49,6 +53,14 @@ export const Modal = forwardRef<HTMLElement, ModalProps>(({
   onOk,
   onCancel,
 }, ref) => {
+  const titleId = useId()
+  /*
+   * aria-modal="true" 只是宣告，不會真的擋住 Tab —— 沒有 trap 的話焦點會跑到
+   * 對話框後面的頁面。trap 同時負責開啟時把焦點移進面板、關閉時還原。
+   */
+  const containerRef = useFocusTrap<HTMLElement>({ active: open })
+  useImperativeHandle(ref, () => containerRef.current as HTMLElement, [containerRef])
+
   useEffect(() => {
     if (!open) return undefined
 
@@ -78,16 +90,18 @@ export const Modal = forwardRef<HTMLElement, ModalProps>(({
         onClick={maskClosable ? onCancel : undefined}
       />
       <section
-        ref={ref}
+        ref={containerRef}
         className={['mds-modal', className].filter(Boolean).join(' ')}
         role="dialog"
         aria-modal="true"
-        aria-labelledby={title ? 'modal-title' : undefined}
+        aria-labelledby={title ? titleId : undefined}
+        // 開啟時焦點先落在面板本身，螢幕閱讀器才會朗讀對話框名稱而不是第一個按鈕
+        tabIndex={-1}
         style={{ width }}
       >
         {(title || closable) && (
           <header className="mds-modal__header">
-            {title && <h2 className="mds-modal__title" id="modal-title">{title}</h2>}
+            {title && <h2 className="mds-modal__title" id={titleId}>{title}</h2>}
             {closable && (
               <button
                 className="mds-modal__close"

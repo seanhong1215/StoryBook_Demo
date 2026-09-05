@@ -7,7 +7,7 @@
 
 ## 現在的狀態（Phase 0–4 完成，已發布 0.1.0，內部試用階段）
 
-- `npm test` — **105 個 story 全過**（a11y 已設為 `error` 模式，含 4 個 play function）
+- `npm test` — **107 個 story 全過**（a11y 已設為 `error` 模式，含 6 個 play function）
 - lint / typecheck / build / build-storybook 全綠
 - `@seanhong1215/my-design-system@0.1.0` **已發布到 GitHub Packages**，
   已用全新專案從 registry 實測安裝成功
@@ -92,7 +92,7 @@ npm run demo:sync    # build → pack → 用 --no-save 覆蓋 demo 的 node_mod
 | 2 | ✅ 完成 | Dark mode token 架構 |
 | 3 | ✅ 完成 | Storybook toolbar 全域化（theme + product-line） |
 | 4 | ✅ 完成 | a11y 真正啟用 |
-| 5 | 🟡 部分 | Interaction tests：Dropdown / Tooltip 已有 4 個 play function，其餘元件待補 |
+| 5 | 🟡 部分 | Interaction tests：Dropdown / Tooltip / Modal 已有 6 個 play function，其餘元件待補 |
 | 6 | ⬜ 待辦 | MDX 使用指南 |
 | 7 | 🟡 部分 | CI 已建立（含 pack job）；Pages/Chromatic 待對外發布階段 |
 
@@ -131,6 +131,22 @@ Phase 5（測試）與 6（MDX）在內部試用階段**不是必要的**，可�
 無誤（11 個卡片、0 個 page error）、`verify:pack` 全綠。
 
 ## 待辦細節
+
+### Modal focus trap / useFocusTrap（2026-09-05 完成）
+
+Modal 原本只有 `aria-modal="true"` —— 那只是給輔助技術的宣告，**不會真的擋住
+Tab**，焦點會直接跑到對話框後面的頁面，鍵盤使用者會在看不見焦點的情況下操作背景。
+
+- 新增 `src/hooks/useFocusTrap.ts`：開啟時把焦點移入容器、Tab / Shift+Tab 在
+  容器內循環、關閉時還原到開啟前的元素
+- 容器帶 `tabIndex={-1}` 時優先聚焦容器本身，螢幕閱讀器才會先朗讀對話框名稱，
+  而不是劈頭念第一個按鈕
+- 順手修掉 Modal 寫死的 `id="modal-title"`（同頁兩個 Modal 會產生重複 id），改用 `useId()`
+- 抽出 `src/hooks/focusable.ts`（可 focus 元素的判斷，Tooltip 與 trap 共用）與
+  `useIsomorphicLayoutEffect.ts`，usePopup 與 Tooltip 一併改用
+
+可 focus 清單用 `getClientRects().length > 0` 過濾看不見的元素：它們仍符合選擇器，
+但 `focus()` 對它們無效，留著會讓 Tab 循環卡在一個看不見的元素上。
 
 ### Icon 元件（2026-09-05 完成）
 
