@@ -40,13 +40,23 @@
 }
 
 .mds-modal__close {
+  align-items: center;
   background: transparent;
   border: 0;
+  border-radius: var(--radius-sm);
   color: var(--color-text-muted);
   cursor: pointer;
+  display: inline-flex;
   font: inherit;
+  justify-content: center;
   line-height: 1;
   padding: 4px;
+}
+
+/* 只有圖示的按鈕更需要看得見焦點：沒有文字可以當視覺錨點 */
+.mds-modal__close:focus-visible {
+  box-shadow: var(--shadow-focus);
+  outline: none;
 }
 
 .mds-modal__close:hover {

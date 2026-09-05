@@ -18,6 +18,7 @@ Public exports are managed in `src/index.ts`. All components are TypeScript,
 support `forwardRef`, and export their prop types.
 
 - `ThemeProvider`
+- `Icon`
 - `Button`
 - `Badge`
 - `Tag`

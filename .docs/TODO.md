@@ -7,7 +7,7 @@
 
 ## 現在的狀態（Phase 0–4 完成，已發布 0.1.0，內部試用階段）
 
-- `npm test` — **99 個 story 全過**（a11y 已設為 `error` 模式，含 4 個 play function）
+- `npm test` — **105 個 story 全過**（a11y 已設為 `error` 模式，含 4 個 play function）
 - lint / typecheck / build / build-storybook 全綠
 - `@seanhong1215/my-design-system@0.1.0` **已發布到 GitHub Packages**，
   已用全新專案從 registry 實測安裝成功
@@ -131,6 +131,22 @@ Phase 5（測試）與 6（MDX）在內部試用階段**不是必要的**，可�
 無誤（11 個卡片、0 個 page error）、`verify:pack` 全綠。
 
 ## 待辦細節
+
+### Icon 元件（2026-09-05 完成）
+
+Modal / Alert / Input 的關閉鈕原本是字元 `"x"`、Table 排序指示器是文字
+`"up"` / `"down"` / `"sort"`、Alert 的語意圖示只是一個 8px 色點 —— 這是唯一
+不用讀程式碼就會被看出來的粗糙處。
+
+- 13 個內建線條圖示，統一 24×24 grid / 2px stroke / 圓角端點；用
+  `currentColor` + `1em`，跟著周圍文字的顏色與字級走，因此沒有顏色 prop
+- 刻意不做完整圖示庫：只收元件自己用得到的，加上 search / check / chevron
+  四向這類通用款
+- 預設 `aria-hidden`（旁邊通常已有文字，或按鈕自帶 `aria-label`）；
+  傳 `aria-label` 時自動切成 `role="img"`
+- 順帶補上純圖示按鈕的 `:focus-visible` 焦點框 —— 沒有文字當視覺錨點時更需要
+- `spin` 在 `prefers-reduced-motion` 下放慢而非停止（停住的轉圈看起來像壞掉）
+- story 用 `Record<IconName, string>` 列清單，少一個就編譯不過，不會脫節
 
 ### 浮層共用層 `usePopup`（2026-09-05 完成）
 

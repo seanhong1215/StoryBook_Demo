@@ -32,12 +32,8 @@
 }
 
 .mds-alert__icon {
-  background: currentColor;
-  border-radius: var(--radius-full);
-  flex: 0 0 auto;
-  height: 8px;
-  margin-top: 7px;
-  width: 8px;
+  /* 顏色跟著 alert 語意色走（stroke: currentColor），與第一行文字對齊 */
+  margin-top: 2px;
 }
 
 .mds-alert__content {
@@ -62,12 +58,22 @@
 }
 
 .mds-alert__close {
+  align-items: center;
   background: transparent;
   border: 0;
+  border-radius: var(--radius-sm);
   color: currentColor;
   cursor: pointer;
+  display: inline-flex;
   flex: 0 0 auto;
   font: inherit;
+  justify-content: center;
   line-height: 1;
   padding: 4px;
+}
+
+/* 只有圖示的按鈕更需要看得見焦點：沒有文字可以當視覺錨點 */
+.mds-alert__close:focus-visible {
+  box-shadow: var(--shadow-focus);
+  outline: none;
 }

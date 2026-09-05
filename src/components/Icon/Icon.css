@@ -1,0 +1,27 @@
+.mds-icon {
+  display: inline-block;
+  /* 不要被 flex 容器壓扁（Alert / Button 內都是 flex） */
+  flex: 0 0 auto;
+  /* 與相鄰文字的基線對齊，否則圖示會偏高 */
+  vertical-align: -0.125em;
+}
+
+.mds-icon--spin {
+  animation: mds-icon-spin 1s linear infinite;
+}
+
+@keyframes mds-icon-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/*
+ * 載入指示器不能直接停掉動畫 —— 停住的轉圈看起來像壞掉。
+ * 改成放慢，仍然傳達「進行中」但不會造成前庭不適。
+ */
+@media (prefers-reduced-motion: reduce) {
+  .mds-icon--spin {
+    animation-duration: 2.4s;
+  }
+}
