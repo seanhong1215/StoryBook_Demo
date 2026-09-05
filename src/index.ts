@@ -47,7 +47,15 @@ export type { IconProps, IconName } from './components/Icon/Icon'
 export type { ButtonProps, ButtonVariant } from './components/Button/Button'
 export type { BadgeProps } from './components/Badge/Badge'
 export type { CardProps } from './components/Card/Card'
-export type { TableProps, TableColumn, TableRowSelection, TableRowKey } from './components/Table/Table'
+export type {
+  TableProps,
+  TableColumn,
+  TableRowSelection,
+  TableRowKey,
+  TableSort,
+  TablePaginationConfig,
+  TableChangeInfo,
+} from './components/Table/Table'
 export type { FormProps, FormItemProps, FormRule, FormValues } from './components/Form/Form'
 export type { InputProps } from './components/Input/Input'
 export type { TextareaProps } from './components/Textarea/Textarea'
