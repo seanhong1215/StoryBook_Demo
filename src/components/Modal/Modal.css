@@ -23,6 +23,11 @@
   transform: translateX(-50%);
 }
 
+/* 面板是程式移入焦點的容器，不是使用者自己 tab 到的控制項，不畫焦點框 */
+.mds-modal:focus {
+  outline: none;
+}
+
 .mds-modal__header {
   align-items: center;
   border-bottom: 1px solid var(--color-border);

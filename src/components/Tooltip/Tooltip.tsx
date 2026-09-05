@@ -1,22 +1,9 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
+import { FOCUSABLE_SELECTOR } from '../../hooks/focusable'
 import { usePopup } from '../../hooks/usePopup'
 import type { PopupPlacement } from '../../hooks/usePopup'
 import './Tooltip.css'
-
-/*
- * 用來判斷 children 自己有沒有可 focus 的元素。
- * 有的話就讓它當 tab stop；沒有的話才把 wrapper 設成 tabIndex={0}。
- * 兩個都給會變成同一個提示要按兩次 Tab 才跳得過去。
- */
-const FOCUSABLE_SELECTOR = [
-  'a[href]',
-  'button:not([disabled])',
-  'input:not([disabled])',
-  'select:not([disabled])',
-  'textarea:not([disabled])',
-  '[tabindex]:not([tabindex="-1"])',
-].join(', ')
 
 export interface TooltipProps {
   /** Content shown inside the tooltip bubble. */
@@ -82,6 +69,10 @@ export const Tooltip = forwardRef<HTMLSpanElement, TooltipProps>(({
 
   useEffect(() => () => clearTimeout(timerRef.current), [])
 
+  /*
+   * children 自己有可 focus 的元素時就讓它當 tab stop，沒有才把 wrapper
+   * 設成 tabIndex={0}。兩個都給的話同一個提示要按兩次 Tab 才跳得過去。
+   */
   useEffect(() => {
     const wrapper = anchorRef.current
     if (!wrapper) return
