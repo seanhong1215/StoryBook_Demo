@@ -1,5 +1,6 @@
 import { forwardRef } from 'react'
 import type { ReactNode, SelectHTMLAttributes } from 'react'
+import { useLocale } from '../../config/context'
 import './Select.css'
 
 export interface SelectOption {
@@ -32,7 +33,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(({
   size = 'md',
   status,
   options = [],
-  placeholder = 'Select an option',
+  placeholder,
   value,
   defaultValue,
   disabled = false,
@@ -40,6 +41,10 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(({
   children,
   ...props
 }, ref) => {
+  const locale = useLocale()
+  // placeholder={null} 是「不要 prompt」的意思，不能被 locale 預設值蓋掉
+  const prompt = placeholder === undefined ? locale.select.placeholder : placeholder
+
   const classes = [
     'mds-select',
     `mds-select--${size}`,
@@ -59,7 +64,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(({
    *
    * 受控時不能同時給 value 與 defaultValue，React 會警告，因此下面分開展開。
    */
-  const uncontrolledDefault = defaultValue ?? (placeholder ? '' : undefined)
+  const uncontrolledDefault = defaultValue ?? (prompt ? '' : undefined)
 
   return (
     <span className={classes}>
@@ -72,10 +77,10 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(({
         disabled={disabled}
         {...props}
       >
-        {placeholder && (
+        {prompt && (
           // hidden 讓 placeholder 不出現在展開清單裡，但被選中時仍會顯示在收合的控制項上
           <option value="" disabled hidden>
-            {placeholder}
+            {prompt}
           </option>
         )}
         {children || options.map((option) => (

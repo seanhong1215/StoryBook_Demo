@@ -7,7 +7,7 @@
 
 ## 現在的狀態（Phase 0–4 完成，已發布 0.1.0，內部試用階段）
 
-- `npm test` — **112 個 story 全過**（a11y 已設為 `error` 模式，含 11 個 play function）
+- `npm test` — **114 個 story 全過**（a11y 已設為 `error` 模式，含 12 個 play function）
 - lint / typecheck / build / build-storybook 全綠
 - `@seanhong1215/my-design-system@0.1.0` **已發布到 GitHub Packages**，
   已用全新專案從 registry 實測安裝成功
@@ -131,6 +131,27 @@ Phase 5（測試）與 6（MDX）在內部試用階段**不是必要的**，可�
 無誤（11 個卡片、0 個 page error）、`verify:pack` 全綠。
 
 ## 待辦細節
+
+### ConfigProvider 與 i18n（2026-09-05 完成）
+
+`'OK'` / `'Cancel'` / `'No data'` / `'Previous'` / `'Next'` / `'Select all rows'`
+這些字串原本寫死在元件裡，內部產品線要中文化只能每個使用端逐一傳 prop。
+
+- 新增 `ConfigProvider`（語系 + 主題 + 產品線 + `getPopupContainer`），
+  內建 `en` 與 `zhTW` 兩個語系包
+- **`ThemeProvider` 保留為薄包裝**，內部委派給 `ConfigProvider`，既有使用端與
+  demo 完全不用改。名稱與職責分開：主題歸主題，全域設定歸 ConfigProvider
+- 巢狀時只覆寫有傳的項目（內層只換產品線，語系從外層繼承）；沒包 provider
+  時 fallback 到 `en`，大部分 story 因此不用改
+- 帶數值的文案用函式不用字串樣板 ——「共 6 筆」與「6 items」語序不同，
+  沒辦法用同一個 `{n} xxx` 模板表達
+- `getPopupContainer` 接進 Tooltip / Dropdown（usePopup 當初預留的 `container`
+  選項現在有出口了）
+
+**測試順手抓到一個真的缺陷**：`NestedProviders` story 放了兩個 Pagination，
+axe 判 `landmark-unique` —— 兩個 `<nav>` 同名，以 landmark 導覽時分不出來。
+這是同一頁上下各放一個分頁時會踩到的實際情況，因此補了 `Pagination` 的
+`label` prop。另外頁碼按鈕補上 `aria-label`（原本讀屏只唸得到孤零零的「3」）。
 
 ### 發布流程與視覺回歸（2026-09-05 完成）
 

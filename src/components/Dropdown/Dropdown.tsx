@@ -1,5 +1,6 @@
 import { forwardRef, useEffect, useId, useImperativeHandle, useRef, useState } from 'react'
 import type { KeyboardEvent, ReactNode } from 'react'
+import { useConfig } from '../../config/context'
 import { usePopup } from '../../hooks/usePopup'
 import type { PopupPlacement } from '../../hooks/usePopup'
 import './Dropdown.css'
@@ -53,6 +54,7 @@ export const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
   onOpenChange,
   onSelect,
 }, ref) => {
+  const { getPopupContainer } = useConfig()
   const rootRef = useRef<HTMLDivElement>(null)
   useImperativeHandle(ref, () => rootRef.current as HTMLDivElement, [])
 
@@ -84,6 +86,7 @@ export const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
     open,
     placement,
     offset: 6,
+    container: getPopupContainer?.(),
     // Escape 自己處理：關閉之後要把焦點交還給觸發按鈕，hook 不管焦點
     closeOnEscape: false,
     onClose: () => setOpenState(false),

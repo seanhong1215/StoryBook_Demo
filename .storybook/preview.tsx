@@ -106,7 +106,7 @@ const preview: Preview = {
           'Layout',
           ['Space'],
           'Foundation',
-          ['Tokens'],
+          ['Tokens', 'Localization'],
         ],
       },
     },
