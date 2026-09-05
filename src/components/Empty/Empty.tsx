@@ -1,5 +1,6 @@
 import { forwardRef } from 'react'
 import type { MouseEventHandler, ReactNode } from 'react'
+import { useLocale } from '../../config/context'
 import { Button } from '../Button/Button'
 import './Empty.css'
 
@@ -20,7 +21,7 @@ export interface EmptyProps {
 }
 
 export const Empty = forwardRef<HTMLDivElement, EmptyProps>(({
-  title = 'No data',
+  title,
   description,
   image,
   action,
@@ -28,12 +29,14 @@ export const Empty = forwardRef<HTMLDivElement, EmptyProps>(({
   onAction,
   className = '',
 }, ref) => {
+  const locale = useLocale()
+
   return (
     <div ref={ref} className={['mds-empty', className].filter(Boolean).join(' ')}>
       <div className="mds-empty__image" aria-hidden="true">
         {image || <span className="mds-empty__box" />}
       </div>
-      <h3 className="mds-empty__title">{title}</h3>
+      <h3 className="mds-empty__title">{title ?? locale.empty.title}</h3>
       {description && <p className="mds-empty__description">{description}</p>}
       {(action || actionText) && (
         <div className="mds-empty__action">

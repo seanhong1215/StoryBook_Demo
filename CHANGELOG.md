@@ -12,6 +12,11 @@
 
 ### Added
 
+- **`ConfigProvider`**：全域設定（語系、主題、產品線、浮層容器）。內建 `en`
+  與 `zhTW` 兩個語系包，元件自己渲染的文案與無障礙標籤都跟著走；使用端傳的
+  prop 一律優先，locale 只是預設值。沒包 provider 時 fallback 到 `en`。
+- **`Pagination` 的 `label`**：同一頁有多個分頁時各自命名，否則以 landmark
+  導覽時分不出來。
 - **`Icon`**：13 個內建線條圖示，統一 24×24 grid 與 2px stroke，用
   `currentColor` + `1em`，跟著周圍文字的顏色與字級走。
 - **`Modal` focus trap**：開啟時焦點移入面板、`Tab` / `Shift+Tab` 在面板內
@@ -49,6 +54,10 @@
 - ⚠️ **`Tooltip` 的 DOM 結構變動**：移除內層的 `.mds-tooltip__trigger`，
   泡泡改由 portal 掛在 `document.body`。有直接指定這兩個 class 的樣式需調整。
 - `Table` 換排序時頁碼會回到第 1 頁。
+- `ThemeProvider` 現在是 `ConfigProvider` 的薄包裝，行為完全相同，既有使用端
+  不需要改。新專案建議直接用 `ConfigProvider`。
+- `Pagination` 的頁碼按鈕補上 `aria-label`（例如 `Page 3`）—— 讀屏原本只會唸出
+  孤零零的「3」。以可及名稱查詢這些按鈕的測試需要跟著改。
 
 ## [0.1.0] - 2026-07-21
 

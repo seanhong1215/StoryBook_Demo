@@ -1,5 +1,6 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
+import { useConfig } from '../../config/context'
 import { FOCUSABLE_SELECTOR } from '../../hooks/focusable'
 import { usePopup } from '../../hooks/usePopup'
 import type { PopupPlacement } from '../../hooks/usePopup'
@@ -37,6 +38,7 @@ export const Tooltip = forwardRef<HTMLSpanElement, TooltipProps>(({
   mouseLeaveDelay = 100,
   onOpenChange,
 }, ref) => {
+  const { getPopupContainer } = useConfig()
   const [internalOpen, setInternalOpen] = useState(defaultOpen)
   const isControlled = controlledOpen !== undefined
   const hasTitle = title !== undefined && title !== null && title !== ''
@@ -62,6 +64,7 @@ export const Tooltip = forwardRef<HTMLSpanElement, TooltipProps>(({
   } = usePopup<HTMLSpanElement, HTMLDivElement>({
     open,
     placement,
+    container: getPopupContainer?.(),
     onClose: () => setOpenState(false),
   })
 

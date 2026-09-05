@@ -1,5 +1,6 @@
 import { forwardRef, useImperativeHandle, useRef, useState } from 'react'
 import type { ChangeEvent, InputHTMLAttributes, ReactNode } from 'react'
+import { useLocale } from '../../config/context'
 import { Icon } from '../Icon/Icon'
 import './Input.css'
 
@@ -33,7 +34,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(({
   prefix,
   suffix,
   allowClear = false,
-  clearLabel = 'Clear input',
+  clearLabel,
   value,
   defaultValue,
   disabled = false,
@@ -41,6 +42,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(({
   onChange,
   ...props
 }, ref) => {
+  const locale = useLocale()
   const inputRef = useRef<HTMLInputElement>(null)
   useImperativeHandle(ref, () => inputRef.current as HTMLInputElement, [])
 
@@ -111,7 +113,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(({
         <button
           className="mds-input__clear"
           type="button"
-          aria-label={clearLabel}
+          aria-label={clearLabel ?? locale.input.clear}
           onClick={clearValue}
         >
           <Icon name="close" size={14} />

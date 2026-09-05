@@ -151,7 +151,7 @@ export const PageClampsWhenDataShrinks: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
 
-    await userEvent.click(canvas.getByRole('button', { name: '3' }))
+    await userEvent.click(canvas.getByRole('button', { name: 'Page 3' }))
     await waitFor(() => expect(canvas.getByText('ORD-1029')).toBeInTheDocument())
 
     await userEvent.click(canvas.getByRole('button', { name: 'Filter down to 2 rows' }))
@@ -222,7 +222,7 @@ export const ServerSide: Story = {
     await userEvent.click(canvas.getByRole('button', { name: /Amount/ }))
     await waitFor(() => {
       expect(canvas.getByText('$420')).toBeInTheDocument()
-      expect(canvas.getByRole('button', { name: '1' })).toHaveAttribute('aria-current', 'page')
+      expect(canvas.getByRole('button', { name: 'Page 1' })).toHaveAttribute('aria-current', 'page')
     })
   },
 }

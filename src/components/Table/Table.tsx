@@ -1,5 +1,6 @@
 import { forwardRef, useMemo, useState } from 'react'
 import type { ForwardedRef, ReactElement, ReactNode, Ref } from 'react'
+import { useLocale } from '../../config/context'
 import { Checkbox } from '../Checkbox/Checkbox'
 import { Empty } from '../Empty/Empty'
 import { Icon } from '../Icon/Icon'
@@ -117,10 +118,11 @@ const TableInner = <T,>({
   defaultSort = null,
   manual = false,
   rowSelection,
-  emptyText = 'No data',
+  emptyText,
   className = '',
   onChange,
 }: TableProps<T>, ref: ForwardedRef<HTMLDivElement>) => {
+  const locale = useLocale()
   const paginationConfig = pagination === false ? null : pagination
   const pageSize = paginationConfig?.pageSize ?? 5
 
@@ -229,7 +231,7 @@ const TableInner = <T,>({
                     checked={allVisibleSelected}
                     indeterminate={someVisibleSelected}
                     onChange={toggleAllVisible}
-                    aria-label="Select all rows"
+                    aria-label={locale.table.selectAll}
                   />
                 </th>
               )}
@@ -279,7 +281,7 @@ const TableInner = <T,>({
                       <Checkbox
                         checked={selectedRowKeys.includes(key)}
                         onChange={() => toggleRow(key)}
-                        aria-label={`Select row ${key}`}
+                        aria-label={locale.table.selectRow(key)}
                       />
                     </td>
                   )}
@@ -299,10 +301,10 @@ const TableInner = <T,>({
           </tbody>
         </table>
         {pagedData.length === 0 && (
-          <Empty title={emptyText} />
+          <Empty title={emptyText ?? locale.table.emptyText} />
         )}
       </div>
-      {loading && <div className="mds-table__loading" role="status">Loading</div>}
+      {loading && <div className="mds-table__loading" role="status">{locale.table.loading}</div>}
       {paginationConfig && total > pageSize && (
         <div className="mds-table__pagination">
           <Pagination

@@ -1,5 +1,6 @@
 import { forwardRef } from 'react'
 import type { HTMLAttributes, MouseEventHandler, ReactNode } from 'react'
+import { useLocale } from '../../config/context'
 import { Icon } from '../Icon/Icon'
 import type { IconName } from '../Icon/Icon'
 import './Alert.css'
@@ -41,6 +42,7 @@ export const Alert = forwardRef<HTMLDivElement, AlertProps>(({
   children,
   ...props
 }, ref) => {
+  const locale = useLocale()
   const classes = [
     'mds-alert',
     `mds-alert--${type}`,
@@ -62,7 +64,7 @@ export const Alert = forwardRef<HTMLDivElement, AlertProps>(({
         <button
           className="mds-alert__close"
           type="button"
-          aria-label="Close alert"
+          aria-label={locale.alert.close}
           onClick={onClose}
         >
           <Icon name="close" size={14} />

@@ -1,6 +1,7 @@
 import { forwardRef, useEffect, useId, useImperativeHandle } from 'react'
 import type { ReactNode } from 'react'
 import { createPortal } from 'react-dom'
+import { useLocale } from '../../config/context'
 import { useFocusTrap } from '../../hooks/useFocusTrap'
 import { Button } from '../Button/Button'
 import { Icon } from '../Icon/Icon'
@@ -46,13 +47,14 @@ export const Modal = forwardRef<HTMLElement, ModalProps>(({
   width = 520,
   closable = true,
   maskClosable = true,
-  okText = 'OK',
-  cancelText = 'Cancel',
+  okText,
+  cancelText,
   confirmLoading = false,
   className = '',
   onOk,
   onCancel,
 }, ref) => {
+  const locale = useLocale()
   const titleId = useId()
   /*
    * aria-modal="true" 只是宣告，不會真的擋住 Tab —— 沒有 trap 的話焦點會跑到
@@ -106,7 +108,7 @@ export const Modal = forwardRef<HTMLElement, ModalProps>(({
               <button
                 className="mds-modal__close"
                 type="button"
-                aria-label="Close modal"
+                aria-label={locale.modal.close}
                 onClick={onCancel}
               >
                 <Icon name="close" size={16} />
@@ -118,8 +120,8 @@ export const Modal = forwardRef<HTMLElement, ModalProps>(({
         <footer className="mds-modal__footer">
           {footer === undefined ? (
             <>
-              <Button variant="secondary" onClick={onCancel}>{cancelText}</Button>
-              <Button type="primary" loading={confirmLoading} onClick={onOk}>{okText}</Button>
+              <Button variant="secondary" onClick={onCancel}>{cancelText ?? locale.modal.cancel}</Button>
+              <Button type="primary" loading={confirmLoading} onClick={onOk}>{okText ?? locale.modal.ok}</Button>
             </>
           ) : footer}
         </footer>
