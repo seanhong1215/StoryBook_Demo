@@ -67,6 +67,21 @@ const preview: Preview = {
       },
     },
 
+    /*
+     * Chromatic modes：每個 story 各快照淺色與暗色一次。
+     *
+     * 這個 repo 最容易無聲壞掉的就是 token —— 表面層只由 [data-theme] 覆寫，
+     * 改一行顏色可能只在暗色下失效，而 axe 與所有測試照樣全綠。
+     * 產品線（core / commerce / finance / internal）暫時不進 modes：
+     * 快照數會變成 4 倍，超出免費額度，改動品牌色時再手動確認。
+     */
+    chromatic: {
+      modes: {
+        light: { theme: 'light' },
+        dark: { theme: 'dark' },
+      },
+    },
+
     a11y: {
       // Phase 4 已把 92 個 story × light/dark 的 axe 違規清到 0，
       // 因此從 'todo' 轉為 'error'：之後任何退步都會讓測試失敗。

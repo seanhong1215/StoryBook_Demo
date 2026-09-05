@@ -94,7 +94,7 @@ npm run demo:sync    # build → pack → 用 --no-save 覆蓋 demo 的 node_mod
 | 4 | ✅ 完成 | a11y 真正啟用 |
 | 5 | 🟡 部分 | Interaction tests：Dropdown / Tooltip / Modal / Table / Input 已有 11 個 play function，其餘元件待補 |
 | 6 | ⬜ 待辦 | MDX 使用指南 |
-| 7 | 🟡 部分 | CI 已建立（含 pack job）；Pages/Chromatic 待對外發布階段 |
+| 7 | 🟡 部分 | CI + publish + chromatic workflow 都已建立；Pages 待對外發布階段 |
 
 ## 目前優先序：內部試用
 
@@ -131,6 +131,33 @@ Phase 5（測試）與 6（MDX）在內部試用階段**不是必要的**，可�
 無誤（11 個卡片、0 個 page error）、`verify:pack` 全綠。
 
 ## 待辦細節
+
+### 發布流程與視覺回歸（2026-09-05 完成）
+
+**發布流程**：`prepublishOnly` 原本只跑 `build` —— lint、typecheck、測試綠不綠
+都不影響，一個測試壞掉的版本照樣發得到 registry 上給同事裝。
+
+- 新增 `verify` script（lint + typecheck + test + build），`prepublishOnly` 與
+  `preversion` 都指向它：不論從筆電 `npm publish` 還是 `npm version` 開版，
+  都過同一道關
+- `.github/workflows/publish.yml`：推 `v*` tag 才發布，會擋下 tag 與
+  `package.json` 版本不一致，跑完 `verify` 與 `verify:pack` 才 publish。
+  綁 tag 而不是分支，避免 push 到 master 就意外發版
+- `CHANGELOG.md`（Keep a Changelog）。兩處會改變既有行為的變更明確標在
+  Changed：Table `sorter: true` 的排序結果、Tooltip 的 DOM 結構
+
+**視覺回歸**：`.github/workflows/chromatic.yml`。axe 驗得到無障礙違規，
+驗不到顏色跑掉 —— 而這個 repo 最容易無聲壞掉的正是 token（表面層只由
+`[data-theme]` 覆寫，改一行可能只在暗色下失效，測試照樣全綠）。
+
+- 每個 story 快照淺色與暗色兩次（`parameters.chromatic.modes`）
+- 產品線不進 modes：快照數會變 4 倍、超出免費額度，改品牌色時手動確認
+- 有差異不讓 CI 變紅（`exitZeroOnChanges`），合併回 master 收為新基準
+- 沒設定 token 時整個 workflow 安靜略過，CI 不會一路紅著
+
+**還需要你做一次**：到 chromatic.com 建專案，把 token 存成 repo secret
+`CHROMATIC_PROJECT_TOKEN`。在那之前 chromatic workflow 會自己跳過，
+因此這條路徑我沒辦法在本地實跑驗證。
 
 ### Input allowClear 修正（2026-09-05 完成）
 

@@ -1,0 +1,60 @@
+name: Chromatic
+
+# 視覺回歸。axe 只驗得到「有沒有無障礙違規」，驗不到「顏色有沒有跑掉」——
+# 而這個 repo 最容易無聲壞掉的正是 token：4 條產品線 × 明暗兩套主題，
+# 改一行 CSS 就可能讓其中一組配色失效，而所有測試照樣全綠。
+on:
+  push:
+    branches: [master, feature]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: chromatic-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  visual:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      # secrets 不能直接用在 job 層的 if，因此用一個 step 判斷後給後面的 step 用。
+      # 還沒設定 token 時整個 workflow 安靜略過，而不是讓 CI 一路紅著。
+      - name: 檢查是否已設定 Chromatic token
+        id: guard
+        run: |
+          if [ -z "${{ secrets.CHROMATIC_PROJECT_TOKEN }}" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::未設定 CHROMATIC_PROJECT_TOKEN，略過視覺回歸（設定方式見 README）"
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.guard.outputs.skip != 'true'
+        with:
+          # Chromatic 要靠完整 git 歷史找出基準版本，淺 clone 會每次都當成全新專案
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        if: steps.guard.outputs.skip != 'true'
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        if: steps.guard.outputs.skip != 'true'
+        run: npm ci
+
+      - name: Run Chromatic
+        if: steps.guard.outputs.skip != 'true'
+        uses: chromaui/action@latest
+        with:
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          buildScriptName: build-storybook
+          # 只快照受這次改動影響的 story（TurboSnap），省免費額度
+          onlyChanged: true
+          # 有視覺差異時不讓 CI 變紅：差異需要人看過才知道是 bug 還是刻意改動，
+          # 判斷結果在 Chromatic 上按，不是在 CI 上
+          exitZeroOnChanges: true
+          # 合併回 master 後把當下的樣子收為新基準
+          autoAcceptChanges: master
