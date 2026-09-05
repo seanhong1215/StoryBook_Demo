@@ -7,7 +7,7 @@
 
 ## 現在的狀態（Phase 0–4 完成，已發布 0.1.0，內部試用階段）
 
-- `npm test` — **107 個 story 全過**（a11y 已設為 `error` 模式，含 6 個 play function）
+- `npm test` — **110 個 story 全過**（a11y 已設為 `error` 模式，含 9 個 play function）
 - lint / typecheck / build / build-storybook 全綠
 - `@seanhong1215/my-design-system@0.1.0` **已發布到 GitHub Packages**，
   已用全新專案從 registry 實測安裝成功
@@ -92,7 +92,7 @@ npm run demo:sync    # build → pack → 用 --no-save 覆蓋 demo 的 node_mod
 | 2 | ✅ 完成 | Dark mode token 架構 |
 | 3 | ✅ 完成 | Storybook toolbar 全域化（theme + product-line） |
 | 4 | ✅ 完成 | a11y 真正啟用 |
-| 5 | 🟡 部分 | Interaction tests：Dropdown / Tooltip / Modal 已有 6 個 play function，其餘元件待補 |
+| 5 | 🟡 部分 | Interaction tests：Dropdown / Tooltip / Modal / Table 已有 9 個 play function，其餘元件待補 |
 | 6 | ⬜ 待辦 | MDX 使用指南 |
 | 7 | 🟡 部分 | CI 已建立（含 pack job）；Pages/Chromatic 待對外發布階段 |
 
@@ -131,6 +131,23 @@ Phase 5（測試）與 6（MDX）在內部試用階段**不是必要的**，可�
 無誤（11 個卡片、0 個 page error）、`verify:pack` 全綠。
 
 ## 待辦細節
+
+### Table 排序 / 分頁修正（2026-09-05 完成）
+
+三件事，前兩件是實錯：
+
+- **`sorter: true` 的數字排序**：原本一律 `String().localeCompare()`，數字欄位會排成
+  1, 10, 2。改成依型別分流（number / boolean / Date / 字串），字串再開 `numeric`
+  選項，`ORD-2` 才會排在 `ORD-10` 前面；空值視為最小
+- **資料變少時頁碼沒夾回範圍**：停在第 3 頁時上層把資料篩到 2 筆，`slice` 取到空陣列，
+  畫面變成一張空表格。改成 render 時就把頁碼夾進 `[1, totalPages]`，不用多一次 effect 重繪
+- **開放受控與 `manual` 模式**：新增 `sort` / `defaultSort` / `pagination.current` /
+  `pagination.total` / `onChange(pagination, sort)`，以及 `manual` —— 開啟後 Table
+  不排序也不切片，只回報使用者要求的狀態，由外部去後端取那一頁。這是「能不能用在
+  真實專案」的分水嶺，之前只能吃本地假資料
+
+順帶：`loading` 時補上 `aria-busy` 與 `role="status"`（原本讀屏使用者不知道正在載入），
+換排序時頁碼回到第 1 頁（留在第 3 頁看到的是完全不同的資料）。
 
 ### Modal focus trap / useFocusTrap（2026-09-05 完成）
 
