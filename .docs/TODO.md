@@ -7,7 +7,7 @@
 
 ## 現在的狀態（Phase 0–4 完成，已發布 0.1.0，內部試用階段）
 
-- `npm test` — **110 個 story 全過**（a11y 已設為 `error` 模式，含 9 個 play function）
+- `npm test` — **112 個 story 全過**（a11y 已設為 `error` 模式，含 11 個 play function）
 - lint / typecheck / build / build-storybook 全綠
 - `@seanhong1215/my-design-system@0.1.0` **已發布到 GitHub Packages**，
   已用全新專案從 registry 實測安裝成功
@@ -92,7 +92,7 @@ npm run demo:sync    # build → pack → 用 --no-save 覆蓋 demo 的 node_mod
 | 2 | ✅ 完成 | Dark mode token 架構 |
 | 3 | ✅ 完成 | Storybook toolbar 全域化（theme + product-line） |
 | 4 | ✅ 完成 | a11y 真正啟用 |
-| 5 | 🟡 部分 | Interaction tests：Dropdown / Tooltip / Modal / Table 已有 9 個 play function，其餘元件待補 |
+| 5 | 🟡 部分 | Interaction tests：Dropdown / Tooltip / Modal / Table / Input 已有 11 個 play function，其餘元件待補 |
 | 6 | ⬜ 待辦 | MDX 使用指南 |
 | 7 | 🟡 部分 | CI 已建立（含 pack job）；Pages/Chromatic 待對外發布階段 |
 
@@ -131,6 +131,23 @@ Phase 5（測試）與 6（MDX）在內部試用階段**不是必要的**，可�
 無誤（11 個卡片、0 個 page error）、`verify:pack` 全綠。
 
 ## 待辦細節
+
+### Input allowClear 修正（2026-09-05 完成）
+
+原本清除鈕呼叫的是 `onChange({ target: { value: '' } })` —— 一個造出來的假事件。
+兩個後果：`target` 不是真的 DOM 節點，`name` / `validity` / `form` 全拿不到，
+react-hook-form 的 `register()` 會壞；而且非受控時輸入框裡的字根本不會消失
+（React 沒收到真的變更，DOM 也沒被改）。
+
+- 改成用 `HTMLInputElement.prototype` 上的 value setter 寫進真的 DOM，再
+  `dispatchEvent(new Event('input', { bubbles: true }))`。**必須繞過節點上的
+  setter** —— React 覆寫過它，直接 `input.value = ''` 會連 React 的 value tracker
+  一起更新，React 判定「值沒變」就不會觸發 `onChange`
+- 清除鈕的顯示條件原本是 `allowClear && value`，非受控時 `value` 永遠 undefined，
+  按鈕永遠不出現。改成自己記一份「目前有沒有值」
+- 清完把焦點還給輸入框；`clearLabel` 可自訂（為之後的 i18n 留路）
+- 兩個 play function：非受控（清空 + 按鈕收起 + 焦點）與受控（斷言
+  `event.target.name` 真的拿得到）
 
 ### Table 排序 / 分頁修正（2026-09-05 完成）
 
