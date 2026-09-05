@@ -1,5 +1,6 @@
 import { forwardRef } from 'react'
 import type { ChangeEvent, InputHTMLAttributes, ReactNode } from 'react'
+import { Icon } from '../Icon/Icon'
 import './Input.css'
 
 export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size' | 'prefix'> {
@@ -73,7 +74,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(({
           aria-label="Clear input"
           onClick={clearValue}
         >
-          x
+          <Icon name="close" size={14} />
         </button>
       )}
       {suffix && <span className="mds-input__addon mds-input__addon--suffix">{suffix}</span>}

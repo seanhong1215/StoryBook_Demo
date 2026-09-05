@@ -2,6 +2,7 @@ import { forwardRef, useMemo, useState } from 'react'
 import type { ForwardedRef, ReactElement, ReactNode, Ref } from 'react'
 import { Checkbox } from '../Checkbox/Checkbox'
 import { Empty } from '../Empty/Empty'
+import { Icon } from '../Icon/Icon'
 import { Pagination } from '../Pagination/Pagination'
 import './Table.css'
 
@@ -157,8 +158,13 @@ const TableInner = <T,>({
                         onClick={() => toggleSort(column)}
                       >
                         {column.title}
-                        <span className="mds-table__sort-indicator" aria-hidden="true">
-                          {sorted === 'ascend' ? 'up' : sorted === 'descend' ? 'down' : 'sort'}
+                        <span className="mds-table__sort-indicator">
+                          <Icon
+                            name={sorted === 'ascend'
+                              ? 'chevron-up'
+                              : sorted === 'descend' ? 'chevron-down' : 'chevron-up-down'}
+                            size={14}
+                          />
                         </span>
                       </button>
                     ) : column.title}

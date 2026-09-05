@@ -79,7 +79,7 @@ const preview: Preview = {
           'Components',
           ['Showcase', 'Overview', 'Usage'],
           'General',
-          ['Button'],
+          ['Button', 'Icon'],
           'Data Display',
           ['Badge', 'Tag', 'Card', 'Tabs', 'Table'],
           'Data Entry',

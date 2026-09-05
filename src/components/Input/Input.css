@@ -83,6 +83,16 @@
   width: 20px;
 }
 
+.mds-input__clear {
+  border-radius: var(--radius-full);
+}
+
+/* 只有圖示的按鈕更需要看得見焦點：沒有文字可以當視覺錨點 */
+.mds-input__clear:focus-visible {
+  box-shadow: var(--shadow-focus);
+  outline: none;
+}
+
 .mds-input__clear:hover {
   color: var(--color-text);
 }
