@@ -21,6 +21,16 @@
   position: relative;
 }
 
+/*
+ * 方向鍵移動焦點時要看得見停在哪。用 :focus-visible 而不是 :focus，
+ * 滑鼠點分頁時就不會多出一個焦點框。
+ */
+.mds-tabs__tab:focus-visible {
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-focus);
+  outline: none;
+}
+
 .mds-tabs__tab[aria-selected="true"] {
   color: var(--color-primary-text);
 }
@@ -75,4 +85,11 @@
 
 .mds-tabs__panel {
   color: var(--color-text);
+}
+
+/* 面板本身可以被 Tab 到（內容可能要捲動），因此也要有焦點樣式 */
+.mds-tabs__panel:focus-visible {
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-focus);
+  outline: none;
 }
