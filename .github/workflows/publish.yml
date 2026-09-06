@@ -53,6 +53,9 @@ jobs:
       - name: Verify packed tarball installs in a fresh consumer
         run: npm run verify:pack
 
+      - name: Measure what a single-component consumer actually bundles
+        run: npm run measure:bundle
+
       # 上一步已經跑完 verify，--ignore-scripts 是為了不讓 prepublishOnly 再跑一次
       - name: Publish to GitHub Packages
         run: npm publish --ignore-scripts

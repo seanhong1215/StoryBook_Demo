@@ -1,24 +1,11 @@
+/*
+ * 只留 tokens：它是所有元件的基礎，一定要載入。
+ *
+ * 逐元件的 CSS import 刻意拿掉 —— 每個元件檔自己都有 `import './X.css'`，
+ * 在這裡再 import 一次會讓「只用一個 Button 也載入全部樣式」變成必然：
+ * CSS 在 sideEffects 裡被標成有副作用，從 entry 無條件 import 就搖不掉。
+ */
 import './tokens/tokens.css'
-import './components/Icon/Icon.css'
-import './components/Button/Button.css'
-import './components/Badge/Badge.css'
-import './components/Card/Card.css'
-import './components/Table/Table.css'
-import './components/Form/Form.css'
-import './components/Input/Input.css'
-import './components/Textarea/Textarea.css'
-import './components/Select/Select.css'
-import './components/Checkbox/Checkbox.css'
-import './components/Switch/Switch.css'
-import './components/Alert/Alert.css'
-import './components/Modal/Modal.css'
-import './components/Empty/Empty.css'
-import './components/Tooltip/Tooltip.css'
-import './components/Space/Space.css'
-import './components/Tabs/Tabs.css'
-import './components/Tag/Tag.css'
-import './components/Dropdown/Dropdown.css'
-import './components/Pagination/Pagination.css'
 
 export { ConfigProvider } from './config/ConfigProvider'
 export { ThemeProvider } from './theme/ThemeProvider'

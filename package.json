@@ -13,13 +13,13 @@
     "**/*.css"
   ],
   "main": "./dist/my-design-system.umd.cjs",
-  "module": "./dist/my-design-system.js",
+  "module": "./dist/index.js",
   "style": "./dist/my-design-system.css",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/my-design-system.js",
+      "import": "./dist/index.js",
       "require": "./dist/my-design-system.umd.cjs"
     },
     "./styles.css": "./dist/my-design-system.css"
@@ -33,7 +33,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && vite build --mode umd",
     "verify": "npm run lint && npm run typecheck && npm test && npm run build",
     "preversion": "npm run verify",
     "prepublishOnly": "npm run verify",
@@ -48,6 +48,7 @@
     "demo:sync": "node scripts/sync-demo.mjs",
     "demo:dev": "npm --prefix demo/product-a-demo run dev",
     "verify:pack": "node scripts/verify-pack.mjs",
+    "measure:bundle": "node scripts/measure-bundle.mjs",
     "deploy": "powershell -ExecutionPolicy Bypass -File scripts/deploy-storybook.ps1"
   },
   "peerDependencies": {

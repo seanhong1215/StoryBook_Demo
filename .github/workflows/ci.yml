@@ -81,3 +81,8 @@ jobs:
 
       - name: Verify packed tarball installs in a fresh consumer
         run: npm run verify:pack
+
+      # 會在「只 import 一個元件卻拉進超過一半的 library」時失敗，
+      # 擋下讓 tree-shaking 失效的改動（例如又在 entry 無條件 import CSS）
+      - name: Measure what a single-component consumer actually bundles
+        run: npm run measure:bundle
