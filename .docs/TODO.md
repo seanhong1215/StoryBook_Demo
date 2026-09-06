@@ -7,7 +7,7 @@
 
 ## 現在的狀態（Phase 0–4 完成，已發布 0.1.0，內部試用階段）
 
-- `npm test` — **127 個 story 全過**（a11y 已設為 `error` 模式，含 26 個 play function）
+- `npm test` — **126 個 story 全過**（a11y 已設為 `error` 模式，含 26 個 play function）
 - lint / typecheck / build / build-storybook 全綠
 - `@seanhong1215/my-design-system@0.1.0` **已發布到 GitHub Packages**，
   已用全新專案從 registry 實測安裝成功
@@ -93,7 +93,7 @@ npm run demo:sync    # build → pack → 用 --no-save 覆蓋 demo 的 node_mod
 | 3 | ✅ 完成 | Storybook toolbar 全域化（theme + product-line） |
 | 4 | ✅ 完成 | a11y 真正啟用 |
 | 5 | ✅ 完成 | Interaction tests：26 個 play function，涵蓋 12 個有行為的元件 |
-| 6 | ⬜ 待辦 | MDX 使用指南 |
+| 6 | ✅ 完成 | MDX 說明頁：Getting Started / Accessibility / Architecture |
 | 7 | 🟡 部分 | CI + publish + chromatic workflow 都已建立；Pages 待對外發布階段 |
 
 ## 目前優先序：內部試用
@@ -131,6 +131,27 @@ Phase 5（測試）與 6（MDX）在內部試用階段**不是必要的**，可�
 無誤（11 個卡片、0 個 page error）、`verify:pack` 全綠。
 
 ## 待辦細節
+
+### MDX 說明頁（2026-09-06 完成）
+
+三頁，各自回答一個問題：
+
+- **Getting Started** —— 怎麼裝、怎麼接。含 GitHub Packages 的認證設定
+  （classic PAT 要勾 `repo`，缺了會拿到 404 而不是權限錯誤）、ConfigProvider
+  的四個 prop、自訂產品線只覆寫品牌層
+- **Accessibility** —— **library 保證什麼 vs 使用端要自己做什麼**。前者自動化
+  測得到（axe error 模式 + 26 個 play function + Chromatic），後者測不到：
+  `Switch` / `Select` 的無障礙名稱、多個 `Pagination` 各自命名、圖示按鈕的
+  `aria-label`。也誠實列出限制（沒有虛擬捲動、`Select` 做不到多選、沒有 RTL）
+- **Architecture** —— 共用行為層、token 三層、Form 的值為什麼不放 context、
+  打包為什麼要 preserveModules，以及「刻意沒做」的四件事與理由
+
+**踩到的坑**：MDX v3 預設不吃 GFM 表格，說明頁裡的表格會被原封不動印成一串
+pipe 符號 —— 而 `build-storybook` 完全不會報錯，只有實際打開頁面才看得到。
+裝了 `remark-gfm` 並掛進 `@storybook/addon-docs` 的 `mdxCompileOptions`。
+
+順帶移除過期的 `Components/Usage` 頁：內容還在講「未發布、用 npm pack 安裝」，
+套件名也是舊的未 scoped 名稱，照著做會失敗。
 
 ### 打包顆粒度：讓 tree-shaking 真的有效（2026-09-06 完成）
 

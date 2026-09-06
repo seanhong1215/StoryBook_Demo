@@ -1,0 +1,82 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Components/Architecture" />
+
+# 架構與取捨
+
+21 個元件、約 45 kB JS、零執行期依賴。這頁記的是幾個「為什麼是這樣」，
+而不是元件清單 —— 那些看 sidebar 就有了。
+
+## 共用行為層
+
+元件不各自實作互動行為，共通的部分抽在 `src/hooks/`：
+
+| Hook | 負責 | 誰在用 |
+|---|---|---|
+| `usePopup` | 定位（flip + shift）、portal、點擊外部與 Escape 關閉 | `Tooltip`、`Dropdown` |
+| `useFocusTrap` | 焦點移入、`Tab` 循環、關閉時還原 | `Modal` |
+| `focusable` | 「目前真的可以 focus 的元素」的判斷 | `Tooltip`、`useFocusTrap` |
+
+抽這一層的理由不是「重用」，是**正確性**。浮層定位如果各寫各的，就會變成
+每個元件都用 `position: absolute` 寫死方向：沒有邊界偵測，靠近視窗邊緣會被
+切掉，放進 `overflow: hidden` 的容器裡會整個看不見。這些不是會被測試抓到的
+bug，是使用者遇到才會回報的那種。
+
+集中之後，後面每個浮層元件都便宜很多 —— Popover、Popconfirm、Menu 的子選單、
+自繪的 Select 都可以直接坐在 `usePopup` 上。
+
+## token 分三層
+
+尺度層（間距、圓角、字級）、品牌層（`[data-product-line]`）、
+表面層（`[data-theme]`），彼此不重疊。這個分層是為了避免
+4 條產品線 × 2 個主題 = 8 組色票要手工維護。
+
+彩色淺底（Alert / Tag / Badge）用 `color-mix()` 由品牌色與表面色即時混出，
+所以同時跟隨產品線與主題，不需要額外色票。
+
+**踩過最深的坑**：CSS 自訂屬性在**宣告的那個元素上**就完成 `var()` 代換，
+算出的顏色以固定值往下繼承。`--tone-*` 一開始只宣告在 `:root`，
+結果巢狀的 `[data-theme="dark"]` 完全不會重算，暗色下的彩色淺底維持淺色。
+選擇器必須寫成 `:root, [data-theme], [data-product-line]`。
+
+## Form 的值不放在 context
+
+`Form` 的欄位值放在一個外部 store，`Form.Item` 用 `useSyncExternalStore`
+**逐欄位訂閱**，context 只帶 store 本身（identity 永遠不變）。
+
+值一旦進 context，每一次按鍵都會讓所有 `Form.Item` 重繪 —— 30 個欄位的表單
+打字就會卡。`Data Entry/Form` 底下的 `IsolatedRerenders` story 用 render 計數
+把這件事變成可測的斷言，而不是口頭聲稱。
+
+## 打包：保留模組結構
+
+ES 產物用 `preserveModules`，一個模組一支檔案，每支各自 import 自己的 CSS。
+
+改成這樣之前實測過：全部壓成單一檔案時，「只 import 一個 Button」的產物是
+**41 kB**，裡面完整包含 Table / Modal / Form 的程式碼。原因是每個元件都是
+`const X = forwardRef(...)` 這種頂層呼叫，Rollup 無法證明它沒有副作用，
+只好整段保留。改用 preserveModules 之後同樣的情境是 **1.4 kB**。
+
+`npm run measure:bundle` 把這個量測固定下來並在 CI 上跑 —— tree-shaking 失效
+不會有任何測試抓得到，只能用量的。
+
+## 刻意沒做的
+
+| 沒做 | 理由 |
+|---|---|
+| CSS-in-JS | 靜態 CSS 載入更快、無執行期成本。代價是不能在執行期產生新主題 —— 換主題只能靠預先定義好的 `[data-product-line]` |
+| 自繪的 Select | 原生 `<select>` 的行動裝置與讀屏支援最好。代價是做不到多選與可搜尋 |
+| 完整圖示庫 | 只收元件自己用得到的 13 個。需要更多的話 `Icon` 的 `children` 收 `ReactNode` |
+| 虛擬捲動 | 內部後台的資料量還沒到需要它的程度，加了會讓 `Table` 複雜度跳一級 |
+
+## 目錄
+
+```
+src/
+  components/    元件，一個資料夾一個（tsx + css + stories）
+  config/        ConfigProvider 與它的 context
+  hooks/         共用行為層
+  locale/        內建語系包
+  tokens/        三層 token
+  docs/          Storybook 的說明頁
+```
