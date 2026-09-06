@@ -72,3 +72,22 @@
   color: var(--color-text-muted);
   cursor: not-allowed;
 }
+
+/* 高對比模式：說明見 tokens.css 結尾 */
+@media (forced-colors: active) {
+  .mds-dropdown__trigger:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+  }
+
+  .mds-dropdown__item:hover:not(:disabled),
+  .mds-dropdown__item:focus-visible {
+    background: Highlight;
+    color: HighlightText;
+    outline: none;
+  }
+
+  .mds-dropdown__item:disabled {
+    color: GrayText;
+  }
+}

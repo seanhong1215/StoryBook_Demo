@@ -77,3 +77,11 @@
   box-shadow: var(--shadow-focus);
   outline: none;
 }
+
+/* 高對比模式：說明見 tokens.css 結尾 */
+@media (forced-colors: active) {
+  .mds-alert__close:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+  }
+}

@@ -70,9 +70,9 @@ npm run demo:sync    # build → pack → 用 --no-save 覆蓋 demo 的 node_mod
 
 | # | 事項 | 影響 | 備註 |
 |---|---|---|---|
-| 1 | `--color-border` 對 `--color-surface` 淺色下只有 **1.24:1** | 大 | WCAG 1.4.11 對「識別控制項所需的邊界」要求 3:1。修它要把**所有元件的邊框大幅加深**，會明顯改變整體視覺設計。非 dark mode 造成，改動前就存在 |
+| ~~1~~ | ~~`--color-border` 對比 1.24:1~~ | — | ✅ 已解：新增 `--color-border-strong`（淺 3.25:1 / 暗 3.10:1）只套用在控制項，裝飾線維持原樣 |
 | 2 | 下一步做哪個 Phase | — | 5（interaction tests）/ 6（MDX）/ 7（CI/CD 的 Pages/Chromatic）。建議先收內部回饋，等 API 因真實使用穩定下來再做 |
-| 3 | `ProductLine` 型別是固定四個字串聯集 | 小 | 消費端若要加自訂品牌線，CSS 可直接加但 TS 型別需放寬 |
+| ~~3~~ | ~~`ProductLine` 型別固定四個字串~~ | — | ✅ 已解：放寬為 `\| (string & Record<never, never>)`，保留編輯器提示 |
 
 ~~發布到 GitHub Packages~~ — 已完成，`0.1.0` 在 registry 上，已實測全新安裝成功。
 
@@ -131,6 +131,27 @@ Phase 5（測試）與 6（MDX）在內部試用階段**不是必要的**，可�
 無誤（11 個卡片、0 個 page error）、`verify:pack` 全綠。
 
 ## 待辦細節
+
+### 高對比模式與邊界對比（2026-09-06 完成）
+
+**高對比（強制色彩）模式**：兩個系統性問題，完整說明寫在 `tokens.css` 結尾。
+
+- `box-shadow` 在強制色彩下**完全不會被繪製**。整個 library 的焦點框都是
+  `--shadow-focus`（box-shadow）做的，等於高對比模式下沒有任何焦點指示 ——
+  每個焦點樣式都補了一份 `outline` 版本
+- 靠底色表達的狀態（checkbox 勾選、switch 開啟、選中的分頁、目前頁碼、
+  選單 hover）在強制色彩下背景會被系統色蓋掉，全部改用系統色關鍵字
+- Modal 的半透明遮罩會被塗成不透明（底下內容整個看不見），面板也只靠陰影與
+  底色跟頁面區隔 —— 兩者都補了處理
+
+**邊界對比**（原本掛在「等待使用者決定」）：新增 `--color-border-strong`
+（淺色 `#898F99` = 3.25:1、暗色 `#5B6980` = 3.10:1），只套用在 Input / Select /
+Textarea / Checkbox / secondary Button / 頁碼按鈕。**刻意不把 `--color-border`
+整個加深** —— WCAG 1.4.11 要求的是「識別控制項所需的邊界」，表格分隔線與 Card
+外框這類裝飾線條不在範圍內，一起加深會讓整個介面變重。
+
+順帶補齊 Button / Pagination 頁碼 / Table 排序鈕的 `:focus-visible`
+（原本靠瀏覽器預設 outline，與其他元件不一致），以及放寬 `ProductLine` 型別。
 
 ### 互動測試補齊（2026-09-06 完成）
 
