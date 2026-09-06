@@ -30,6 +30,7 @@ export { Badge } from './components/Badge/Badge'
 export { Card } from './components/Card/Card'
 export { Table } from './components/Table/Table'
 export { Form, FormItem } from './components/Form/Form'
+export { FormValidationError } from './components/Form/store'
 export { Input } from './components/Input/Input'
 export { Textarea } from './components/Textarea/Textarea'
 export { Select } from './components/Select/Select'
@@ -61,7 +62,14 @@ export type {
   TablePaginationConfig,
   TableChangeInfo,
 } from './components/Table/Table'
-export type { FormProps, FormItemProps, FormRule, FormValues } from './components/Form/Form'
+export type {
+  FormProps,
+  FormItemProps,
+  FormRule,
+  FormValues,
+  FormInstance,
+  ValidateTrigger,
+} from './components/Form/Form'
 export type { InputProps } from './components/Input/Input'
 export type { TextareaProps } from './components/Textarea/Textarea'
 export type { SelectProps, SelectOption } from './components/Select/Select'

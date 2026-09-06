@@ -35,8 +35,12 @@
   line-height: 1.5;
 }
 
+/*
+ * 不能直接用 --color-danger 當文字：#EF4444 對白底只有 3.76:1，未達 AA 的 4.5:1。
+ * --tone-danger-text 就是「語意色當文字用」的 token，四條產品線 × 明暗都驗過。
+ */
 .mds-form-item__message {
-  color: var(--color-danger);
+  color: var(--tone-danger-text);
 }
 
 .mds-form--horizontal .mds-form-item__message,

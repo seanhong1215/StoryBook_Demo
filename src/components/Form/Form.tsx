@@ -6,39 +6,42 @@ import {
   useContext,
   useEffect,
   useId,
+  useImperativeHandle,
   useMemo,
   useRef,
   useState,
+  useSyncExternalStore,
 } from 'react'
 import type { FormEvent, FormHTMLAttributes, ReactElement, ReactNode } from 'react'
 import { Button } from '../Button/Button'
+import { FormStore, FormValidationError } from './store'
+import type { FormInstance, FormRule, FormValues } from './store'
 import './Form.css'
 
-export type FormValues = Record<string, unknown>
+export type { FormValues, FormRule, FormInstance } from './store'
 
-export interface FormRule {
-  /** Value must be non-empty. */
-  required?: boolean
-  /** Value must match this pattern. */
-  pattern?: RegExp
-  /** Error message when the rule fails. */
-  message?: string
-  /** Custom validator returning an error message, or undefined when valid. */
-  validator?: (value: unknown) => string | undefined | Promise<string | undefined>
-}
-
-interface FieldConfig {
-  rules: FormRule[]
-}
+/** 什麼時候驗證。預設只在送出時驗，已經出錯的欄位改動時會立刻重驗。 */
+export type ValidateTrigger = 'onChange' | 'onBlur' | 'onSubmit'
 
 interface FormContextValue {
-  values: FormValues
-  errors: Record<string, string | undefined>
-  registerField: (name: string, config: FieldConfig) => () => void
-  setFieldValue: (name: string, value: unknown) => void
+  store: FormStore
+  validateTrigger: ValidateTrigger
 }
 
 const FormContext = createContext<FormContextValue | null>(null)
+
+/*
+ * 沒有 Form 祖先的 FormItem 用這一份。hook 不能有條件地呼叫，
+ * 但沒接上表單時也不該真的寫入任何狀態 —— 這個 store 只被讀，不被寫。
+ */
+const DETACHED_STORE = new FormStore()
+
+// useState 的 lazy initializer 是「每個元件實例只建立一次」的標準寫法；
+// 用 ref 在 render 期間賦值會被 react-hooks/refs 擋下來
+const useFormStore = () => {
+  const [store] = useState(() => new FormStore())
+  return store
+}
 
 const getEventValue = (event: unknown, valuePropName: string): unknown => {
   if (event && typeof event === 'object' && 'target' in event) {
@@ -49,27 +52,10 @@ const getEventValue = (event: unknown, valuePropName: string): unknown => {
   return event
 }
 
-const validateField = async (value: unknown, rules: FormRule[] = []) => {
-  for (const rule of rules) {
-    if (rule.required && (value === undefined || value === null || value === '')) {
-      return rule.message || 'This field is required.'
-    }
-
-    if (rule.pattern && value && !rule.pattern.test(String(value))) {
-      return rule.message || 'This field format is invalid.'
-    }
-
-    if (rule.validator) {
-      const result = await rule.validator(value)
-      if (result) return result
-    }
-  }
-
-  return undefined
-}
-
 export interface FormProps extends Omit<FormHTMLAttributes<HTMLFormElement>, 'onSubmit'> {
-  /** Initial field values keyed by field name. */
+  /** Form instance from `Form.useForm()`; omit to let Form manage its own. */
+  form?: FormInstance
+  /** Initial field values keyed by field name. Applied once, on mount. */
   initialValues?: FormValues
   /** Called with the values when submit passes validation. */
   onFinish?: (values: FormValues) => void
@@ -77,76 +63,68 @@ export interface FormProps extends Omit<FormHTMLAttributes<HTMLFormElement>, 'on
   onFinishFailed?: (info: { values: FormValues; errors: Record<string, string> }) => void
   /** Label and control arrangement. */
   layout?: 'vertical' | 'horizontal'
+  /** When fields validate. Individual items can override it. */
+  validateTrigger?: ValidateTrigger
   children?: ReactNode
 }
 
 const FormBase = forwardRef<HTMLFormElement, FormProps>(({
-  initialValues = {},
+  form,
+  initialValues,
   onFinish,
   onFinishFailed,
   layout = 'vertical',
+  validateTrigger = 'onSubmit',
   children,
   className = '',
   ...props
 }, ref) => {
-  const [values, setValues] = useState<FormValues>(initialValues)
-  const [errors, setErrors] = useState<Record<string, string | undefined>>({})
-  const [fields, setFields] = useState<Record<string, FieldConfig>>({})
+  const internalStore = useFormStore()
+  // form 是公開的 FormInstance 介面，唯一的實作就是 FormStore
+  const store = (form as FormStore | undefined) ?? internalStore
 
-  const registerField = useCallback((name: string, config: FieldConfig) => {
-    setFields((current) => ({ ...current, [name]: config }))
+  // initialValues 只在掛載時套用一次；之後由 resetFields() 使用
+  useState(() => store.setInitialValues(initialValues ?? {}))
 
-    return () => {
-      setFields((current) => {
-        const next = { ...current }
-        delete next[name]
-        return next
-      })
-    }
-  }, [])
+  const formRef = useRef<HTMLFormElement>(null)
+  useImperativeHandle(ref, () => formRef.current as HTMLFormElement, [])
 
-  const setFieldValue = useCallback((name: string, value: unknown) => {
-    setValues((current) => ({ ...current, [name]: value }))
-    setErrors((current) => ({ ...current, [name]: undefined }))
-  }, [])
-
-  const validateFields = async () => {
-    const nextErrors: Record<string, string> = {}
-
-    for (const [name, field] of Object.entries(fields)) {
-      const error = await validateField(values[name], field.rules)
-      if (error) {
-        nextErrors[name] = error
-      }
-    }
-
-    setErrors(nextErrors)
-    return nextErrors
-  }
+  // store.submit() 走原生 requestSubmit()，因此 store 需要拿到 <form> 節點
+  useEffect(() => {
+    store.attachElement(formRef.current)
+    return () => store.attachElement(null)
+  }, [store])
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    const nextErrors = await validateFields()
 
-    if (Object.keys(nextErrors).length > 0) {
-      onFinishFailed?.({ values, errors: nextErrors })
-      return
+    try {
+      /*
+       * 驗證必須先獨立求值，不能寫成 onFinish?.(await store.validateFields())——
+       * a?.(b) 在 a 是 nullish 時整個運算式短路，參數不會被求值，
+       * 沒傳 onFinish 的表單就會完全跳過驗證。
+       */
+      const values = await store.validateFields()
+      onFinish?.(values)
+    } catch (error) {
+      if (error instanceof FormValidationError) {
+        onFinishFailed?.({ values: error.values, errors: error.errors })
+        return
+      }
+      throw error
     }
-
-    onFinish?.(values)
   }
 
-  const contextValue = useMemo(() => ({
-    values,
-    errors,
-    registerField,
-    setFieldValue,
-  }), [values, errors, registerField, setFieldValue])
+  /*
+   * context 只帶 store（identity 永遠不變）與設定，不帶值 ——
+   * 值一旦進 context，每次按鍵都會讓所有 FormItem 重繪。
+   */
+  const contextValue = useMemo(() => ({ store, validateTrigger }), [store, validateTrigger])
 
   return (
     <FormContext.Provider value={contextValue}>
       <form
-        ref={ref}
+        ref={formRef}
         className={['mds-form', `mds-form--${layout}`, className].filter(Boolean).join(' ')}
         onSubmit={handleSubmit}
         {...props}
@@ -162,6 +140,7 @@ FormBase.displayName = 'Form'
 interface FieldElementProps {
   status?: 'error' | 'warning'
   onChange?: (...args: unknown[]) => void
+  onBlur?: (...args: unknown[]) => void
   [prop: string]: unknown
 }
 
@@ -176,6 +155,8 @@ export interface FormItemProps {
   valuePropName?: string
   /** Derives the field value from the child's onChange arguments. */
   getValueFromEvent?: (...args: unknown[]) => unknown
+  /** Overrides the form-level validate trigger for this field. */
+  validateTrigger?: ValidateTrigger
   /** A single form control element. */
   children?: ReactElement<FieldElementProps>
   /** Helper text shown when there is no error. */
@@ -188,14 +169,24 @@ export const FormItem = forwardRef<HTMLDivElement, FormItemProps>(({
   rules = [],
   valuePropName = 'value',
   getValueFromEvent,
+  validateTrigger,
   children,
   extra,
 }, ref) => {
-  const form = useContext(FormContext)
+  const context = useContext(FormContext)
+  const store = context?.store ?? DETACHED_STORE
+  const connected = Boolean(context) && Boolean(name)
+  const trigger = validateTrigger ?? context?.validateTrigger ?? 'onSubmit'
+
+  /*
+   * 只訂閱自己這一欄。同一個表單裡其他欄位改動時，這個元件不會重繪 ——
+   * 這是把值放在 store 而不是 context 的主要理由。
+   */
+  const subscribe = useCallback((listener: () => void) => store.subscribe(name, listener), [store, name])
+  const getSnapshot = useCallback(() => store.getFieldSnapshot(name), [store, name])
+  const { value, error } = useSyncExternalStore(subscribe, getSnapshot, getSnapshot)
+
   const rulesRef = useRef(rules)
-  const error = name ? form?.errors[name] : undefined
-  const value = name ? form?.values[name] : undefined
-  const registerField = form?.registerField
 
   /*
    * label 必須真的關聯到控制項，否則螢幕閱讀器讀不出欄位名稱
@@ -214,13 +205,9 @@ export const FormItem = forwardRef<HTMLDivElement, FormItemProps>(({
   }, [rules])
 
   useEffect(() => {
-    if (!name || !registerField) return undefined
-    return registerField(name, {
-      get rules() {
-        return rulesRef.current
-      },
-    })
-  }, [name, registerField])
+    if (!connected || !name) return undefined
+    return store.registerField(name, { getRules: () => rulesRef.current })
+  }, [connected, name, store])
 
   // a11y 相關的 props 不依賴 name / form，未接上 Form 時也要套用
   const a11yProps = children
@@ -232,7 +219,7 @@ export const FormItem = forwardRef<HTMLDivElement, FormItemProps>(({
     : {}
 
   const child = children
-    ? cloneElement(children, name && form
+    ? cloneElement(children, connected && name
       ? {
         ...a11yProps,
         [valuePropName]: value ?? (valuePropName === 'checked' ? false : ''),
@@ -242,9 +229,15 @@ export const FormItem = forwardRef<HTMLDivElement, FormItemProps>(({
             ? getValueFromEvent(...args)
             : getEventValue(args[0], valuePropName)
 
-          form.setFieldValue(name, nextValue)
+          store.setFieldValue(name, nextValue, { validate: trigger === 'onChange' })
           children.props.onChange?.(...args)
         },
+        ...(trigger === 'onBlur' ? {
+          onBlur: (...args: unknown[]) => {
+            void store.validateField(name)
+            children.props.onBlur?.(...args)
+          },
+        } : {}),
       }
       : a11yProps)
     : children
@@ -267,8 +260,20 @@ export const FormItem = forwardRef<HTMLDivElement, FormItemProps>(({
 
 FormItem.displayName = 'FormItem'
 
-// eslint-disable-next-line react-refresh/only-export-components -- compound component 靜態屬性（Form.Item / Form.Submit）
+/**
+ * 取得一個表單實例，用來從外部讀值、寫值、重設或觸發驗證。
+ *
+ * ```tsx
+ * const form = Form.useForm()
+ * <Form form={form} onFinish={…}>…</Form>
+ * form.resetFields()
+ * ```
+ */
+const useForm = (): FormInstance => useFormStore()
+
+// eslint-disable-next-line react-refresh/only-export-components -- compound component 靜態屬性（Form.Item / Form.Submit / Form.useForm）
 export const Form = Object.assign(FormBase, {
   Item: FormItem,
   Submit: Button,
+  useForm,
 })
