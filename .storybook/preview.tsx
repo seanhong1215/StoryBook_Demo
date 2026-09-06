@@ -92,7 +92,7 @@ const preview: Preview = {
       storySort: {
         order: [
           'Components',
-          ['Showcase', 'Overview', 'Usage'],
+          ['Showcase', 'Overview', 'Getting Started', 'Accessibility', 'Architecture'],
           'General',
           ['Button', 'Icon'],
           'Data Display',

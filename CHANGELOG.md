@@ -15,6 +15,9 @@
 - **`ConfigProvider`**：全域設定（語系、主題、產品線、浮層容器）。內建 `en`
   與 `zhTW` 兩個語系包，元件自己渲染的文案與無障礙標籤都跟著走；使用端傳的
   prop 一律優先，locale 只是預設值。沒包 provider 時 fallback 到 `en`。
+- **Storybook 說明頁（MDX）**：Getting Started（安裝、ConfigProvider、自訂產品線）、
+  Accessibility（library 保證什麼 / 使用端要自己做什麼）、Architecture（共用行為層
+  與幾個關鍵取捨）。
 - **`npm run measure:bundle`**：建兩個臨時消費端（一個只 import Button、
   一個 import 全部）實際打包並印出對照，tree-shaking 失效時會讓 CI 失敗。
 - **高對比（強制色彩）模式支援**：`box-shadow` 在強制色彩下不會被繪製，
@@ -98,6 +101,8 @@
   `module` 欄位由 `dist/my-design-system.js` 改為 `dist/index.js`。
 - `ProductLine` 型別放寬為 `'core' | … | (string & Record<never, never>)`，
   消費端可自訂產品線，同時保留內建四個值的編輯器提示。
+- 移除過期的 `Components/Usage` 說明頁：內容還在講「未發布、用 npm pack 安裝」，
+  套件名也是舊的未 scoped 名稱。由 Getting Started 取代。
 - `Pagination` 的頁碼按鈕補上 `aria-label`（例如 `Page 3`）—— 讀屏原本只會唸出
   孤零零的「3」。以可及名稱查詢這些按鈕的測試需要跟著改。
 

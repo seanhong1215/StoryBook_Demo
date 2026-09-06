@@ -1,0 +1,91 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Components/Accessibility" />
+
+# 無障礙契約
+
+這頁講清楚兩件事：**library 保證什麼**，以及**使用端還是得自己做什麼**。
+自動化測試抓得到前者，抓不到後者。
+
+## CI 上真的在跑的
+
+- 每個 story 都會跑 axe，`.storybook/preview.tsx` 把它設成 `error` 模式 ——
+  任何無障礙違規都會讓 `npm test` 失敗，不是警告而已
+- 26 個 play function 覆蓋鍵盤流程：方向鍵導覽、焦點鎖定、焦點還原、
+  `aria-controls` 與面板的關聯
+- 明暗兩套主題各快照一次（Chromatic），顏色跑掉會被比對出來
+
+axe 只驗得到「結構上的違規」。「Tab 之後焦點跑到哪」「高對比模式下看不看得見」
+這類問題它一律測不出來，所以下面幾項是靠 play function 與人工確認的。
+
+## library 保證的
+
+**鍵盤操作**
+
+| 元件 | 行為 |
+|---|---|
+| `Dropdown` | 方向鍵開啟與移動、`Home` / `End`、`Escape` / `Tab` 關閉並還原焦點、跳過停用項；roving tabindex |
+| `Tabs` | 方向鍵切換（自動啟動）、`Home` / `End`、跳過停用分頁；整組只佔一個 tab stop |
+| `Modal` | 開啟時焦點移入面板、`Tab` / `Shift+Tab` 在面板內循環、關閉時還原到開啟前的元素 |
+| `Tooltip` | focus 立即顯示（不套用 hover 延遲）、`Escape` 關閉 |
+
+**關聯性**
+
+- `Form.Item` 的 `label` 一定關聯到控制項（子元素自帶 `id` 就沿用，否則產生一個）
+- 錯誤訊息用 `role="alert"`，並透過 `aria-describedby` 關聯到控制項
+- `Tabs` 的 tab 與 tabpanel 用 `aria-controls` / `aria-labelledby` 互指
+- `Tooltip` 開啟時才把 `aria-describedby` 掛到**真正被 focus 的那個元素**上
+
+**高對比（強制色彩）模式**
+
+`box-shadow` 在強制色彩下不會被繪製，而這個 library 的焦點框全部是 box-shadow
+做的 —— 所有焦點樣式都補了 `outline` 版本。靠底色表達的狀態（勾選、開關、
+選中分頁、目前頁碼）也都改用系統色關鍵字。
+
+**對比度**
+
+- 文字對背景在四條產品線 × 明暗共 8 組下都通過 AA
+- 控制項邊界用 `--color-border-strong`（淺色 3.25:1 / 暗色 3.10:1），
+  滿足 WCAG 1.4.11 的 3:1
+
+## 使用端要自己做的
+
+**沒有可見文字的控制項必須自己給名字。** library 無從得知這個開關是控制什麼的：
+
+```tsx
+{/* 錯：讀屏只會唸「切換開關，開啟」 */}
+<Switch defaultChecked />
+
+{/* 對 */}
+<Switch defaultChecked aria-label="啟用工作區" />
+```
+
+同樣需要注意的還有：
+
+- `Select` —— `placeholder` 只是提示選項，不是標籤。要給 `aria-label`
+  或用 `<label htmlFor>` 關聯（放在 `Form.Item` 裡就會自動處理）
+- `Pagination` —— 同一頁有多個分頁器時各給一個 `label`，
+  否則兩個 `<nav>` 同名，用 landmark 導覽時分不出來
+- `Tabs` —— 同一頁有多組分頁時給 `label`
+
+**`Dropdown` 的 `trigger` 傳內容而不是 `<Button>`。** Dropdown 自己會渲染一個
+`<button>`，再塞一個進去會變成按鈕包按鈕：無效的 HTML，而且鍵盤操作會壞掉。
+
+**圖示按鈕要給 `aria-label`。** `Icon` 預設是裝飾性的（`aria-hidden`），
+因為它通常旁邊就有文字。只有圖示的按鈕，名字要下在按鈕上：
+
+```tsx
+<Button variant="ghost" aria-label="關閉面板">
+  <Icon name="close" />
+</Button>
+```
+
+圖示本身要傳達意義（旁邊沒有文字）時，給 `Icon` 一個 `aria-label`，
+它會自動變成 `role="img"`。
+
+## 已知的限制
+
+- `Table` 沒有虛擬捲動，資料量大時 DOM 節點數會很可觀
+- `Select` 是原生 `<select>` 的包裝。好處是行動裝置與讀屏支援最好，
+  代價是做不到多選與可搜尋 —— 那需要整個改成自繪
+- 沒有 RTL 支援

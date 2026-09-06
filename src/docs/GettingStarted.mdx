@@ -1,0 +1,121 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Components/Getting Started" />
+
+# Getting Started
+
+`@seanhong1215/my-design-system` 發布在 GitHub Packages 的私有 registry 上，
+不在公開 npm。安裝前需要一次性的認證設定。
+
+## 安裝
+
+在你的 `~/.npmrc`（Windows 是 `C:\Users\<你>\.npmrc`）加上 token：
+
+```
+//npm.pkg.github.com/:_authToken=YOUR_PAT
+```
+
+Token 要用 **classic PAT**，勾 `write:packages` 與 `repo`。
+private repo 缺 `repo` 會拿到 **404** 而不是權限錯誤，很容易誤判成套件不存在。
+
+專案裡加一支 `.npmrc`（不含 token，可以進版控）：
+
+```
+@seanhong1215:registry=https://npm.pkg.github.com
+```
+
+然後就能安裝：
+
+```bash
+npm install @seanhong1215/my-design-system
+```
+
+完整步驟與常見錯誤見 repo 的 `.docs/INTERNAL-ROLLOUT.md`。
+
+## 樣式
+
+**用 bundler 的話不需要 import 任何 CSS 檔。** 每個元件都會帶著自己的樣式，
+你只會拿到用到的那幾支 —— 只用一個 `Button` 大約是 1.4 kB JS + 2.1 kB CSS。
+
+沒有 bundler（直接 `<script>` 載 UMD）時才需要整包樣式：
+
+```html
+<link rel="stylesheet" href=".../my-design-system/dist/my-design-system.css" />
+```
+
+## 第一個畫面
+
+```tsx
+import {
+  Alert,
+  Button,
+  Card,
+  ConfigProvider,
+  Form,
+  Input,
+  Space,
+  zhTW,
+} from '@seanhong1215/my-design-system'
+
+export function App() {
+  const form = Form.useForm()
+
+  return (
+    // global 讓主題屬性寫到 <html>：Modal / Tooltip / Dropdown 是 portal 出去的，
+    // 只包一層 div 的話它們拿不到 token
+    <ConfigProvider global productLine="commerce" locale={zhTW}>
+      <Space direction="vertical" align="stretch">
+        <Alert type="success" message="Design system connected" />
+        <Card title="建立工作區">
+          <Form form={form} onFinish={console.log}>
+            <Form.Item name="workspace" label="名稱" rules={[{ required: true }]}>
+              <Input allowClear placeholder="Acme workspace" />
+            </Form.Item>
+            <Space>
+              <Button variant="secondary" onClick={() => form.resetFields()}>重設</Button>
+              <Button type="primary" htmlType="submit">建立</Button>
+            </Space>
+          </Form>
+        </Card>
+      </Space>
+    </ConfigProvider>
+  )
+}
+```
+
+## ConfigProvider
+
+一個 provider 管四件事，巢狀時只覆寫有傳的項目：
+
+| Prop | 作用 |
+|---|---|
+| `productLine` | 品牌 token（`core` / `commerce` / `finance` / `internal`，也可自訂） |
+| `theme` | `light` / `dark` |
+| `locale` | 元件自己渲染的文案與無障礙標籤（內建 `en`、`zhTW`） |
+| `getPopupContainer` | 浮層要掛在哪個節點下，預設 `document.body` |
+| `global` | 把主題屬性寫到 `<html>` 而不是只寫在這層 wrapper |
+
+沒包 provider 時元件一樣能用，文案會 fallback 到英文。
+
+`ThemeProvider` 是 `ConfigProvider` 的薄包裝，保留給既有使用端，新專案直接用
+`ConfigProvider`。
+
+## 自訂產品線
+
+CSS 加一組覆寫就會生效，型別也接受任意字串：
+
+```css
+[data-product-line='acme'] {
+  --color-primary: #7C3AED;
+  --color-primary-hover: #6D28D9;
+  --radius-md: 12px;
+}
+```
+
+```tsx
+<ConfigProvider global productLine="acme">…</ConfigProvider>
+```
+
+只覆寫**品牌層**的 token（primary / success / danger / warning 與圓角）。
+表面層（背景、文字、邊框）由 `theme` 決定，不要在產品線裡改，
+否則暗色模式會被蓋掉 —— 詳見 `Foundation/Tokens`。
