@@ -68,11 +68,13 @@ npm run demo:sync    # build → pack → 用 --no-save 覆蓋 demo 的 node_mod
 
 ## 等待使用者決定
 
-| # | 事項 | 影響 | 備註 |
-|---|---|---|---|
-| ~~1~~ | ~~`--color-border` 對比 1.24:1~~ | — | ✅ 已解：新增 `--color-border-strong`（淺 3.25:1 / 暗 3.10:1）只套用在控制項，裝飾線維持原樣 |
-| 2 | 下一步做哪個 Phase | — | 5（interaction tests）/ 6（MDX）/ 7（CI/CD 的 Pages/Chromatic）。建議先收內部回饋，等 API 因真實使用穩定下來再做 |
-| ~~3~~ | ~~`ProductLine` 型別固定四個字串~~ | — | ✅ 已解：放寬為 `\| (string & Record<never, never>)`，保留編輯器提示 |
+原本掛在這裡的三項（`--color-border` 對比、`ProductLine` 型別、下一個 Phase）
+都已經處理完，詳見下方各段。目前只剩兩件需要使用者動手，不是技術決策：
+
+| # | 事項 | 說明 |
+|---|---|---|
+| 1 | 設定 `CHROMATIC_PROJECT_TOKEN` | 到 chromatic.com 建專案，把 token 存成 repo secret。在那之前 chromatic workflow 會自己安靜略過，因此這條路徑還沒實跑驗證過 |
+| 2 | 要不要發 `0.2.0` | CHANGELOG 的 `[Unreleased]` 已整理好，三處會改變既有行為的變更都標在 Changed。發布方式：把 `[Unreleased]` 改成 `[0.2.0]` → `npm version minor` → `git push --follow-tags` |
 
 ~~發布到 GitHub Packages~~ — 已完成，`0.1.0` 在 registry 上，已實測全新安裝成功。
 
