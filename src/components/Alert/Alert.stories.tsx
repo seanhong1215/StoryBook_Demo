@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { expect, fn, userEvent, within } from 'storybook/test'
 import { Button } from '../Button/Button'
 import { Alert } from './Alert'
 
@@ -46,4 +47,21 @@ export const WithAction: Story = {
       action={<Button size="sm" variant="secondary">Manage</Button>}
     />
   ),
+}
+
+export const Closable: Story = {
+  args: {
+    type: 'warning',
+    message: 'Quota almost reached',
+    closable: true,
+    onClose: fn(),
+  },
+  play: async ({ args, canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Alert 不會自己消失 —— 要不要移除由使用端決定
+    await userEvent.click(canvas.getByRole('button', { name: 'Close alert' }))
+    await expect(args.onClose).toHaveBeenCalledTimes(1)
+    await expect(canvas.getByText('Quota almost reached')).toBeInTheDocument()
+  },
 }

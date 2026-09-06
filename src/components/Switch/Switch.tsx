@@ -38,6 +38,11 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(({
         ref={ref}
         className="mds-switch__input"
         type="checkbox"
+        /*
+         * 沒有 role 的話讀屏會唸成「核取方塊，已勾選」；switch 才會唸成
+         * 「切換開關，開啟」。原生 checked 會自動映射成 aria-checked。
+         */
+        role="switch"
         checked={checked}
         defaultChecked={defaultChecked}
         disabled={disabled || loading}

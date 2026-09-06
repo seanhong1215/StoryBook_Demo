@@ -15,6 +15,8 @@
 - **`ConfigProvider`**：全域設定（語系、主題、產品線、浮層容器）。內建 `en`
   與 `zhTW` 兩個語系包，元件自己渲染的文案與無障礙標籤都跟著走；使用端傳的
   prop 一律優先，locale 只是預設值。沒包 provider 時 fallback 到 `en`。
+- **`Switch` 的 `role="switch"`**：原本是原生 checkbox，讀屏會唸成
+  「核取方塊，已勾選」；現在會唸成「切換開關，開啟」。
 - **`Form.useForm()`**：回傳表單實例，可從表單外讀值、寫值、重設、觸發驗證與
   送出（`getFieldsValue` / `setFieldsValue` / `resetFields` / `validateFields` /
   `submit`）。`submit()` 走原生 `requestSubmit()`，與使用者按送出鈕是同一條路徑。

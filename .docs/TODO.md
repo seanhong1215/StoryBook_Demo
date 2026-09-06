@@ -7,7 +7,7 @@
 
 ## 現在的狀態（Phase 0–4 完成，已發布 0.1.0，內部試用階段）
 
-- `npm test` — **118 個 story 全過**（a11y 已設為 `error` 模式，含 17 個 play function）
+- `npm test` — **127 個 story 全過**（a11y 已設為 `error` 模式，含 26 個 play function）
 - lint / typecheck / build / build-storybook 全綠
 - `@seanhong1215/my-design-system@0.1.0` **已發布到 GitHub Packages**，
   已用全新專案從 registry 實測安裝成功
@@ -92,7 +92,7 @@ npm run demo:sync    # build → pack → 用 --no-save 覆蓋 demo 的 node_mod
 | 2 | ✅ 完成 | Dark mode token 架構 |
 | 3 | ✅ 完成 | Storybook toolbar 全域化（theme + product-line） |
 | 4 | ✅ 完成 | a11y 真正啟用 |
-| 5 | 🟡 部分 | Interaction tests：Dropdown / Tooltip / Modal / Table / Input 已有 11 個 play function，其餘元件待補 |
+| 5 | ✅ 完成 | Interaction tests：26 個 play function，涵蓋 12 個有行為的元件 |
 | 6 | ⬜ 待辦 | MDX 使用指南 |
 | 7 | 🟡 部分 | CI + publish + chromatic workflow 都已建立；Pages 待對外發布階段 |
 
@@ -131,6 +131,23 @@ Phase 5（測試）與 6（MDX）在內部試用階段**不是必要的**，可�
 無誤（11 個卡片、0 個 page error）、`verify:pack` 全綠。
 
 ## 待辦細節
+
+### 互動測試補齊（2026-09-06 完成）
+
+原本只有 render + axe 的元件補上行為測試，26 個 play function 涵蓋 12 個元件：
+
+- Checkbox：切換、`indeterminate` 是 DOM property 而非屬性、disabled 不切換
+- Switch：點擊與 Space 切換、disabled 不切換
+- Alert：closable 觸發 onClose，且**不會自己消失**（要不要移除由使用端決定）
+- Pagination：第一頁停用「上一頁」、點頁碼送出正確頁數、點目前這頁不重複觸發
+- Select：placeholder 未選取時 value 為空字串（`required` 才擋得下來）、
+  選取送出 onChange、disabled 選項選不動
+
+順帶把 Switch 補上 `role="switch"` —— 原本是原生 checkbox，讀屏會唸成
+「核取方塊，已勾選」而不是「切換開關，開啟」。
+
+剩下沒有 play function 的是純展示元件（Badge / Tag / Card / Space / Empty /
+Textarea / Button），render + axe 對它們是恰當的覆蓋層級。
 
 ### Form 重寫（2026-09-06 完成）
 
