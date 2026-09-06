@@ -7,7 +7,7 @@
 
 ## 現在的狀態（Phase 0–4 完成，已發布 0.1.0，內部試用階段）
 
-- `npm test` — **114 個 story 全過**（a11y 已設為 `error` 模式，含 12 個 play function）
+- `npm test` — **115 個 story 全過**（a11y 已設為 `error` 模式，含 13 個 play function）
 - lint / typecheck / build / build-storybook 全綠
 - `@seanhong1215/my-design-system@0.1.0` **已發布到 GitHub Packages**，
   已用全新專案從 registry 實測安裝成功
@@ -131,6 +131,19 @@ Phase 5（測試）與 6（MDX）在內部試用階段**不是必要的**，可�
 無誤（11 個卡片、0 個 page error）、`verify:pack` 全綠。
 
 ## 待辦細節
+
+### Tabs 補齊 WAI-ARIA（2026-09-06 完成）
+
+原本只有 `role="tab"` 與 `aria-selected`，其餘都缺：
+
+- 方向鍵 / `Home` / `End` 切換，跳過停用中的分頁；採自動啟動
+  （APG 建議面板內容不昂貴時用這種模式，不必按完方向鍵再按 Enter）
+- roving tabindex：整組分頁只佔一個 tab stop，而不是每個分頁都要按一次 Tab
+- 補上 `id` / `aria-controls` / `aria-labelledby`，讓 tab 與 tabpanel 互相關聯；
+  `aria-controls` 只在選中時給（只有選中的面板會被渲染，指向不存在的 id 會被 axe 判違規）
+- 面板補 `tabIndex={0}`，內容可捲動時鍵盤使用者才到得了
+- 修掉 `activeKey || internalActiveKey`：key 為空字串的分頁永遠選不起來，改用 `??`
+- 新增 `label` 設定分頁列的無障礙名稱，並補上 tab 與 panel 的 `:focus-visible`
 
 ### ConfigProvider 與 i18n（2026-09-05 完成）
 

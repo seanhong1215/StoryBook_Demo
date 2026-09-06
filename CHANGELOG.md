@@ -15,6 +15,8 @@
 - **`ConfigProvider`**：全域設定（語系、主題、產品線、浮層容器）。內建 `en`
   與 `zhTW` 兩個語系包，元件自己渲染的文案與無障礙標籤都跟著走；使用端傳的
   prop 一律優先，locale 只是預設值。沒包 provider 時 fallback 到 `en`。
+- **`Tabs` 鍵盤操作**：方向鍵切換分頁（自動啟動）、`Home` / `End` 跳到頭尾、
+  跳過停用中的分頁，並採 roving tabindex。新增 `label` 設定分頁列的無障礙名稱。
 - **`Pagination` 的 `label`**：同一頁有多個分頁時各自命名，否則以 landmark
   導覽時分不出來。
 - **`Icon`**：13 個內建線條圖示，統一 24×24 grid 與 2px stroke，用
@@ -43,6 +45,11 @@
   focus 的元素上。
 - **`Tooltip` / `Dropdown` 被裁切**：浮層改走 portal，不再被父層的
   `overflow: hidden` 切掉，並會在空間不足時自動翻面。
+- **`Tabs` 的 ARIA 關聯**：`role="tab"` 與 `role="tabpanel"` 之間原本沒有
+  `id` / `aria-controls` / `aria-labelledby`，輔助技術無從得知哪個面板屬於哪個
+  分頁；面板也缺 `tabIndex`，鍵盤使用者無法捲動其內容。
+- **`Tabs` 的空字串 key**：`activeKey || internalActiveKey` 會讓 key 為空字串的
+  分頁永遠選不起來，改用 `??`。
 - **`Modal` 重複 id**：標題原本寫死 `id="modal-title"`，同頁兩個 Modal 會衝突。
 - **`Table` 載入狀態**：補上 `aria-busy` 與 `role="status"`。
 
@@ -56,6 +63,9 @@
 - `Table` 換排序時頁碼會回到第 1 頁。
 - `ThemeProvider` 現在是 `ConfigProvider` 的薄包裝，行為完全相同，既有使用端
   不需要改。新專案建議直接用 `ConfigProvider`。
+- ⚠️ **`Tabs` 的 Tab 鍵行為改變**：分頁列改為 roving tabindex，整組分頁只佔一個
+  tab stop（原本每個分頁都是），符合 WAI-ARIA 的 tabs pattern。面板本身現在也
+  可以被 Tab 到。
 - `Pagination` 的頁碼按鈕補上 `aria-label`（例如 `Page 3`）—— 讀屏原本只會唸出
   孤零零的「3」。以可及名稱查詢這些按鈕的測試需要跟著改。
 
