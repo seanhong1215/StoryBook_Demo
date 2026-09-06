@@ -7,7 +7,7 @@
 
 ## 現在的狀態（Phase 0–4 完成，已發布 0.1.0，內部試用階段）
 
-- `npm test` — **115 個 story 全過**（a11y 已設為 `error` 模式，含 13 個 play function）
+- `npm test` — **118 個 story 全過**（a11y 已設為 `error` 模式，含 17 個 play function）
 - lint / typecheck / build / build-storybook 全綠
 - `@seanhong1215/my-design-system@0.1.0` **已發布到 GitHub Packages**，
   已用全新專案從 registry 實測安裝成功
@@ -131,6 +131,28 @@ Phase 5（測試）與 6（MDX）在內部試用階段**不是必要的**，可�
 無誤（11 個卡片、0 個 page error）、`verify:pack` 全綠。
 
 ## 待辦細節
+
+### Form 重寫（2026-09-06 完成）
+
+三個問題一次處理：只在 submit 驗證、沒有 form instance、每次按鍵全表單重繪。
+
+- **值移出 React state**：改用外部 store + 逐欄位訂閱（`useSyncExternalStore`），
+  context 只帶 store（identity 永不變）與設定。打字時只有那一個欄位重繪 ——
+  `IsolatedRerenders` story 用 render 計數把這件事變成可測的斷言
+- **`Form.useForm()`**：`getFieldsValue` / `setFieldsValue` / `resetFields` /
+  `validateFields` / `submit`。`submit()` 走原生 `requestSubmit()`，
+  跟使用者按按鈕是同一條路徑，不會出現「按鈕可以但程式呼叫不行」的差異
+- **`validateTrigger`**：`onSubmit`（預設）/ `onBlur` / `onChange`。另外不需設定就
+  生效的一條：已經出錯的欄位改動時立刻重驗，使用者修好就馬上看到錯誤消失
+
+**寫出來的 bug 與抓到的既有缺陷各一**：
+
+1. 我把送出寫成 `onFinish?.(await store.validateFields())` —— `a?.(b)` 在 `a` 是
+   nullish 時**整個運算式短路，參數不會被求值**，因此沒傳 `onFinish` 的表單
+   完全跳過驗證。測試一致失敗、加了 console.log 就一致通過（log 改變了時序），
+   查了幾輪才定位到是語言語義而不是時序
+2. 錯誤訊息用 `--color-danger` 當文字，對白底只有 3.76:1 未達 AA。這是既有缺陷，
+   之前沒有任何 story 會真的顯示驗證錯誤，axe 一直掃不到。改用 `--tone-danger-text`
 
 ### Tabs 補齊 WAI-ARIA（2026-09-06 完成）
 

@@ -15,6 +15,11 @@
 - **`ConfigProvider`**：全域設定（語系、主題、產品線、浮層容器）。內建 `en`
   與 `zhTW` 兩個語系包，元件自己渲染的文案與無障礙標籤都跟著走；使用端傳的
   prop 一律優先，locale 只是預設值。沒包 provider 時 fallback 到 `en`。
+- **`Form.useForm()`**：回傳表單實例，可從表單外讀值、寫值、重設、觸發驗證與
+  送出（`getFieldsValue` / `setFieldsValue` / `resetFields` / `validateFields` /
+  `submit`）。`submit()` 走原生 `requestSubmit()`，與使用者按送出鈕是同一條路徑。
+- **`Form` 的 `validateTrigger`**：`onSubmit`（預設）/ `onBlur` / `onChange`，
+  可在表單層設定或由個別 `Form.Item` 覆寫。已經出錯的欄位改動時一律立刻重驗。
 - **`Tabs` 鍵盤操作**：方向鍵切換分頁（自動啟動）、`Home` / `End` 跳到頭尾、
   跳過停用中的分頁，並採 roving tabindex。新增 `label` 設定分頁列的無障礙名稱。
 - **`Pagination` 的 `label`**：同一頁有多個分頁時各自命名，否則以 landmark
@@ -45,6 +50,9 @@
   focus 的元素上。
 - **`Tooltip` / `Dropdown` 被裁切**：浮層改走 portal，不再被父層的
   `overflow: hidden` 切掉，並會在空間不足時自動翻面。
+- **表單錯誤訊息的對比度**：原本直接用 `--color-danger`（#EF4444 對白底只有
+  3.76:1，未達 AA）。改用 `--tone-danger-text`。之前沒有任何 story 會真的顯示
+  驗證錯誤，所以 axe 一直掃不到。
 - **`Tabs` 的 ARIA 關聯**：`role="tab"` 與 `role="tabpanel"` 之間原本沒有
   `id` / `aria-controls` / `aria-labelledby`，輔助技術無從得知哪個面板屬於哪個
   分頁；面板也缺 `tabIndex`，鍵盤使用者無法捲動其內容。
@@ -66,6 +74,9 @@
 - ⚠️ **`Tabs` 的 Tab 鍵行為改變**：分頁列改為 roving tabindex，整組分頁只佔一個
   tab stop（原本每個分頁都是），符合 WAI-ARIA 的 tabs pattern。面板本身現在也
   可以被 Tab 到。
+- **`Form` 的值改放在外部 store**，`Form.Item` 逐欄位訂閱，因此在一個欄位打字
+  只會重繪那一個欄位（原本值放在 context，每次按鍵所有欄位一起重繪）。
+  對外行為不變。
 - `Pagination` 的頁碼按鈕補上 `aria-label`（例如 `Page 3`）—— 讀屏原本只會唸出
   孤零零的「3」。以可及名稱查詢這些按鈕的測試需要跟著改。
 
