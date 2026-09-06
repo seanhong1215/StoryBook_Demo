@@ -132,6 +132,37 @@ Phase 5（測試）與 6（MDX）在內部試用階段**不是必要的**，可�
 
 ## 待辦細節
 
+### 打包顆粒度：讓 tree-shaking 真的有效（2026-09-06 完成）
+
+**先量再改**：改之前寫了個臨時消費端實測，「只 import 一個 Button」的產物是
+**41 kB**，裡面完整包含 Table / Modal / Form 的程式碼。原因是 lib 模式把所有
+東西壓成單一檔案，而每個元件都是 `const X = forwardRef(...)` 這種頂層呼叫 ——
+Rollup 無法證明它沒有副作用，只好整段保留。
+
+- ES 產物改用 `preserveModules`，一個模組一支檔案；UMD 維持單檔打包，
+  因此 `npm run build` 拆成兩趟（`vite build && vite build --mode umd`）
+- `src/index.ts` 拿掉逐元件的 CSS import，只留 tokens —— CSS 在 `sideEffects`
+  裡標成有副作用，從 entry 無條件 import 就註定搖不掉
+- Vite lib 模式會抽出 CSS 但**同時把 JS 裡的 import 拿掉**，產物中沒有任何模組
+  引用那些 CSS。加了一個 20 行的 plugin 在 `generateBundle` 把關聯補回去，
+  「用到哪個元件才載入哪支樣式」才真的成立
+
+實測結果（react 已 external）：
+
+| | JS | CSS |
+|---|---|---|
+| 只 import Button（改前） | 41.13 kB | 30.85 kB（且要手動 import 全部） |
+| 只 import Button（改後） | **1.38 kB** | **2.12 kB**（自動帶入） |
+| import 全部 | 44.74 kB | 30.16 kB |
+
+`npm run measure:bundle` 把這個量測固定下來，只 import 一個元件卻超過全部的
+50% 就讓 CI 失敗 —— 這種退步不會有任何測試抓得到，只能用量的。
+
+**已知的外觀瑕疵**：產物裡是 `Button2.js` 而不是 `Button.js`。同一層的
+`Button.tsx` 與 `Button.css` 都被登記成名為 "Button" 的 chunk，後者讓前者被改名。
+純粹是命名重複、不影響解析（消費端走 exports 與相對 import），不值得為此把
+22 支 CSS 改名。
+
 ### 高對比模式與邊界對比（2026-09-06 完成）
 
 **高對比（強制色彩）模式**：兩個系統性問題，完整說明寫在 `tokens.css` 結尾。

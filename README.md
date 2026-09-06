@@ -172,7 +172,6 @@ adding your own product line).
 ### Usage
 
 ```tsx
-import '@seanhong1215/my-design-system/styles.css'
 import {
   Alert,
   Button,
@@ -227,10 +226,19 @@ export function App() {
 ### Styling and collisions
 
 All class names are prefixed with `mds-` (`.mds-btn`, `.mds-card`,
-`.mds-form-item__label`). The stylesheet is a single global
-`dist/my-design-system.css`, so the prefix is what keeps it from colliding with
-the host app's own styles or with Bootstrap. A host app defining `.card` or
-`.input` will not affect library components.
+`.mds-form-item__label`), which is what keeps them from colliding with the host
+app's own styles or with Bootstrap. A host app defining `.card` or `.input` will
+not affect library components.
+
+**With a bundler you do not import a stylesheet.** The ES build keeps one module
+per component, and each module imports its own CSS, so you get exactly the
+styles for the components you use. Importing a single `Button` pulls in 1.4 kB of
+JS and 2.1 kB of CSS; importing everything is 45 kB and 30 kB. `npm run
+measure:bundle` builds two throwaway consumers and prints that comparison — it
+fails if a change ever breaks tree-shaking again.
+
+`@seanhong1215/my-design-system/styles.css` still exists for consumers without a
+bundler (the UMD/CDN path); it is the whole stylesheet in one file.
 
 ### Theming
 

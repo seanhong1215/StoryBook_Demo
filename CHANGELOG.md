@@ -15,6 +15,8 @@
 - **`ConfigProvider`**：全域設定（語系、主題、產品線、浮層容器）。內建 `en`
   與 `zhTW` 兩個語系包，元件自己渲染的文案與無障礙標籤都跟著走；使用端傳的
   prop 一律優先，locale 只是預設值。沒包 provider 時 fallback 到 `en`。
+- **`npm run measure:bundle`**：建兩個臨時消費端（一個只 import Button、
+  一個 import 全部）實際打包並印出對照，tree-shaking 失效時會讓 CI 失敗。
 - **高對比（強制色彩）模式支援**：`box-shadow` 在強制色彩下不會被繪製，
   整個 library 的焦點框原本都是 `box-shadow` 做的，等於高對比模式下沒有焦點
   指示；靠底色表達的狀態（勾選、開關、選中分頁、目前頁碼）也全部看不出差異。
@@ -89,6 +91,11 @@
 - **`Form` 的值改放在外部 store**，`Form.Item` 逐欄位訂閱，因此在一個欄位打字
   只會重繪那一個欄位（原本值放在 context，每次按鍵所有欄位一起重繪）。
   對外行為不變。
+- ⚠️ **ES 產物改為保留模組結構**（`preserveModules`），每個元件一支檔案並各自
+  import 自己的 CSS。**用 bundler 的消費端不再需要 `import '.../styles.css'`**，
+  只會拿到用到的元件的樣式：只用一個 Button 從「41 kB JS + 30 kB CSS」降到
+  「1.4 kB + 2.1 kB」。`./styles.css` 子路徑仍保留給沒有 bundler 的 UMD / CDN 用法。
+  `module` 欄位由 `dist/my-design-system.js` 改為 `dist/index.js`。
 - `ProductLine` 型別放寬為 `'core' | … | (string & Record<never, never>)`，
   消費端可自訂產品線，同時保留內建四個值的編輯器提示。
 - `Pagination` 的頁碼按鈕補上 `aria-label`（例如 `Page 3`）—— 讀屏原本只會唸出
