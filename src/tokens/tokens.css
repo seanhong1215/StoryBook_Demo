@@ -109,6 +109,16 @@
   /* 必須與 bg-subtle 有可見差距，否則 secondary 按鈕 hover 看不出變化 */
   --color-surface-hover: #E8EBEF;
   --color-border: #E5E7EB;
+  /*
+   * 控制項的邊界專用。WCAG 1.4.11 對「識別控制項所需的邊界」要求 3:1，
+   * 而 --color-border 對白底只有 1.24:1。
+   *
+   * 刻意分成兩個 token 而不是把 --color-border 整個加深：1.4.11 要求的是
+   * 「識別控制項」所需的邊界，表格分隔線、Card 外框這類純裝飾的線條不在範圍內，
+   * 一起加深會讓整個介面變得又重又髒。
+   * 這個值對 #FFFFFF 是 3.25:1。
+   */
+  --color-border-strong: #898F99;
   --color-text: #111827;
   /* #6B7280 在 --color-bg-subtle 上只有 4.39:1，未達 AA；加深到 4.5 以上 */
   --color-text-muted: #5C6573;
@@ -146,6 +156,8 @@
   --color-surface: #151B26;
   --color-surface-hover: #1E2635;
   --color-border: #2A3444;
+  /* 對 --color-surface #151B26 是 3.10:1、對 --color-bg #0B0F17 是 3.45:1 */
+  --color-border-strong: #5B6980;
   --color-text: #E5E7EB;
   --color-text-muted: #9CA3AF;
 
@@ -278,3 +290,21 @@
   --radius-md: 8px;
   --radius-lg: 12px;
 }
+
+/* ---------- 高對比（強制色彩）模式 ---------- */
+
+/*
+ * 各元件 CSS 結尾的 @media (forced-colors: active) 區塊都是為了這件事，
+ * 完整理由寫在這裡，不在 12 個檔案裡重複：
+ *
+ * 1. box-shadow 在強制色彩下完全不會被繪製。這個 library 的焦點框全部是
+ *    box-shadow 做的（--shadow-focus），等於在高對比模式下沒有焦點指示 ——
+ *    所以每個焦點樣式都要補一份 outline 的版本。
+ * 2. 作者指定的背景色會被系統色取代。凡是「靠底色表達狀態」的地方
+ *    （checkbox 勾選、switch 開啟、選中的分頁、目前頁碼、選單 hover）
+ *    都會變得看不出差異，必須改用系統色關鍵字。
+ *
+ * 可用的系統色：Highlight / HighlightText（選取態）、ButtonText、
+ * GrayText（停用態）、Canvas / CanvasText（一般表面與文字）。
+ * 只有這些關鍵字在強制色彩下會被尊重，一般的顏色值都會被覆蓋。
+ */

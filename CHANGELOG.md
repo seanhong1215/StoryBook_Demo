@@ -15,6 +15,16 @@
 - **`ConfigProvider`**：全域設定（語系、主題、產品線、浮層容器）。內建 `en`
   與 `zhTW` 兩個語系包，元件自己渲染的文案與無障礙標籤都跟著走；使用端傳的
   prop 一律優先，locale 只是預設值。沒包 provider 時 fallback 到 `en`。
+- **高對比（強制色彩）模式支援**：`box-shadow` 在強制色彩下不會被繪製，
+  整個 library 的焦點框原本都是 `box-shadow` 做的，等於高對比模式下沒有焦點
+  指示；靠底色表達的狀態（勾選、開關、選中分頁、目前頁碼）也全部看不出差異。
+  改用系統色關鍵字補齊。
+- **`--color-border-strong`**：控制項邊界專用的 token。WCAG 1.4.11 要求
+  「識別控制項所需的邊界」達 3:1，原本的 `--color-border` 對白底只有 1.24:1。
+  Input / Select / Textarea / Checkbox / secondary Button / 頁碼按鈕改用它；
+  表格分隔線、Card 外框這類裝飾性線條維持原樣。
+- **`Button` / `Pagination` 頁碼 / `Table` 排序鈕的 `:focus-visible`**：
+  原本靠瀏覽器預設 outline，與其他元件不一致。
 - **`Switch` 的 `role="switch"`**：原本是原生 checkbox，讀屏會唸成
   「核取方塊，已勾選」；現在會唸成「切換開關，開啟」。
 - **`Form.useForm()`**：回傳表單實例，可從表單外讀值、寫值、重設、觸發驗證與
@@ -79,6 +89,8 @@
 - **`Form` 的值改放在外部 store**，`Form.Item` 逐欄位訂閱，因此在一個欄位打字
   只會重繪那一個欄位（原本值放在 context，每次按鍵所有欄位一起重繪）。
   對外行為不變。
+- `ProductLine` 型別放寬為 `'core' | … | (string & Record<never, never>)`，
+  消費端可自訂產品線，同時保留內建四個值的編輯器提示。
 - `Pagination` 的頁碼按鈕補上 `aria-label`（例如 `Page 3`）—— 讀屏原本只會唸出
   孤零零的「3」。以可及名稱查詢這些按鈕的測試需要跟著改。
 

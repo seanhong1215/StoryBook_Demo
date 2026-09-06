@@ -26,7 +26,7 @@
 
 .mds-pagination__page {
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-md);
   color: var(--color-text);
   cursor: pointer;
@@ -49,4 +49,23 @@
 .mds-pagination__ellipsis {
   color: var(--color-text-muted);
   font-size: var(--font-size-sm);
+}
+
+.mds-pagination__page:focus-visible {
+  box-shadow: var(--shadow-focus);
+  outline: none;
+}
+
+/* 高對比模式：說明見 tokens.css 結尾 */
+@media (forced-colors: active) {
+  .mds-pagination__page:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 1px;
+  }
+
+  /* 目前頁碼靠邊框色與字色表達，強制色彩下兩者都會被蓋掉 */
+  .mds-pagination__page[aria-current="page"] {
+    background: Highlight;
+    color: HighlightText;
+  }
 }

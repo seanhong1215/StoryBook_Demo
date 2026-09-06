@@ -3,7 +3,20 @@ import type { HTMLAttributes } from 'react'
 import { ConfigContext, useConfig } from './context'
 import type { Locale } from '../locale/types'
 
-export type ProductLine = 'core' | 'commerce' | 'finance' | 'internal'
+/**
+ * 內建四條產品線，但不限於這四個。
+ *
+ * 消費端只要在自己的 CSS 加一組 `[data-product-line="acme"]` 覆寫品牌 token
+ * 就能新增產品線，型別不該擋住這件事。`string & Record<never, never>` 讓字串
+ * 通過型別檢查的同時，編輯器仍然會提示內建的四個值
+ * （直接寫成 `| string` 會讓聯集塌成 string，提示就沒了）。
+ */
+export type ProductLine =
+  | 'core'
+  | 'commerce'
+  | 'finance'
+  | 'internal'
+  | (string & Record<never, never>)
 
 export interface ConfigProviderProps extends HTMLAttributes<HTMLDivElement> {
   /** Product line whose brand tokens apply inside this provider. */

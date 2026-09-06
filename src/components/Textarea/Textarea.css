@@ -1,6 +1,6 @@
 .mds-textarea {
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-md);
   color: var(--color-text);
   display: inline-grid;
@@ -65,4 +65,12 @@
   color: var(--color-text-muted);
   font-size: var(--font-size-xs);
   justify-self: end;
+}
+
+/* 高對比模式：說明見 tokens.css 結尾 */
+@media (forced-colors: active) {
+  .mds-textarea:focus-within {
+    outline: 2px solid Highlight;
+    outline-offset: 1px;
+  }
 }

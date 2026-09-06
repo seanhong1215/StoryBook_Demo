@@ -53,3 +53,11 @@
   border-radius: var(--radius-full);
   flex: 0 0 auto;
 }
+
+/* 高對比模式：說明見 tokens.css 結尾 */
+@media (forced-colors: active) {
+  /* Badge 只有底色沒有邊框，強制色彩下會整個融進背景 */
+  .mds-badge {
+    border: 1px solid CanvasText;
+  }
+}
