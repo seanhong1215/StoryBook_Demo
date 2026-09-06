@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { expect, fn, userEvent, within } from 'storybook/test'
 import { Switch } from './Switch'
 
 const meta = {
@@ -60,4 +61,39 @@ export const States: Story = {
       <Switch loading defaultChecked aria-label="Loading switch" />
     </div>
   ),
+}
+
+export const Interaction: Story = {
+  args: {
+    'aria-label': 'Enable workspace',
+    onChange: fn(),
+  },
+  play: async ({ args, canvasElement }) => {
+    const canvas = within(canvasElement)
+    const toggle = canvas.getByRole('switch', { name: 'Enable workspace' })
+
+    await expect(toggle).not.toBeChecked()
+    await userEvent.click(toggle)
+    await expect(toggle).toBeChecked()
+
+    // 點擊後焦點在開關上，Space 應該也能切換
+    await userEvent.keyboard(' ')
+    await expect(toggle).not.toBeChecked()
+    await expect(args.onChange).toHaveBeenCalledTimes(2)
+  },
+}
+
+export const DisabledDoesNotToggle: Story = {
+  args: {
+    disabled: true,
+    'aria-label': 'Disabled switch',
+    onChange: fn(),
+  },
+  play: async ({ args, canvasElement }) => {
+    const toggle = within(canvasElement).getByRole('switch')
+
+    await userEvent.click(toggle)
+    await expect(toggle).not.toBeChecked()
+    await expect(args.onChange).not.toHaveBeenCalled()
+  },
 }

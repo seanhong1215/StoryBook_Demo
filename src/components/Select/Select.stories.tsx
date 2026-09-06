@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { expect, fn, userEvent, within } from 'storybook/test'
 import { Select } from './Select'
 import type { SelectOption } from './Select'
 
@@ -96,4 +97,27 @@ export const Status: Story = {
       <Select disabled options={options} placeholder="Disabled select" aria-label="Plan, disabled" />
     </div>
   ),
+}
+
+export const Interaction: Story = {
+  args: {
+    options,
+    placeholder: 'Choose a plan',
+    'aria-label': 'Plan',
+    onChange: fn(),
+  },
+  play: async ({ args, canvasElement }) => {
+    const canvas = within(canvasElement)
+    const select = canvas.getByRole('combobox', { name: 'Plan' })
+
+    // placeholder 是 disabled + hidden 的 option，未選取時 value 是空字串，
+    // 因此 required 驗證擋得下來
+    await expect(select).toHaveValue('')
+
+    await userEvent.selectOptions(select, 'finance-basic')
+    await expect(select).toHaveValue('finance-basic')
+    await expect(args.onChange).toHaveBeenCalledTimes(1)
+
+    await expect(canvas.getByRole('option', { name: 'Legacy Plan' })).toBeDisabled()
+  },
 }

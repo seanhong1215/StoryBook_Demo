@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { expect, fn, userEvent, within } from 'storybook/test'
 import { Checkbox } from './Checkbox'
 
 const meta = {
@@ -49,4 +50,50 @@ export const Group: Story = {
       <Checkbox disabled>Owner access</Checkbox>
     </div>
   ),
+}
+
+export const Interaction: Story = {
+  args: {
+    children: 'Receive product updates',
+    onChange: fn(),
+  },
+  play: async ({ args, canvasElement }) => {
+    const canvas = within(canvasElement)
+    const box = canvas.getByRole('checkbox', { name: 'Receive product updates' })
+
+    await expect(box).not.toBeChecked()
+    await userEvent.click(box)
+    await expect(box).toBeChecked()
+    await expect(args.onChange).toHaveBeenCalledTimes(1)
+  },
+}
+
+/** indeterminate 沒有對應的 HTML 屬性，只能透過 DOM property 設定。 */
+export const IndeterminateIsDomOnly: Story = {
+  args: {
+    indeterminate: true,
+    children: 'Select all permissions',
+  },
+  play: async ({ canvasElement }) => {
+    const box = within(canvasElement).getByRole('checkbox') as HTMLInputElement
+
+    await expect(box.indeterminate).toBe(true)
+    // 半選不等於已選：value 仍然是未勾選
+    await expect(box).not.toBeChecked()
+  },
+}
+
+export const DisabledDoesNotToggle: Story = {
+  args: {
+    disabled: true,
+    children: 'Owner access',
+    onChange: fn(),
+  },
+  play: async ({ args, canvasElement }) => {
+    const box = within(canvasElement).getByRole('checkbox')
+
+    await userEvent.click(box)
+    await expect(box).not.toBeChecked()
+    await expect(args.onChange).not.toHaveBeenCalled()
+  },
 }
