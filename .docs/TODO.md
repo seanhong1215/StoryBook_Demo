@@ -5,13 +5,17 @@
 
 ---
 
-## 現在的狀態（Phase 0–4 完成，已發布 0.1.0，內部試用階段）
+## 現在的狀態（Phase 0–6 完成，0.2.0 已 tag，內部試用階段）
 
 - `npm test` — **127 個 story 全過**（a11y 已設為 `error` 模式，含 26 個 play function）
 - lint / typecheck / build / build-storybook 全綠
-- `@seanhong1215/my-design-system@0.1.0` **已發布到 GitHub Packages**，
+- `@seanhong1215/my-design-system@0.1.0` 在 GitHub Packages 上，
   已用全新專案從 registry 實測安裝成功
-- commit 已推送到 `origin/feature`（2026-09-07 這批 showcase 相關的尚未推送）
+- **`v0.2.0` tag 已推送（2026-09-07）** —— `npm version minor` 的 preversion
+  跑完整套 verify 才讓版本號動。但 **`publish.yml` 這條路徑是第一次真的執行**：
+  在此之前這個 repo 一個 tag 都沒有，`0.1.0` 是手動 `npm publish` 上去的。
+  **結果要到 Actions 頁確認**，registry 上有沒有 0.2.0 目前未經驗證
+- commit 全數已推送到 `origin/feature`
 
 **library 已跨過「可被 MVP 專案共用」的門檻**（Phase 1f 即達成，2–4 是加值），
 且已經是同事實際能安裝使用的狀態。詳細安裝與試用步驟見 `.docs/INTERNAL-ROLLOUT.md`。
@@ -75,7 +79,7 @@ npm run demo:sync    # build → pack → 用 --no-save 覆蓋 demo 的 node_mod
 |---|---|---|
 | 1 | 設定 `CHROMATIC_PROJECT_TOKEN` | 到 chromatic.com 建專案，把 token 存成 repo secret。在那之前 chromatic workflow 會自己安靜略過，因此這條路徑還沒實跑驗證過 |
 
-~~發布到 GitHub Packages~~ — 已完成，`0.1.0` 在 registry 上，已實測全新安裝成功。
+~~發布到 GitHub Packages~~ — `0.1.0` 已在 registry 上；`0.2.0` 的 tag 已推，等 workflow 結果。
 
 ---
 
@@ -110,7 +114,9 @@ Phase 順序不同：
 | 3 | 內部試用指南 | ✅ `.docs/INTERNAL-ROLLOUT.md` |
 | 4 | 發布 0.1.0 到 GitHub Packages | ✅ 已發布，已實測全新安裝成功 |
 | 5 | demo 改用 registry 依賴，示範真實接入方式 | ✅ 見下方「demo 定位調整」 |
-| 6 | 收內部回饋 → 修 → 0.1.x | ⬜ 進行中 |
+| 6 | 收內部回饋 → 修 → 0.1.x | ✅ 這批修完，收斂成 0.2.0 |
+| 7 | 確認 `publish.yml` 首次執行的結果 | ⬜ **待確認**，見上方「現在的狀態」 |
+| 8 | demo 升到 `^0.2.0` | ⬜ 卡在 7。`^0.1.0` 在 0.x 下等於 `<0.2.0`，demo 不會自己升上去 |
 
 Phase 5（測試）與 6（MDX）在內部試用階段**不是必要的**，可往後放。
 
