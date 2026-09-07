@@ -17,8 +17,8 @@ Storybook 開起來之後，這個順序最快看懂它做到什麼程度：
 |---|---|
 | `Showcase / 00 可操作的營運主控台` | **可以真的操作。** 表格排序分頁 → 每列的操作選單 → 對話框 → 表單驗證，建議把滑鼠放開只用鍵盤走一次 |
 | `Showcase / 01–04` | 同一批元件換 `productLine` 就變成三個不同產品的版型 |
-| `Components / Architecture` | 幾個「為什麼是這樣」：共用行為層、token 三層、打包顆粒度 |
-| `Components / Accessibility` | library 保證什麼、使用端要自己做什麼 |
+| `Guide / Architecture` | 幾個「為什麼是這樣」：共用行為層、token 三層、打包顆粒度 |
+| `Guide / Accessibility` | library 保證什麼、使用端要自己做什麼 |
 | `Foundation / Tokens` | 明暗兩套 token 並排，顯示實際計算值 |
 
 右上角工具列可以切 Theme 與 Product line，對每個 story 都生效。
@@ -67,7 +67,7 @@ token 分三層，彼此不重疊 —— 這是 4 條產品線 × 2 個主題不
 才吃得到。彩色淺底（`Alert` / `Tag` / `Badge`）用 `color-mix()` 由品牌色與當前
 表面色即時混出，同時跟著產品線與主題走。
 
-自訂產品線與完整 API 見 Storybook 的 `Components / Getting Started`。
+自訂產品線與完整 API 見 Storybook 的 `Guide / Getting Started`。
 
 ## 安裝
 
@@ -102,9 +102,9 @@ npm install @seanhong1215/my-design-system
 
 | 在哪 | 內容 |
 |---|---|
-| Storybook `Components / Getting Started` | 安裝、`ConfigProvider`、自訂產品線 |
-| Storybook `Components / Accessibility` | 無障礙契約與已知限制 |
-| Storybook `Components / Architecture` | 架構取捨與刻意沒做的事 |
+| Storybook `Guide / Getting Started` | 安裝、`ConfigProvider`、常用模式與自訂產品線 |
+| Storybook `Guide / Accessibility` | 無障礙契約與已知限制 |
+| Storybook `Guide / Architecture` | 架構取捨與刻意沒做的事 |
 | [`.docs/INTERNAL-ROLLOUT.md`](.docs/INTERNAL-ROLLOUT.md) | 內部試用指南、發布流程、CI |
 | [`CHANGELOG.md`](CHANGELOG.md) | 版本變更；1.0 前破壞性變更落在 minor |
 

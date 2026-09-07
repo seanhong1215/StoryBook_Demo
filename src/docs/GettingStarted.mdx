@@ -1,6 +1,6 @@
 import { Meta } from '@storybook/addon-docs/blocks'
 
-<Meta title="Components/Getting Started" />
+<Meta title="Guide/Getting Started" />
 
 # Getting Started
 
@@ -15,7 +15,7 @@ import { Meta } from '@storybook/addon-docs/blocks'
 //npm.pkg.github.com/:_authToken=YOUR_PAT
 ```
 
-Token 要用 **classic PAT**，勾 `write:packages` 與 `repo`。
+Token 要用 **classic PAT**，勾 `read:packages` 與 `repo`。
 private repo 缺 `repo` 會拿到 **404** 而不是權限錯誤，很容易誤判成套件不存在。
 
 專案裡加一支 `.npmrc`（不含 token，可以進版控）：
@@ -32,9 +32,9 @@ npm install @seanhong1215/my-design-system
 
 完整步驟與常見錯誤見 repo 的 `.docs/INTERNAL-ROLLOUT.md`。
 
-## 樣式
+## 匯入元件
 
-**用 bundler 的話不需要 import 任何 CSS 檔。** 每個元件都會帶著自己的樣式，
+**使用 Vite、Webpack 等 bundler 時，不需要另外 import CSS。** 每個元件會帶著自己的樣式，
 你只會拿到用到的那幾支 —— 只用一個 `Button` 大約是 1.4 kB JS + 2.1 kB CSS。
 
 沒有 bundler（直接 `<script>` 載 UMD）時才需要整包樣式：
@@ -43,7 +43,7 @@ npm install @seanhong1215/my-design-system
 <link rel="stylesheet" href=".../my-design-system/dist/my-design-system.css" />
 ```
 
-## 第一個畫面
+## 第一個元件
 
 ```tsx
 import {
@@ -99,6 +99,43 @@ export function App() {
 
 `ThemeProvider` 是 `ConfigProvider` 的薄包裝，保留給既有使用端，新專案直接用
 `ConfigProvider`。
+
+## 常用模式
+
+### 直接匯入
+
+```tsx
+import { Button, Card, Space } from '@seanhong1215/my-design-system'
+
+export function Actions() {
+  return (
+    <Card title="操作">
+      <Space>
+        <Button variant="secondary">取消</Button>
+        <Button type="primary">儲存</Button>
+      </Space>
+    </Card>
+  )
+}
+```
+
+### 搭配 react-hook-form
+
+表單控制項的 ref 會指向內層原生元素，可以直接交給 `register()`：
+
+```tsx
+const { register } = useForm()
+
+<Input {...register('email')} type="email" />
+```
+
+### TypeScript 型別
+
+所有公開 props 與資料型別都能從 package entry 匯入：
+
+```tsx
+import type { ButtonProps, TableColumn } from '@seanhong1215/my-design-system'
+```
 
 ## 自訂產品線
 

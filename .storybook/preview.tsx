@@ -91,8 +91,8 @@ const preview: Preview = {
     options: {
       storySort: {
         order: [
-          'Components',
-          ['Showcase', 'Overview', 'Getting Started', 'Accessibility', 'Architecture'],
+          'Guide',
+          ['Overview', 'Getting Started', 'Accessibility', 'Architecture'],
           'General',
           ['Button', 'Icon'],
           'Data Display',

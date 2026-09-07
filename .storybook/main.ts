@@ -41,5 +41,15 @@ const config: StorybookConfig = {
       propFilter: (prop) => (prop.parent ? !prop.parent.fileName.includes('node_modules') : true),
     },
   },
+  viteFinal: (viteConfig) => ({
+    ...viteConfig,
+    build: {
+      ...viteConfig.build,
+      // Vite 8 會讓 Storybook preview entry 保留 CSS 的 JS import；部署到
+      // GitHub Pages 後，瀏覽器會因 text/css MIME type 拒絕整個 module。
+      // Storybook 靜態站不需要按 story 拆 CSS，合併後改由 <link> 載入即可。
+      cssCodeSplit: false,
+    },
+  }),
 }
 export default config
