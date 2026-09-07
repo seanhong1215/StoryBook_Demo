@@ -54,6 +54,11 @@
   `mouseLeaveDelay`、`onOpenChange`。
 - **`Input` 的 `clearLabel`**：清除鈕的無障礙文案不再寫死。
 - **z-index token**：`--z-modal` / `--z-dropdown` / `--z-tooltip`。
+- **`Dropdown` 的 `label`**：觸發鈕的無障礙名稱。`trigger` 只放圖示時按鈕會
+  完全沒有名字；表格裡每一列都有一個操作選單時，也需要各自命名才分得出來。
+- **Showcase 的「可操作的營運主控台」**：把有行為的元件串成一條真實流程 ——
+  表格排序分頁 → 每列的操作選單 → 對話框 → 表單驗證，整頁都能真的操作。
+  其餘四個 showcase 是靜態版型。
 
 ### Fixed
 
@@ -77,6 +82,10 @@
   分頁永遠選不起來，改用 `??`。
 - **`Modal` 重複 id**：標題原本寫死 `id="modal-title"`，同頁兩個 Modal 會衝突。
 - **`Table` 載入狀態**：補上 `aria-busy` 與 `role="status"`。
+- **`Modal` 沒有遵守 `getPopupContainer`**：`Tooltip` 與 `Dropdown` 都會照
+  `ConfigProvider` 指定的節點掛載，只有 `Modal` 寫死 `document.body`。
+  非 global 模式下（主題屬性只寫在 wrapper 上）對話框因此拿不到所屬區塊的
+  產品線色。
 
 ### Changed
 

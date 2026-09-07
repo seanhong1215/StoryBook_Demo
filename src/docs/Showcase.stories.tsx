@@ -1,10 +1,25 @@
+import { useRef, useState } from 'react'
+import { Alert } from '../components/Alert/Alert'
 import { Badge } from '../components/Badge/Badge'
+import type { BadgeProps } from '../components/Badge/Badge'
 import { Button } from '../components/Button/Button'
 import { Card } from '../components/Card/Card'
+import { Dropdown } from '../components/Dropdown/Dropdown'
+import { Form } from '../components/Form/Form'
+import type { FormValues } from '../components/Form/Form'
+import { Icon } from '../components/Icon/Icon'
 import { Input } from '../components/Input/Input'
+import { Modal } from '../components/Modal/Modal'
 import { Select } from '../components/Select/Select'
+import type { SelectOption } from '../components/Select/Select'
 import { Space } from '../components/Space/Space'
+import { Table } from '../components/Table/Table'
+import type { TableColumn, TableRowKey } from '../components/Table/Table'
 import { Tag } from '../components/Tag/Tag'
+import { Textarea } from '../components/Textarea/Textarea'
+import { Tooltip } from '../components/Tooltip/Tooltip'
+import { ConfigProvider } from '../config/ConfigProvider'
+import { zhTW } from '../locale/zh-TW'
 import { ThemeProvider } from '../theme/ThemeProvider'
 import portfolioCover from '../assets/portfolio-cover.png'
 
@@ -344,22 +359,283 @@ const SaasServicesTemplate = () => (
   </ThemeProvider>
 )
 
+/* -------------------------------------------------------------------------
+ * 可操作的營運主控台
+ *
+ * 另外三張是靜態版型，展示的是排版能力；這一張的重點是行為 ——
+ * 表格排序分頁、選單的鍵盤操作、對話框的焦點鎖定、表單驗證，都可以真的動手試。
+ * 這些正是排版類截圖看不出來、但實際導入後每天都會碰到的部分。
+ * ------------------------------------------------------------------------- */
+
+interface ConsoleOrder {
+  key: string
+  order: string
+  customer: string
+  plan: string
+  amount: number
+  status: 'processing' | 'shipped' | 'hold'
+}
+
+const consoleOrders: ConsoleOrder[] = [
+  { key: '1', order: 'ORD-2041', customer: 'Acme Studio', plan: 'Commerce Pro', amount: 12800, status: 'processing' },
+  { key: '2', order: 'ORD-2042', customer: 'Northwind', plan: 'Finance Basic', amount: 860, status: 'shipped' },
+  { key: '3', order: 'ORD-2043', customer: 'Orbit Ops', plan: 'Internal Tools', amount: 4200, status: 'hold' },
+  { key: '4', order: 'ORD-2044', customer: 'Bluebird', plan: 'Commerce Pro', amount: 1460, status: 'processing' },
+  { key: '5', order: 'ORD-2045', customer: 'Summit', plan: 'Finance Basic', amount: 970, status: 'shipped' },
+  { key: '6', order: 'ORD-2046', customer: 'Atlas', plan: 'Internal Tools', amount: 610, status: 'processing' },
+  { key: '7', order: 'ORD-2047', customer: 'Lighthouse', plan: 'Commerce Pro', amount: 23400, status: 'hold' },
+  { key: '8', order: 'ORD-2048', customer: 'Kite', plan: 'Finance Basic', amount: 320, status: 'shipped' },
+  { key: '9', order: 'ORD-2049', customer: 'Meridian', plan: 'Commerce Pro', amount: 8150, status: 'processing' },
+]
+
+const consoleStatus: Record<ConsoleOrder['status'], { label: string; variant: BadgeProps['variant'] }> = {
+  processing: { label: '處理中', variant: 'primary' },
+  shipped: { label: '已出貨', variant: 'success' },
+  hold: { label: '待確認', variant: 'warning' },
+}
+
+const consolePlans: SelectOption[] = [
+  { label: 'Commerce Pro', value: 'Commerce Pro' },
+  { label: 'Finance Basic', value: 'Finance Basic' },
+  { label: 'Internal Tools', value: 'Internal Tools' },
+]
+
+const OperationsConsoleTemplate = () => {
+  const pageRef = useRef<HTMLElement>(null)
+  const [orders, setOrders] = useState(consoleOrders)
+  const [selectedRowKeys, setSelectedRowKeys] = useState<TableRowKey[]>([])
+  const [editing, setEditing] = useState<ConsoleOrder | null>(null)
+  const [notice, setNotice] = useState<string | null>(null)
+  const form = Form.useForm()
+
+  const setStatus = (key: string, status: ConsoleOrder['status']) => {
+    setOrders((current) => current.map((order) => (
+      order.key === key ? { ...order, status } : order
+    )))
+  }
+
+  const handleAction = (action: string, record: ConsoleOrder) => {
+    if (action === 'edit') {
+      setEditing(record)
+      return
+    }
+    if (action === 'ship') {
+      setStatus(record.key, 'shipped')
+      setNotice(`${record.order} 已標記為出貨。`)
+      return
+    }
+    setStatus(record.key, 'hold')
+    setNotice(`${record.order} 已暫停處理。`)
+  }
+
+  const handleSave = (values: FormValues) => {
+    if (!editing) return
+    setOrders((current) => current.map((order) => (
+      order.key === editing.key
+        ? { ...order, customer: String(values.customer), plan: String(values.plan) }
+        : order
+    )))
+    setNotice(`${editing.order} 已更新。`)
+    setEditing(null)
+  }
+
+  const shipSelected = () => {
+    setOrders((current) => current.map((order) => (
+      selectedRowKeys.includes(order.key) ? { ...order, status: 'shipped' } : order
+    )))
+    setNotice(`已將 ${selectedRowKeys.length} 筆訂單標記為出貨。`)
+    setSelectedRowKeys([])
+  }
+
+  const columns: TableColumn<ConsoleOrder>[] = [
+    { title: '訂單編號', dataIndex: 'order', sorter: true },
+    { title: '客戶', dataIndex: 'customer', sorter: true },
+    {
+      title: '方案',
+      dataIndex: 'plan',
+      render: (value) => <Tag color="primary">{value}</Tag>,
+    },
+    {
+      title: '金額',
+      dataIndex: 'amount',
+      sorter: true,
+      render: (value) => `$${Number(value).toLocaleString('en-US')}`,
+    },
+    {
+      title: '狀態',
+      dataIndex: 'status',
+      render: (_, record) => (
+        <Badge variant={consoleStatus[record.status].variant}>
+          {consoleStatus[record.status].label}
+        </Badge>
+      ),
+    },
+    {
+      title: '操作',
+      key: 'actions',
+      render: (_, record) => (
+        <Dropdown
+          // 只有圖示的觸發鈕一定要給名字，而且每一列各自命名
+          label={`${record.order} 的操作`}
+          trigger={<Icon name="chevron-down" size={16} />}
+          placement="bottom-end"
+          items={[
+            { key: 'edit', label: '編輯訂單' },
+            { key: 'ship', label: '標記為已出貨', disabled: record.status === 'shipped' },
+            { key: 'hold', label: '暫停處理' },
+          ]}
+          onSelect={(item) => handleAction(String(item.key), record)}
+        />
+      ),
+    },
+  ]
+
+  return (
+    /*
+     * locale 讓元件自己渲染的文案（分頁的「上一頁」、對話框的「確定 / 取消」、
+     * 空狀態的「沒有資料」）跟著中文走，不需要逐一傳 prop。
+     *
+     * getPopupContainer 把浮層掛進這一頁自己的節點下。這裡是非 global 模式，
+     * productLine 只寫在 wrapper 上，浮層預設掛到 document.body 就會拿到
+     * Storybook 工具列設定的產品線色，而不是這一頁的 commerce。
+     */
+    <ConfigProvider
+      productLine="commerce"
+      locale={zhTW}
+      getPopupContainer={() => pageRef.current}
+    >
+      <main className="template-page" id="top" ref={pageRef}>
+        <header className="template-header">
+          <strong className="template-brand">RetailOps Console</strong>
+          <nav aria-label="RetailOps Console">
+            <a href="#top">訂單</a>
+            <a href="#top">庫存</a>
+            <a href="#top">客服</a>
+          </nav>
+          <Space>
+            <Button variant="secondary" size="sm" leftIcon={<Icon name="search" />}>
+              搜尋訂單
+            </Button>
+            <Button type="primary" size="sm">建立訂單</Button>
+          </Space>
+        </header>
+
+        <section className="console-body">
+          <Alert
+            type="info"
+            message="這一頁可以真的操作 —— 建議把滑鼠放開，只用鍵盤走一次"
+            description={
+              <ul className="console-hints">
+                <li>用 <kbd>Tab</kbd> 走到任一列的操作選單，按 <kbd>↓</kbd> 開啟，<kbd>↑</kbd><kbd>↓</kbd> 移動，<kbd>Esc</kbd> 關閉 —— 焦點會回到原本那顆按鈕</li>
+                <li>選單裡挑「編輯訂單」開啟對話框，一直按 <kbd>Tab</kbd>：焦點會鎖在對話框裡出不去</li>
+                <li>把客戶名稱清空後按「儲存」看驗證；補回任何一個字，錯誤訊息會立刻消失</li>
+                <li>點欄位標題排序 —— 金額是依數值排，不是把 1,460 當字串排在 860 前面</li>
+              </ul>
+            }
+          />
+
+          {notice && (
+            <Alert type="success" message={notice} closable onClose={() => setNotice(null)} />
+          )}
+
+          <Card
+            title="今日訂單"
+            titleAs="h2"
+            extra={
+              <Space>
+                {selectedRowKeys.length > 0 && (
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    leftIcon={<Icon name="check" />}
+                    onClick={shipSelected}
+                  >
+                    {`將 ${selectedRowKeys.length} 筆標記出貨`}
+                  </Button>
+                )}
+                <Tooltip title="這裡的排序與分頁都在前端完成。接後端時改用 manual 模式，Table 只回報使用者要求的頁碼與排序，資料由外部取。">
+                  <span className="console-info">
+                    <Icon name="info-circle" size={16} aria-label="關於這張表格" />
+                  </span>
+                </Tooltip>
+              </Space>
+            }
+          >
+            <Table
+              columns={columns}
+              dataSource={orders}
+              pagination={{ pageSize: 4 }}
+              rowSelection={{ selectedRowKeys, onChange: setSelectedRowKeys }}
+            />
+          </Card>
+        </section>
+
+        <Modal
+          open={editing !== null}
+          title={editing ? `編輯 ${editing.order}` : ''}
+          okText="儲存"
+          /*
+           * 送出鈕在 Modal 的 footer，不在 <form> 裡面，沒辦法用 htmlType="submit"。
+           * form.submit() 走原生 requestSubmit()，跟使用者自己按送出鈕是同一條路徑。
+           */
+          onOk={() => form.submit()}
+          onCancel={() => setEditing(null)}
+        >
+          <Form
+            form={form}
+            initialValues={editing ? { customer: editing.customer, plan: editing.plan, note: '' } : {}}
+            onFinish={handleSave}
+          >
+            <Form.Item
+              name="customer"
+              label="客戶名稱"
+              rules={[{ required: true, message: '客戶名稱不能空白。' }]}
+            >
+              <Input allowClear />
+            </Form.Item>
+            <Form.Item name="plan" label="方案">
+              <Select options={consolePlans} />
+            </Form.Item>
+            <Form.Item name="note" label="異動備註" extra="會寫進這張訂單的異動紀錄。">
+              <Textarea rows={2} placeholder="例如：客戶來電要求改方案" />
+            </Form.Item>
+          </Form>
+        </Modal>
+
+        <Footer product="RetailOps Console" links={['訂單', '庫存', '客服', '設定']} />
+      </main>
+    </ConfigProvider>
+  )
+}
+
+export const OperationsConsole: Story = {
+  name: '00 可操作的營運主控台',
+  parameters: {
+    docs: {
+      description: {
+        story: '把有行為的元件串成一條真實流程：表格排序分頁 → 列操作選單 → 對話框 → 表單驗證。',
+      },
+    },
+  },
+  render: () => <OperationsConsoleTemplate />,
+}
+
 export const PortfolioCover: Story = {
-  name: '00 Cover 首頁',
+  name: '01 Cover 首頁',
   render: () => <PortfolioCoverTemplate />,
 }
 
 export const CommerceOperations: Story = {
-  name: '01 電商營運首頁',
+  name: '02 電商營運首頁',
   render: () => <CommerceOperationsTemplate />,
 }
 
 export const FinancialServices: Story = {
-  name: '02 金融服務首頁',
+  name: '03 金融服務首頁',
   render: () => <FinanceServicesTemplate />,
 }
 
 export const SaasService: Story = {
-  name: '03 SaaS 服務首頁',
+  name: '04 SaaS 服務首頁',
   render: () => <SaasServicesTemplate />,
 }
