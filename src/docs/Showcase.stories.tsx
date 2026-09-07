@@ -38,6 +38,29 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
+/**
+ * 展場的說明牌：這一頁在示範什麼、用了哪些元件。
+ *
+ * 刻意放在 `<main>` 外面而且長得跟版型完全不同 —— 它是給看 Storybook 的人讀的
+ * 註解，不是版型的一部分。這幾個 story 沒有 docs 頁（也沒有 autodocs），
+ * `parameters.docs.description` 不會渲染在任何地方，說明只能寫進畫面裡。
+ */
+const ShowcaseNote = ({
+  productLine,
+  summary,
+  components,
+}: {
+  productLine: string
+  summary: string
+  components: string
+}) => (
+  <div className="showcase-note">
+    <span className="showcase-note__tag">{productLine}</span>
+    <p className="showcase-note__summary">{summary}</p>
+    <p className="showcase-note__components">{components}</p>
+  </div>
+)
+
 const Footer = ({ product, links }: { product: string; links: string[] }) => (
   <footer className="template-footer">
     <strong>{product}</strong>
@@ -51,6 +74,11 @@ const Footer = ({ product, links }: { product: string; links: string[] }) => (
 
 const PortfolioCoverTemplate = () => (
   <ThemeProvider productLine="commerce">
+    <ShowcaseNote
+      productLine="靜態圖檔"
+      summary="作品集封面圖，不是用元件組出來的 —— 這一頁是一張 PNG。"
+      components="想看真的能操作的畫面請開「00 可操作的營運主控台」；想看用元件組出來的版型看 02–04。"
+    />
     <main className="portfolio-cover-showcase portfolio-cover-showcase--image">
       <img
         className="portfolio-cover-showcase__image"
@@ -63,6 +91,11 @@ const PortfolioCoverTemplate = () => (
 
 const CommerceOperationsTemplate = () => (
   <ThemeProvider productLine="commerce">
+    <ShowcaseNote
+      productLine="commerce 產品線"
+      summary="靜態版型：小型電商的營運首頁。示範同一組元件在品牌色換成 commerce 之後，整頁不需要任何額外樣式就成立。"
+      components="Card（含 size=small 的巢狀卡片）、Badge、Tag、Space、Input、Select、Button。標題階層刻意從 h1 排到 h3，沒有跳級。"
+    />
     <main className="template-page template-page--commerce" id="top">
       <header className="template-header">
         <strong className="template-brand">RetailOps Cloud</strong>
@@ -162,6 +195,11 @@ const CommerceOperationsTemplate = () => (
 
 const FinanceServicesTemplate = () => (
   <ThemeProvider productLine="finance">
+    <ShowcaseNote
+      productLine="finance 產品線"
+      summary="靜態版型：金融服務的風控入口。跟 02 是同一批元件，只換了 productLine —— 主色、圓角、密度全部跟著走，版型檔本身沒有一行顏色。"
+      components="Card、Badge、Tag、Space、Button。品牌層 token 由 [data-product-line] 覆寫，表面層仍由 [data-theme] 決定，兩者不重疊。"
+    />
     <main className="template-page template-page--finance" id="top">
       <header className="finance-header">
         <strong className="template-brand">TrustLedger</strong>
@@ -249,6 +287,11 @@ const FinanceServicesTemplate = () => (
 
 const SaasServicesTemplate = () => (
   <ThemeProvider productLine="internal">
+    <ShowcaseNote
+      productLine="internal 產品線"
+      summary="靜態版型：內部工具的 SaaS 首頁。第三次用同一批元件 —— 三頁看起來是三個不同產品，版型檔裡沒有任何寫死的顏色。"
+      components="Card、Badge、Tag、Space、Input、Select、Button。右上角工具列可以再疊一層明暗，兩個維度互不干擾。"
+    />
     <main className="template-page template-page--saas" id="top">
       <header className="template-header">
         <strong className="template-brand">TeamPilot</strong>
