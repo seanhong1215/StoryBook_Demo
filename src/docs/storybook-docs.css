@@ -1219,3 +1219,44 @@ pre .punctuation {
   display: inline-flex;
 }
 
+/* Showcase 的說明牌。
+ *
+ * 刻意跟版型長得完全不一樣（等寬字、色調壓低、上方一條粗邊），
+ * 讀者一眼就知道這不是版型的一部分，是給看 Storybook 的人的註解。
+ * 顏色用 token 而不是寫死，明暗兩套主題都要能讀。
+ */
+.showcase-note {
+  background: var(--color-surface-hover);
+  border-bottom: 1px solid var(--color-border-strong);
+  border-top: 3px solid var(--color-primary);
+  display: grid;
+  font-family: ui-monospace, SFMono-Regular, 'Cascadia Mono', Menlo, monospace;
+  gap: 6px;
+  padding: 14px 24px;
+}
+
+.showcase-note__tag {
+  color: var(--color-primary);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.showcase-note__summary,
+.showcase-note__components {
+  margin: 0;
+  max-width: 90ch;
+}
+
+.showcase-note__summary {
+  color: var(--color-text);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.showcase-note__components {
+  color: var(--color-text-muted);
+  font-size: 12px;
+  line-height: 1.6;
+}

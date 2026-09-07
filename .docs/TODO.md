@@ -1,17 +1,17 @@
 # 企業級設計系統升級 — 進度與待辦
 
 > 完整計畫（含每階段細節）：`C:\Users\Administrator\.claude\plans\storybook-tidy-book.md`
-> 最後更新：2026-09-05
+> 最後更新：2026-09-07
 
 ---
 
 ## 現在的狀態（Phase 0–4 完成，已發布 0.1.0，內部試用階段）
 
-- `npm test` — **126 個 story 全過**（a11y 已設為 `error` 模式，含 26 個 play function）
+- `npm test` — **127 個 story 全過**（a11y 已設為 `error` 模式，含 26 個 play function）
 - lint / typecheck / build / build-storybook 全綠
 - `@seanhong1215/my-design-system@0.1.0` **已發布到 GitHub Packages**，
   已用全新專案從 registry 實測安裝成功
-- commit 已推送到 `origin/feature`
+- commit 已推送到 `origin/feature`（2026-09-07 這批 showcase 相關的尚未推送）
 
 **library 已跨過「可被 MVP 專案共用」的門檻**（Phase 1f 即達成，2–4 是加值），
 且已經是同事實際能安裝使用的狀態。詳細安裝與試用步驟見 `.docs/INTERNAL-ROLLOUT.md`。
@@ -69,12 +69,13 @@ npm run demo:sync    # build → pack → 用 --no-save 覆蓋 demo 的 node_mod
 ## 等待使用者決定
 
 原本掛在這裡的三項（`--color-border` 對比、`ProductLine` 型別、下一個 Phase）
-都已經處理完，詳見下方各段。目前只剩兩件需要使用者動手，不是技術決策：
+都已經處理完，詳見下方各段。目前剩三件需要使用者決定，不是技術問題：
 
 | # | 事項 | 說明 |
 |---|---|---|
 | 1 | 設定 `CHROMATIC_PROJECT_TOKEN` | 到 chromatic.com 建專案，把 token 存成 repo secret。在那之前 chromatic workflow 會自己安靜略過，因此這條路徑還沒實跑驗證過 |
 | 2 | 要不要發 `0.2.0` | CHANGELOG 的 `[Unreleased]` 已整理好，三處會改變既有行為的變更都標在 Changed。發布方式：把 `[Unreleased]` 改成 `[0.2.0]` → `npm version minor` → `git push --follow-tags` |
+| 3 | `01 Cover 首頁` 要留還是重做 | 目前是一張 PNG，圖裡的元件是畫的不是真的。選項：用真元件重做（可以順便示範 Icon / Tag / token 色票）、或移出 Storybook 放進 README |
 
 ~~發布到 GitHub Packages~~ — 已完成，`0.1.0` 在 registry 上，已實測全新安裝成功。
 
@@ -97,6 +98,7 @@ npm run demo:sync    # build → pack → 用 --no-save 覆蓋 demo 的 node_mod
 | 5 | ✅ 完成 | Interaction tests：26 個 play function，涵蓋 12 個有行為的元件 |
 | 6 | ✅ 完成 | MDX 說明頁：Getting Started / Accessibility / Architecture |
 | 7 | 🟡 部分 | CI + publish + chromatic workflow 都已建立；Pages 待對外發布階段 |
+| — | ✅ 完成 | Showcase 互動化：新增可操作的營運主控台，其餘四頁補上說明牌 |
 
 ## 目前優先序：內部試用
 
@@ -133,6 +135,38 @@ Phase 5（測試）與 6（MDX）在內部試用階段**不是必要的**，可�
 無誤（11 個卡片、0 個 page error）、`verify:pack` 全綠。
 
 ## 待辦細節
+
+### Showcase 互動化（2026-09-07 完成）
+
+原本五個 showcase 全是靜態版型 —— 好看，但看不出元件真的有行為，
+面試官點進去只會看到一張圖。
+
+新增 `00 可操作的營運主控台`，把有行為的元件串成一條真實流程：
+Table（數值排序、分頁、跨頁列選取）→ 每列的操作選單 → Modal → Form 驗證
+→ 成功提示，包在 `ConfigProvider productLine="commerce" locale={zhTW}` 底下。
+頁首用 Alert 寫清楚用鍵盤怎麼走一遍（`Tab` → `↓` 開選單 → `Esc` 關閉並還原焦點）。
+
+做的過程中發現兩個實際缺陷，各自獨立修掉：
+
+- **`Dropdown` 只有圖示的觸發鈕沒有可存取的名字** → 新增 `label` prop。
+  表格裡每列一個操作選單時還要各自命名（`` `${record.order} 的操作` ``），
+  否則讀屏會唸出一整排一模一樣的按鈕
+- **`Modal` 沒有遵守 `getPopupContainer`** —— `Tooltip` / `Dropdown` 都照
+  `ConfigProvider` 指定的節點掛載，只有 `Modal` 寫死 `document.body`。
+  非 global 模式下主題屬性只寫在 wrapper 上，對話框因此拿到 `<html>` 上的
+  產品線色而不是所屬區塊的。**這是截圖才看得出來的 bug**：所有測試都是綠的，
+  對比也沒問題，只是顏色不對
+
+其餘四頁補上「說明牌」（`.showcase-note`）：產品線、這一頁在示範什麼、
+用了哪些元件。刻意放在 `<main>` 外面且用等寬字，一眼就知道是註解不是版型。
+
+> **為什麼不寫在 `parameters.docs.description`**：Showcase 沒有 `autodocs`
+> tag，也設了 `docs: { page: null }`，根本不會產生 docs 頁 —— 寫在那裡的說明
+> 不會渲染在任何地方。說明只能寫進畫面本身。
+
+`01 Cover 首頁` 的說明牌直接寫明「這一頁是一張 PNG」。圖裡畫的 Button / Badge /
+Tokens 都不是真的元件，跟旁邊三頁「真的用元件組出來」放在一起容易誤導。
+**待決定**：用真元件重做封面，或把它移出 Storybook。
 
 ### MDX 說明頁（2026-09-06 完成）
 
