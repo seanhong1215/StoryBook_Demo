@@ -1,4 +1,9 @@
-$ErrorActionPreference = "Stop"
+﻿$ErrorActionPreference = "Stop"
+
+# 這支檔案必須存成「UTF-8 with BOM」。
+# Windows PowerShell 5.1 讀不到 BOM 就會把整個檔案當成系統 ANSI（正體中文是
+# cp950）解碼，下面 commit -m 的中文會變成亂碼才傳給 git —— gh-pages 上
+# 「deploy: ?湔 Storybook GitHub Pages」就是這樣來的。編輯器另存時請留意。
 
 $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
 $deployDir = Join-Path $repoRoot "storybook-static"
