@@ -69,13 +69,12 @@ npm run demo:sync    # build → pack → 用 --no-save 覆蓋 demo 的 node_mod
 ## 等待使用者決定
 
 原本掛在這裡的三項（`--color-border` 對比、`ProductLine` 型別、下一個 Phase）
-都已經處理完，詳見下方各段。目前剩三件需要使用者決定，不是技術問題：
+都已經處理完，詳見下方各段。目前剩兩件需要使用者動手，不是技術決策：
 
 | # | 事項 | 說明 |
 |---|---|---|
 | 1 | 設定 `CHROMATIC_PROJECT_TOKEN` | 到 chromatic.com 建專案，把 token 存成 repo secret。在那之前 chromatic workflow 會自己安靜略過，因此這條路徑還沒實跑驗證過 |
 | 2 | 要不要發 `0.2.0` | CHANGELOG 的 `[Unreleased]` 已整理好，三處會改變既有行為的變更都標在 Changed。發布方式：把 `[Unreleased]` 改成 `[0.2.0]` → `npm version minor` → `git push --follow-tags` |
-| 3 | `01 Cover 首頁` 要留還是重做 | 目前是一張 PNG，圖裡的元件是畫的不是真的。選項：用真元件重做（可以順便示範 Icon / Tag / token 色票）、或移出 Storybook 放進 README |
 
 ~~發布到 GitHub Packages~~ — 已完成，`0.1.0` 在 registry 上，已實測全新安裝成功。
 
@@ -164,9 +163,32 @@ Table（數值排序、分頁、跨頁列選取）→ 每列的操作選單 → 
 > tag，也設了 `docs: { page: null }`，根本不會產生 docs 頁 —— 寫在那裡的說明
 > 不會渲染在任何地方。說明只能寫進畫面本身。
 
-`01 Cover 首頁` 的說明牌直接寫明「這一頁是一張 PNG」。圖裡畫的 Button / Badge /
-Tokens 都不是真的元件，跟旁邊三頁「真的用元件組出來」放在一起容易誤導。
-**待決定**：用真元件重做封面，或把它移出 Storybook。
+### 封面改用真元件重做（2026-09-07 完成）
+
+原本的 `01 Cover 首頁` 是一張 PNG。問題不是「不好看」，是**圖裡畫的東西跟真的
+元件對不起來** —— 畫的 Button 是藍色圓角、Badge 是膠囊、Tokens 是六個彩色圓點，
+點進 02 之後主色變青色、Badge 是方角。對一個賣點是一致性的元件庫來說，
+封面自己先不一致，比沒有封面糟。
+
+新封面全部用真元件（Button 四種 variant、Input allowClear、Select、Card、
+Badge、Tag、Icon），色票用 `getComputedStyle` 讀實際計算值。
+
+兩個實作決定：
+
+- **不包 `ThemeProvider`** —— 其他四頁各自釘死一條產品線（那是它們的重點：
+  同一批元件換品牌），封面反過來跟著工具列走。「切一下全部跟著變」變成看的人
+  自己按出來的，不是文案聲稱的
+- **色票用 MutationObserver 盯 `<html>` 的屬性**，不是靠 React 重繪。
+  ThemeProvider 的 global 模式只改 documentElement 的屬性，元件不一定會重繪，
+  沒有 observer 的話十六進位數字會停在舊值
+
+原本的 PNG 移到 README 當專案封面 —— 在那裡它是行銷素材，很合理。
+
+**axe 抓到的**：說明牌的產品線標籤原本用 `--color-primary`，core 的 `#0066FF`
+對那塊底只有 4.04:1，11px 粗體要 4.5:1。前四頁都釘死較深的品牌色所以沒踩到，
+封面跟著工具列走才暴露出來。`--color-primary-text` 在淺色下 mix 是 100%
+（等於沒混）也不夠，最後用 `--tone-info-text`。
+**教訓：`--color-primary` 是填色用的，拿來當文字要用 `--tone-*-text`。**
 
 ### MDX 說明頁（2026-09-06 完成）
 

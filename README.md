@@ -1,5 +1,7 @@
 # My Design System
 
+![React Design System — 模板元件庫](src/assets/portfolio-cover.png)
+
 Ant Design-inspired React component library for interview portfolio review.
 
 This project is a lightweight design system built with React, Vite, and Storybook. It focuses on practical component quality for small internal products: clear public exports, reusable CSS tokens, Storybook documentation, and a local Product A adoption demo.
