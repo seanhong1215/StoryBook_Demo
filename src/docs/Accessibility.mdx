@@ -67,6 +67,9 @@ axe 只驗得到「結構上的違規」。「Tab 之後焦點跑到哪」「高
 - `Pagination` —— 同一頁有多個分頁器時各給一個 `label`，
   否則兩個 `<nav>` 同名，用 landmark 導覽時分不出來
 - `Tabs` —— 同一頁有多組分頁時給 `label`
+- `Dropdown` —— `trigger` 只放圖示時要給 `label`。表格裡每列一個操作選單的話，
+  名字要帶上那一列的識別（`` `${record.order} 的操作` ``），
+  否則讀屏會唸出一整排一模一樣的按鈕
 
 **`Dropdown` 的 `trigger` 傳內容而不是 `<Button>`。** Dropdown 自己會渲染一個
 `<button>`，再塞一個進去會變成按鈕包按鈕：無效的 HTML，而且鍵盤操作會壞掉。
