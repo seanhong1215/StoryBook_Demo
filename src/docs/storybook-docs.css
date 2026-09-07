@@ -1185,3 +1185,37 @@ pre .punctuation {
     font-size: 34px;
   }
 }
+
+/* ---------- 可操作的營運主控台 ---------- */
+
+.console-body {
+  display: grid;
+  gap: var(--spacing-md);
+  margin: var(--spacing-lg) auto 0;
+  max-width: var(--template-max-width);
+  width: 100%;
+}
+
+.console-hints {
+  display: grid;
+  gap: 6px;
+  margin: 8px 0 0;
+  padding-left: 18px;
+}
+
+.console-hints kbd {
+  background: var(--color-bg-subtle);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: var(--font-size-xs);
+  padding: 1px 5px;
+}
+
+/* Tooltip 的觸發元素：children 不可 focus 時 wrapper 會接手成為 tab stop */
+.console-info {
+  align-items: center;
+  color: var(--color-text-muted);
+  display: inline-flex;
+}
+
