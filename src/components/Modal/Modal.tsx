@@ -1,7 +1,7 @@
 import { forwardRef, useEffect, useId, useImperativeHandle } from 'react'
 import type { ReactNode } from 'react'
 import { createPortal } from 'react-dom'
-import { useLocale } from '../../config/context'
+import { useConfig } from '../../config/context'
 import { useFocusTrap } from '../../hooks/useFocusTrap'
 import { Button } from '../Button/Button'
 import { Icon } from '../Icon/Icon'
@@ -54,7 +54,7 @@ export const Modal = forwardRef<HTMLElement, ModalProps>(({
   onOk,
   onCancel,
 }, ref) => {
-  const locale = useLocale()
+  const { locale, getPopupContainer } = useConfig()
   const titleId = useId()
   /*
    * aria-modal="true" 只是宣告，不會真的擋住 Tab —— 沒有 trap 的話焦點會跑到
@@ -129,7 +129,13 @@ export const Modal = forwardRef<HTMLElement, ModalProps>(({
     </div>
   )
 
-  return createPortal(content, document.body)
+  /*
+   * 跟 Tooltip / Dropdown 走同一條規則：ConfigProvider 有給 getPopupContainer
+   * 就掛在那個節點下。掛回 document.body 的話，非 global 模式的
+   * ConfigProvider（主題屬性只寫在 wrapper div 上）就傳不到對話框，
+   * 對話框會拿到 <html> 上的產品線色而不是它所屬區塊的。
+   */
+  return createPortal(content, getPopupContainer?.() ?? document.body)
 })
 
 Modal.displayName = 'Modal'
