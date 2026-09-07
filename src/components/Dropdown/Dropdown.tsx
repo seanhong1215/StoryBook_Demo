@@ -24,6 +24,13 @@ export interface DropdownProps {
    * so it would nest interactive controls (invalid HTML, breaks keyboard nav).
    */
   trigger?: ReactNode
+  /**
+   * Accessible name of the trigger.
+   *
+   * Required when `trigger` is icon-only — the button would otherwise have no
+   * name at all. Give each row's menu its own name in a table.
+   */
+  label?: string
   /** Preferred menu position; flips automatically when it would overflow the viewport. */
   placement?: PopupPlacement
   /** Disables the trigger. */
@@ -46,6 +53,7 @@ export interface DropdownProps {
 export const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
   items = [],
   trigger,
+  label,
   placement = 'bottom-start',
   disabled = false,
   className = '',
@@ -220,6 +228,7 @@ export const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
         className="mds-dropdown__trigger"
         type="button"
         disabled={disabled}
+        aria-label={label}
         aria-haspopup="menu"
         aria-expanded={open}
         // 指向不存在的 id 會被 axe 判為違規，因此只在開啟時給
