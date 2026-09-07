@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Alert } from '../components/Alert/Alert'
 import { Badge } from '../components/Badge/Badge'
 import type { BadgeProps } from '../components/Badge/Badge'
@@ -21,7 +21,6 @@ import { Tooltip } from '../components/Tooltip/Tooltip'
 import { ConfigProvider } from '../config/ConfigProvider'
 import { zhTW } from '../locale/zh-TW'
 import { ThemeProvider } from '../theme/ThemeProvider'
-import portfolioCover from '../assets/portfolio-cover.png'
 
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
@@ -72,21 +71,145 @@ const Footer = ({ product, links }: { product: string; links: string[] }) => (
   </footer>
 )
 
+/**
+ * 色票讀 computed value，不寫死色碼。
+ *
+ * 封面宣稱「這裡的每個元件都是真的」，色票如果是寫死的十六進位就自打嘴巴 ——
+ * 換產品線或切明暗時它不會動。
+ *
+ * 觸發重讀的不是 React 的 render：工具列切主題時，ThemeProvider 的 global 模式
+ * 只是改了 `<html>` 上的屬性，這個元件不一定會重繪。所以直接盯著那個屬性看。
+ */
+const CoverSwatch = ({ name }: { name: string }) => {
+  const ref = useRef<HTMLDivElement>(null)
+  const [value, setValue] = useState('')
+
+  useEffect(() => {
+    const node = ref.current
+    if (!node) return undefined
+
+    const read = () => setValue(getComputedStyle(node).getPropertyValue(name).trim())
+    read()
+
+    const observer = new MutationObserver(read)
+    observer.observe(document.documentElement, {
+      attributeFilter: ['data-theme', 'data-product-line'],
+    })
+
+    return () => observer.disconnect()
+  }, [name])
+
+  return (
+    <div className="cover-swatch" ref={ref}>
+      <span className="cover-swatch__chip" style={{ background: `var(${name})` }} />
+      <span className="cover-swatch__name">{name.replace('--color-', '')}</span>
+      <code>{value || '—'}</code>
+    </div>
+  )
+}
+
+const coverStats: [string, string][] = [
+  ['21', '個元件'],
+  ['127', '個 story 測試'],
+  ['1.4 kB', '只用一個 Button'],
+  ['0', '執行期依賴'],
+]
+
+/*
+ * 封面刻意不包 ThemeProvider —— 其他四頁各自釘死一條產品線（那是重點：
+ * 同一批元件換品牌），封面反過來要跟著右上角工具列走，
+ * 這樣「切一下就全部跟著變」是看的人自己按出來的，不是我說的。
+ */
 const PortfolioCoverTemplate = () => (
-  <ThemeProvider productLine="commerce">
+  <>
     <ShowcaseNote
-      productLine="靜態圖檔"
-      summary="作品集封面圖，不是用元件組出來的 —— 這一頁是一張 PNG。"
-      components="想看真的能操作的畫面請開「00 可操作的營運主控台」；想看用元件組出來的版型看 02–04。"
+      productLine="跟著工具列走"
+      summary="作品集封面。右半邊不是示意圖 —— 每個按鈕、輸入框、色票都是真的元件與真的 token 值。"
+      components="用右上角工具列切明暗或換產品線，整張封面會跟著變，色票的十六進位數字也會重算。"
     />
-    <main className="portfolio-cover-showcase portfolio-cover-showcase--image">
-      <img
-        className="portfolio-cover-showcase__image"
-        src={portfolioCover}
-        alt="React Design System 模板元件庫作品集封面"
-      />
+    <main className="cover" id="top">
+      <div className="cover__grid">
+        <section className="cover__intro">
+          <Tag color="primary">Storybook Portfolio</Tag>
+          <h1 className="cover__title">
+            React
+            <span className="cover__title-accent">Design System</span>
+            模板元件庫
+          </h1>
+          <p className="cover__lede">
+            一套可直接套用於企業級產品的 React 元件庫，以 design token 為核心，
+            四條產品線 × 明暗兩套主題共用同一份元件程式碼。
+          </p>
+
+          <dl className="cover__stats">
+            {coverStats.map(([value, label]) => (
+              <div key={label}>
+                <dt>{value}</dt>
+                <dd>{label}</dd>
+              </div>
+            ))}
+          </dl>
+
+          <Space wrap>
+            <Button type="primary" size="lg" rightIcon={<Icon name="chevron-right" />}>
+              瀏覽元件
+            </Button>
+            <Button variant="secondary" size="lg">看架構取捨</Button>
+          </Space>
+        </section>
+
+        <section className="cover__sampler">
+          {/* 緊接在 h1 之後，這裡必須是 h2 才不會跳級 */}
+          <h2 className="cover__sampler-title">下面每一個都是真的元件</h2>
+
+          <Card title="控制項" titleAs="h3" size="small">
+            <Space wrap>
+              <Button type="primary" size="sm">Primary</Button>
+              <Button variant="secondary" size="sm">Secondary</Button>
+              <Button variant="ghost" size="sm">Ghost</Button>
+              <Button variant="danger" size="sm">Danger</Button>
+            </Space>
+            <Space direction="vertical" align="stretch">
+              <Input allowClear defaultValue="真的可以清除" aria-label="範例輸入框" />
+              <Select
+                aria-label="範例選單"
+                defaultValue="tokens"
+                options={[
+                  { label: 'Design tokens', value: 'tokens' },
+                  { label: 'Components', value: 'components' },
+                ]}
+              />
+            </Space>
+          </Card>
+
+          <Card title="狀態" titleAs="h3" size="small">
+            <Space wrap>
+              <Badge variant="primary">預設</Badge>
+              <Badge variant="success">成功</Badge>
+              <Badge variant="warning">警示</Badge>
+              <Badge variant="danger">錯誤</Badge>
+            </Space>
+            <Space wrap>
+              <Tag color="primary">Button</Tag>
+              <Tag color="success">Form</Tag>
+              <Tag color="warning">Table</Tag>
+              <Tag color="danger">Modal</Tag>
+            </Space>
+          </Card>
+
+          <Card title="Token（實際計算值）" titleAs="h3" size="small">
+            <div className="cover-swatches">
+              {['--color-primary', '--color-success', '--color-warning', '--color-danger', '--color-bg', '--color-text'].map((name) => (
+                <CoverSwatch name={name} key={name} />
+              ))}
+            </div>
+          </Card>
+        </section>
+      </div>
+
+      <Footer product="React Design System" links={['元件', '說明頁', 'Tokens']} />
     </main>
-  </ThemeProvider>
+  </>
 )
 
 const CommerceOperationsTemplate = () => (

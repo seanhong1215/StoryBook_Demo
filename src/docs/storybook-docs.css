@@ -564,23 +564,154 @@ pre .punctuation {
   width: 100%;
 }
 
-.portfolio-cover-showcase {
-  background: #020617;
-  display: grid;
+/*
+ * 作品集封面。
+ *
+ * 全部用 token，沒有一個寫死的顏色 —— 封面自己就是「換產品線 / 切明暗不用改
+ * 版型」的證據。原本這一頁是一張 PNG，圖裡畫的 Button 與色票跟真的元件對不
+ * 起來，對一個賣點是一致性的元件庫來說反而扣分。PNG 移到 README 當專案封面。
+ */
+.cover {
+  --template-max-width: 1180px;
+  background: var(--color-bg);
+  color: var(--color-text);
+  display: flex;
+  flex-direction: column;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  gap: 48px;
   min-height: 100vh;
+  padding: 64px 24px 0;
 }
 
-.portfolio-cover-showcase--image {
-  padding: 0;
-  place-items: center;
-}
-
-.portfolio-cover-showcase__image {
-  display: block;
-  height: 100vh;
-  max-width: 100%;
-  object-fit: contain;
+.cover__grid {
+  display: grid;
+  gap: 56px;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  margin: 0 auto;
+  max-width: var(--template-max-width);
   width: 100%;
+}
+
+@media (max-width: 900px) {
+  .cover {
+    padding-top: 40px;
+  }
+
+  .cover__grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 40px;
+  }
+}
+
+.cover__intro {
+  align-content: start;
+  display: grid;
+  gap: 24px;
+  justify-items: start;
+}
+
+.cover__title {
+  display: grid;
+  font-size: clamp(40px, 5.4vw, 68px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin: 0;
+}
+
+.cover__title-accent {
+  color: var(--color-primary);
+}
+
+.cover__lede {
+  color: var(--color-text-muted);
+  font-size: 17px;
+  line-height: 1.7;
+  margin: 0;
+  max-width: 46ch;
+}
+
+.cover__stats {
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px;
+  margin: 0;
+  padding-top: 24px;
+  width: 100%;
+}
+
+.cover__stats dt {
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+.cover__stats dd {
+  color: var(--color-text-muted);
+  font-size: 13px;
+  margin: 4px 0 0;
+}
+
+.cover__sampler {
+  display: grid;
+  gap: 16px;
+  align-content: start;
+}
+
+.cover__sampler-title {
+  color: var(--color-text-muted);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+/*
+ * Card 的 body 沒有預設的子元素間距，而這裡每張卡片都放兩三組東西。
+ * 用 grid 而不是相鄰選擇器加 margin-top —— Space 是 inline-flex，
+ * 兩個 Space 會併在同一行，margin-top 對 inline 盒子不會換行。
+ */
+.cover__sampler .mds-card__body {
+  display: grid;
+  gap: 12px;
+}
+
+.cover-swatches {
+  display: grid;
+  gap: 8px 20px;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+}
+
+.cover-swatch {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  min-width: 0;
+}
+
+.cover-swatch__chip {
+  border: 1px solid var(--color-border-strong);
+  border-radius: 4px;
+  flex: none;
+  height: 18px;
+  width: 18px;
+}
+
+.cover-swatch__name {
+  flex: none;
+  font-size: 12px;
+}
+
+.cover-swatch code {
+  color: var(--color-text-muted);
+  font-size: 11px;
+  margin-left: auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .template-header,
@@ -1236,7 +1367,13 @@ pre .punctuation {
 }
 
 .showcase-note__tag {
-  color: var(--color-primary);
+  /*
+   * 不能用 --color-primary（填色用的品牌色，不保證當文字的對比度）——
+   * core 的 #0066FF 對這塊底只有 4.04:1，11px 粗體需要 4.5:1。
+   * --color-primary-text 在淺色下的 mix 是 100%，等於沒混，一樣不夠。
+   * --tone-info-text 才是「品牌色但確保能當文字讀」的那個（混 55% 文字色）。
+   */
+  color: var(--tone-info-text);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.08em;
