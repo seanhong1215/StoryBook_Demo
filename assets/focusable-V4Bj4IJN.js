@@ -1,0 +1,1 @@
+import{i as e}from"./preload-helper-Cs4UwXAW.js";var t,n,r=e((()=>{t=[`a[href]`,`button:not([disabled])`,`input:not([disabled])`,`select:not([disabled])`,`textarea:not([disabled])`,`[tabindex]:not([tabindex="-1"])`].join(`, `),n=e=>Array.from(e.querySelectorAll(t)).filter(e=>e.getClientRects().length>0)}));export{n,r,t};
